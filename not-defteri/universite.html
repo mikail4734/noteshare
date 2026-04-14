@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Üniversite Notları | Bölümünü Seç</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans text-slate-900">
+
+    <nav class="bg-slate-900 p-4 text-white shadow-2xl sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold flex items-center">
+                <i class="fas fa-university mr-3 text-indigo-400"></i> NotDeposu <span class="ml-2 text-xs font-mono text-indigo-300">v2.0 Academia</span>
+            </h1>
+            <div class="flex items-center space-x-6">
+                <a href="html2.html" class="text-sm hover:text-indigo-400 transition">Ana Sayfa</a>
+                <button class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded text-xs font-bold uppercase tracking-widest transition">Not Yükle</button>
+            </div>
+        </div>
+    </nav>
+
+    <header class="py-20 bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white text-center">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl md:text-5xl font-light mb-4 uppercase tracking-tighter">Akademik Arşiv</h2>
+            <div class="h-1 w-20 bg-indigo-500 mx-auto mb-6"></div>
+            <p class="text-slate-400 text-lg max-w-2xl mx-auto font-light italic">
+                Fakülte ve bölümlere göre ayrılmış, akademik standartlarda ders notları ve çıkmış sorular.
+            </p>
+        </div>
+    </header>
+
+    <main class="container mx-auto py-16 px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <a href="dersler.html" class="bg-white group border border-slate-200 rounded-lg p-8 hover:border-indigo-500 transition-all shadow-sm hover:shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
+                    <i class="fas fa-code text-6xl text-slate-900"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Bilgisayar & Yazılım</h3>
+                <p class="text-slate-500 text-sm mb-4">Veri Yapıları, Algoritmalar, İşletim Sistemleri...</p>
+                <span class="text-indigo-600 text-xs font-bold group-hover:underline">Dökümanları İncele &rarr;</span>
+            </a>
+
+            <a href="dersler.html" class="bg-white group border border-slate-200 rounded-lg p-8 hover:border-red-500 transition-all shadow-sm hover:shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
+                    <i class="fas fa-stethscope text-6xl text-slate-900"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Tıp Fakültesi</h3>
+                <p class="text-slate-500 text-sm mb-4">Anatomi, Fizyoloji, Farmakoloji, Patoloji...</p>
+                <span class="text-red-600 text-xs font-bold group-hover:underline">Dökümanları İncele &rarr;</span>
+            </a>
+
+            <a href="dersler.html" class="bg-white group border border-slate-200 rounded-lg p-8 hover:border-amber-600 transition-all shadow-sm hover:shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
+                    <i class="fas fa-gavel text-6xl text-slate-900"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Hukuk</h3>
+                <p class="text-slate-500 text-sm mb-4">Anayasa, Borçlar Hukuku, Medeni Hukuk...</p>
+                <span class="text-amber-600 text-xs font-bold group-hover:underline">Dökümanları İncele &rarr;</span>
+            </a>
+
+            <a href="dersler.html" class="bg-white group border border-slate-200 rounded-lg p-8 hover:border-teal-500 transition-all shadow-sm hover:shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
+                    <i class="fas fa-drafting-compass text-6xl text-slate-900"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Mimarlık & Tasarım</h3>
+                <p class="text-slate-500 text-sm mb-4">Yapı Bilgisi, Teknik Resim, Restorasyon...</p>
+                <span class="text-teal-600 text-xs font-bold group-hover:underline">Dökümanları İncele &rarr;</span>
+            </a>
+
+            <a href="dersler.html" class="bg-white group border border-slate-200 rounded-lg p-8 hover:border-blue-500 transition-all shadow-sm hover:shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
+                    <i class="fas fa-chart-line text-6xl text-slate-900"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">İşletme & İktisat</h3>
+                <p class="text-slate-500 text-sm mb-4">Makro-Mikro İktisat, Muhasebe, Pazarlama...</p>
+                <span class="text-blue-600 text-xs font-bold group-hover:underline">Dökümanları İncele &rarr;</span>
+            </a>
+
+            <a href="dersler.html" class="bg-white group border border-slate-200 rounded-lg p-8 hover:border-pink-500 transition-all shadow-sm hover:shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
+                    <i class="fas fa-brain text-6xl text-slate-900"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Psikoloji & PDR</h3>
+                <p class="text-slate-500 text-sm mb-4">Klinik Psikoloji, Gelişim Kuramları...</p>
+                <span class="text-pink-500 text-xs font-bold group-hover:underline">Dökümanları İncele &rarr;</span>
+            </a>
+
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12 border-t border-slate-800">
+        <div class="container mx-auto text-center px-4">
+            <p class="text-sm mb-4 font-mono">system.academia.v2.0</p>
+            <p class="text-xs uppercase tracking-widest">&copy; 2026 NoteShare University Network</p>
+        </div>
+    </footer>
+
+</body>
+</html>

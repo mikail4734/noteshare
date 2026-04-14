@@ -1,0 +1,107 @@
+<?php
+/**
+ * NoteShare - Kullanım Koşulları (PHP)
+ */
+
+$sayfa_basligi = "Kullanım Koşulları | NoteShare";
+$guncelleme_tarihi = "Mart 2026";
+$iletisim_email = "iletisim@noteshare.com";
+
+// Koşullar verisini bir dizi olarak tutuyoruz (Yönetimi daha kolaydır)
+$kosullar = [
+    [
+        'id' => 1,
+        'baslik' => 'Kabul Edilme',
+        'ikon' => 'fas fa-info-circle',
+        'icerik' => 'NoteShare platformuna erişerek veya kullanarak, bu kullanım koşullarının tamamını okuduğunuzu, anladığınızı ve kabul ettiğinizi beyan etmiş olursunuz.'
+    ],
+    [
+        'id' => 2,
+        'baslik' => 'Kullanıcı Sorumlulukları',
+        'ikon' => 'fas fa-user-shield',
+        'icerik' => 'Kullanıcılar, paylaştıkları notların içeriğinden tamamen sorumludur. Telif hakkı içeren, hakaret vari veya yasa dışı içeriklerin paylaşılması yasaktır. Paylaşılan içeriklerin doğruluğu NoteShare tarafından garanti edilmez.'
+    ],
+    [
+        'id' => 3,
+        'baslik' => 'Fikri Mülkiyet',
+        'ikon' => 'fas fa-copyright',
+        'icerik' => 'NoteShare markası, tasarımı ve kod yapısı NoteShare ekibine aittir. Kullanıcıların paylaştığı notlar üzerinde ise NoteShare, platformun işleyişi için sınırsız kullanım ve sergileme hakkına sahiptir.'
+    ]
+];
+?>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $sayfa_basligi; ?></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <nav class="bg-white border-b px-8 py-4 sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="index.php" class="text-slate-400 hover:text-indigo-600 transition">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1 class="font-bold text-xl text-indigo-600 italic">NoteShare</h1>
+            </div>
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Son Güncelleme: <?php echo $guncelleme_tarihi; ?>
+            </span>
+        </div>
+    </nav>
+
+    <main class="container mx-auto max-w-4xl py-12 px-6">
+        <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 p-10 border border-slate-100">
+            <h2 class="text-3xl font-black text-slate-900 mb-8 border-b pb-4">Kullanım Koşulları</h2>
+            
+            <div class="space-y-8 text-slate-600 leading-relaxed">
+                
+                <?php foreach ($kosullar as $kosul): ?>
+                <section>
+                    <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center">
+                        <i class="<?php echo $kosul['ikon']; ?> text-indigo-500 mr-2"></i> 
+                        <?php echo $kosul['id'] . ". " . $kosul['baslik']; ?>
+                    </h3>
+                    <p><?php echo $kosul['icerik']; ?></p>
+                </section>
+                <?php endforeach; ?>
+
+                <section>
+                    <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center">
+                        <i class="fas fa-ban text-indigo-500 mr-2"></i> 4. Yasaklı Faaliyetler
+                    </h3>
+                    <ul class="list-disc ml-6 space-y-2">
+                        <li>Sisteme zarar verecek yazılımlar yüklemek.</li>
+                        <li>Diğer kullanıcıların verilerini izinsiz toplamak.</li>
+                        <li>Eğitim amaçlı olmayan yanıltıcı içerikler üretmek.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center">
+                        <i class="fas fa-exclamation-triangle text-indigo-500 mr-2"></i> 5. Sorumluluk Sınırı
+                    </h3>
+                    <p>NoteShare, platformdaki herhangi bir teknik arıza, veri kaybı veya yanlış bilgiden dolayı doğabilecek zararlardan sorumlu tutulamaz. Platform "olduğu gibi" sunulmaktadır.</p>
+                </section>
+
+                <div class="mt-12 p-6 bg-indigo-50 rounded-2xl border border-indigo-100">
+                    <p class="text-sm text-indigo-700 font-medium italic text-center">
+                        Bu koşullar hakkında sorularınız için 
+                        <a href="mailto:<?php echo $iletisim_email; ?>" class="underline font-bold"><?php echo $iletisim_email; ?></a> 
+                        adresi üzerinden bizimle iletişime geçebilirsiniz.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-8 text-center text-slate-400 text-xs uppercase tracking-widest">
+        &copy; <?php echo date("Y"); ?> NoteShare Platformu
+    </footer>
+
+</body>
+</html>
