@@ -1,18 +1,16 @@
 <?php
-/**
- * NoteShare - İlkokul Sayfası (PHP)
- */
+
 
 $sayfa_basligi = "İlkokul Notları | Eğlenerek Öğren";
 $site_adi = "NoteShare";
 
-// Dersler Verisi - PHP dizisi ile yönetimi kolaylaştırıyoruz
+
 $dersler = [
     [
         'ad' => 'Hayat Bilgisi',
         'alt_baslik' => 'Çevremiz ve Dünyamız',
         'ikon' => 'fas fa-sun',
-        'renk' => 'orange', // hover:border-orange-400
+        'renk' => 'orange', 
         'bg_ikon' => 'bg-yellow-100',
         'text_ikon' => 'text-yellow-600'
     ],
@@ -93,7 +91,7 @@ $dersler = [
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
             
             <?php foreach ($dersler as $ders): ?>
-            <a href="dersler.php?ders=<?php echo urlencode($ders['ad']); ?>" 
+            <a href="dersler.php?seviye=<?php echo urlencode('İlkokul'); ?>&ders=<?php echo urlencode($ders['ad']); ?>"
                class="bg-white rounded-[2.5rem] p-10 shadow-sm border-4 border-transparent hover:border-<?php echo $ders['renk']; ?>-400 hover:shadow-2xl hover:-translate-y-3 transition-all group text-center">
                 
                 <div class="<?php echo $ders['bg_ikon'] . ' ' . $ders['text_ikon']; ?> w-24 h-24 rounded-full flex items-center justify-center text-4xl mb-6 mx-auto group-hover:scale-110 transition-transform shadow-md">

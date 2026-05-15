@@ -1,1 +1,26 @@
+# Hassas dosyalar - ASLA git'e gitmesin
 .env
+*.log
+*.sql
+
+# Composer / Node bağımlılıkları (server'da kurulur)
+vendor/
+node_modules/
+
+# Yüklenmiş dosyalar
+uploads/*
+!uploads/.gitkeep
+
+# Sistem
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Geçici / yedek
+*.bak
+*.tmp
+
+# Local Claude/dev
+.claude/

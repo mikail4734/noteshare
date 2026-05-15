@@ -1,10 +1,10 @@
 <?php
 session_start();
 
-// Veritabanı bağlantısını dahil ediyoruz
+
 require_once 'baglan.php';
 
-// Eğer e-posta girilmeden (direkt linkle) bu sayfaya gelinmişse ilk sayfaya geri gönder
+
 if (!isset($_SESSION['onay_kodu']) || !isset($_SESSION['sifirlama_email'])) {
     header("Location: sifre-sifirla.php");
     exit();
@@ -17,26 +17,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $girilen_kod = $_POST['kod'];
     $yeni_sifre = $_POST['yeni_sifre'];
 
-    // Session'da sakladığımız kod ile kullanıcının yazdığı kodu karşılaştırıyoruz
+    
     if ($girilen_kod == $_SESSION['onay_kodu']) {
         
-        // 1. Yeni şifreyi güvenli hale getir (Hashleme)
+       
         $guvenli_sifre = password_hash($yeni_sifre, PASSWORD_DEFAULT);
         $email = $_SESSION['sifirlama_email'];
 
         try {
-            // 2. Veritabanını Güncelle
-            // users tablosundaki password sütununu yeni şifreyle değiştiriyoruz
+           
             $guncelleSorgu = $db->prepare("UPDATE users SET password = ? WHERE email = ?");
             $guncelleSorgu->execute([$guvenli_sifre, $email]);
 
             $mesaj = "Şifreniz başarıyla güncellendi! Giriş sayfasına yönlendiriliyorsunuz...";
             $mesaj_turu = "basari";
             
-            // İşlem bittiği için verileri temizle
+          
             session_destroy(); 
             
-            // 3 saniye sonra otomatik olarak giriş sayfasına at
+       
             header("Refresh: 3; url=giris.php");
         } catch(PDOException $e) {
             $mesaj = "Veritabanı güncellenirken hata oluştu: " . $e->getMessage();

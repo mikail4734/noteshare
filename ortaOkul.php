@@ -1,125 +1,90 @@
 <?php
-/**
- * NoteShare - Ortaokul Sayfası (PHP)
- */
+$jsonPath = __DIR__ . '/egitim_verileri.json';
+$dersler = [];
+if (file_exists($jsonPath)) {
+    $data = json_decode(file_get_contents($jsonPath), true);
+    $dersler = $data['ortaokul']['dersler'] ?? [];
+    sort($dersler);
+}
+$site_adi = "NoteShare";
 
-$sayfa_basligi = "Ortaokul Notları | Dersini Seç";
-$site_adi = "NotDeposu"; // Navigasyondaki isim
-
-// Dersler Verisi
-$dersler = [
-    [
-        'ad' => 'Türkçe',
-        'alt' => 'Dil Bilgisi & Yazım',
-        'ikon' => 'fas fa-pen-nib',
-        'renk_sinifi' => 'orange'
-    ],
-    [
-        'ad' => 'Matematik',
-        'alt' => 'Sayılar & Problemler',
-        'ikon' => 'fas fa-calculator',
-        'renk_sinifi' => 'blue'
-    ],
-    [
-        'ad' => 'Fen Bilimleri',
-        'alt' => 'Deneyler & Canlılar',
-        'ikon' => 'fas fa-microscope',
-        'renk_sinifi' => 'green'
-    ],
-    [
-        'ad' => 'Sosyal Bilgiler',
-        'alt' => 'Tarih & Coğrafya',
-        'ikon' => 'fas fa-map-marked-alt',
-        'renk_sinifi' => 'red'
-    ],
-    [
-        'ad' => 'İnkılap Tarihi',
-        'alt' => 'LGS Hazırlık',
-        'ikon' => 'fas fa-star-and-crescent',
-        'renk_sinifi' => 'amber'
-    ],
-    [
-        'ad' => 'Din Kültürü',
-        'alt' => 'İnanç & İbadet',
-        'ikon' => 'fas fa-mosque',
-        'renk_sinifi' => 'teal'
-    ],
-    [
-        'ad' => 'İngilizce',
-        'alt' => 'Words & Grammar',
-        'ikon' => 'fas fa-globe',
-        'renk_sinifi' => 'indigo'
-    ],
-    [
-        'ad' => 'Bilişim',
-        'alt' => 'Kodlama & Yazılım',
-        'ikon' => 'fas fa-laptop-code',
-        'renk_sinifi' => 'gray'
-    ]
+$dersIkon = [
+    'Türkçe' => 'fa-pen-nib', 'Matematik' => 'fa-calculator',
+    'Fen Bilimleri' => 'fa-microscope', 'Sosyal Bilgiler' => 'fa-map-marked-alt',
+    'T.C. İnkılap Tarihi ve Atatürkçülük' => 'fa-star-and-crescent',
+    'İngilizce' => 'fa-globe', 'Din Kültürü ve Ahlak Bilgisi' => 'fa-mosque',
+    'Bilişim Teknolojileri' => 'fa-laptop-code', 'Görsel Sanatlar' => 'fa-palette',
+    'Müzik' => 'fa-music', 'Beden Eğitimi ve Spor' => 'fa-futbol',
 ];
+$defaultIkon = 'fa-book';
 ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $sayfa_basligi; ?></title>
+    <title>Ortaokul Notları | Dersini Seç</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .ders-card { transition: all 0.25s; }
+        .ders-card:hover { transform: translateY(-4px); border-color: #10b981; box-shadow: 0 12px 24px rgba(16,185,129,0.15); }
+    </style>
 </head>
-<body class="bg-slate-50 font-sans">
+<body class="bg-slate-50 text-slate-900">
 
-    <nav class="bg-emerald-600 p-4 text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold flex items-center cursor-pointer" onclick="window.location.href='index.php'">
-                <i class="fas fa-book-reader mr-2 text-yellow-300"></i> <?php echo $site_adi; ?>
-            </h1>
-            <div class="flex space-x-4 font-medium">
-                <a href="index.php" class="hover:text-emerald-200 transition">Ana Sayfa</a>
-                <span class="bg-white text-emerald-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">Ortaokul</span>
-            </div>
-        </div>
-    </nav>
+<nav class="bg-emerald-600 p-4 text-white shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-2xl font-bold cursor-pointer" onclick="window.location.href='index.php'">
+            <i class="fas fa-book-reader mr-2 text-yellow-300"></i> <?= $site_adi ?>
+        </h1>
+        <a href="index.php" class="hover:text-emerald-200 transition text-sm">← Ana Sayfa</a>
+    </div>
+</nav>
 
-    <header class="py-16 bg-emerald-500 text-white text-center">
-        <div class="container mx-auto px-4">
-            <h2 class="text-4xl font-extrabold mb-4">Ortaokul Ders Notları</h2>
-            <p class="text-emerald-50 text-lg max-w-xl mx-auto">
-                LGS hazırlık ve okul sınavların için en anlaşılır, renkli ve özetlenmiş ders notları burada!
-            </p>
-        </div>
-    </header>
+<header class="py-16 bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-center">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-extrabold mb-3">Ortaokul Notları</h2>
+        <p class="text-emerald-100 text-lg max-w-xl mx-auto">LGS hazırlık + 5-6-7-8. sınıf · <?= count($dersler) ?> ders</p>
+        <input type="text" id="dersAra" placeholder="Ders ara..." class="mt-6 bg-white/10 border border-white/20 rounded-full py-2 px-5 text-sm text-white placeholder-white/40 outline-none w-72">
+    </div>
+</header>
 
-    <main class="container mx-auto py-12 px-4">
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            
-            <?php foreach ($dersler as $ders): ?>
-            <a href="dersler.php?ders=<?php echo urlencode($ders['ad']); ?>" 
-               class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all group text-center">
-                
-                <div class="bg-<?php echo $ders['renk_sinifi']; ?>-100 text-<?php echo $ders['renk_sinifi']; ?>-600 w-20 h-20 rounded-2xl flex items-center justify-center text-3xl mb-6 mx-auto group-hover:bg-<?php echo $ders['renk_sinifi']; ?>-600 group-hover:text-white transition-all shadow-inner">
-                    <i class="<?php echo $ders['ikon']; ?>"></i>
+<main class="container mx-auto py-12 px-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <?php foreach ($dersler as $d):
+            $ikon = $dersIkon[$d] ?? $defaultIkon;
+        ?>
+            <a href="dersler.php?seviye=<?= urlencode('Orta Okul') ?>&ders=<?= urlencode($d) ?>"
+               class="ders-card bg-white border-2 border-slate-100 rounded-2xl p-5 text-center block ders-item"
+               data-ad="<?= mb_strtolower(htmlspecialchars($d)) ?>">
+                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-2">
+                    <i class="fas <?= $ikon ?> text-lg"></i>
                 </div>
-                
-                <h3 class="font-black text-gray-800 text-xl tracking-tight"><?php echo $ders['ad']; ?></h3>
-                <p class="text-gray-400 text-xs mt-2 uppercase font-bold tracking-widest"><?php echo $ders['alt']; ?></p>
+                <h3 class="font-bold text-slate-800 text-xs leading-tight"><?= htmlspecialchars($d) ?></h3>
             </a>
-            <?php endforeach; ?>
+        <?php endforeach; ?>
+    </div>
+    <p id="bosUyari" class="hidden text-center text-slate-400 py-12">Sonuç bulunamadı.</p>
+</main>
 
-        </div>
-    </main>
+<footer class="bg-emerald-900 text-emerald-200 py-8 text-center text-xs">
+    &copy; <?= date("Y") ?> NoteShare Ortaokul Akademisi
+</footer>
 
-    <footer class="bg-emerald-900 text-white py-12">
-        <div class="container mx-auto px-4 text-center">
-            <h3 class="text-2xl font-bold mb-4">LGS mi Geliyor? Korkma!</h3>
-            <p class="text-emerald-200 mb-8 max-w-lg mx-auto italic">
-                Sınavlara en iyi notlarla hazırlanman için NoteShare her zaman yanında. Başarılar dileriz!
-            </p>
-            <div class="text-sm opacity-50">
-                &copy; <?php echo date("Y"); ?> NoteShare Ortaokul Akademisi
-            </div>
-        </div>
-    </footer>
-
+<script>
+const items = document.querySelectorAll('.ders-item');
+const bos = document.getElementById('bosUyari');
+document.getElementById('dersAra').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase().trim();
+    let say = 0;
+    items.forEach(el => {
+        const eslesti = !q || el.dataset.ad.includes(q);
+        el.style.display = eslesti ? '' : 'none';
+        if (eslesti) say++;
+    });
+    bos.classList.toggle('hidden', say > 0);
+});
+</script>
 </body>
 </html>

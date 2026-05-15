@@ -1,17 +1,22 @@
 <?php
-$host = 'localhost';
-$db_adi = 'notdeposu'; 
-$username = "root";    // Tanımlanan isim
-$password = "";        // Tanımlanan şifre
+require_once __DIR__ . '/config.php';
 
 try {
-    // Burada yukarıdaki değişken isimlerini ($username ve $password) kullanmalısın
-    $db = new PDO("mysql:host=$host;dbname=$db_adi;charset=utf8", $username, $password);
-    
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    // echo "Bağlantı başarılı!"; // Test etmek için bunu açabilirsin
+    $db = new PDO(
+        "mysql:host={$config['DB_HOST']};dbname={$config['DB_NAME']};charset=utf8mb4",
+        $config['DB_USER'],
+        $config['DB_PASS'],
+        [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+        ]
+    );
 } catch (PDOException $e) {
-    echo "Veritabanı bağlantı hatası: " . $e->getMessage();
-    die();
+    if (($config['APP_ENV'] ?? 'production') === 'development') {
+        die("Veritabanı bağlantı hatası: " . $e->getMessage());
+    }
+    error_log("DB hatası: " . $e->getMessage());
+    die("Servis geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.");
 }
 ?>

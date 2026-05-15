@@ -1,7 +1,7 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
-// Sayfa ismini dosya adına göre otomatik belirle
+
 $dosya_adi = basename($_SERVER['PHP_SELF'], ".php");
 $sayfa_basliklari = [
     'populer-notlar' => ['baslik' => 'En Popüler Notlar', 'ikon' => 'fa-fire', 'renk' => 'text-orange-500'],

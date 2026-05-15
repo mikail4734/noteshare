@@ -1,9 +1,5 @@
 <?php
-/**
- * NoteShare - İletişim Sayfası (PHP)
- */
 
-// Dinamik Değişkenler
 $site_adi = "NoteShare";
 $sayfa_basligi = "Bize Ulaşın | " . $site_adi;
 $admin_email = "mikailcelik4734@gmail.com";

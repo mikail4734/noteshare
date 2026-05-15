@@ -1,126 +1,115 @@
 <?php
-/**
- * NoteShare - Lise Sayfası (PHP)
- */
+$jsonPath = __DIR__ . '/egitim_verileri.json';
+$dersler = [];
+$okullar = [];
+if (file_exists($jsonPath)) {
+    $data = json_decode(file_get_contents($jsonPath), true);
+    $dersler = $data['lise']['dersler'] ?? [];
+    $okullar = $data['lise']['okullar'] ?? [];
+    sort($dersler);
+    sort($okullar);
+}
+$site_adi = "NoteShare";
 
-$sayfa_basligi = "Lise Notları | Dersini Seç";
-$site_adi = "NotDeposu";
-
-// Lise Dersleri Verisi (Linkleri ekledim)
-$dersler = [
-    [
-        'ad' => 'Matematik',
-        'alt' => 'Fonksiyonlar, Logaritma...',
-        'ikon' => 'fas fa-calculator',
-        'renk' => 'blue',
-        'link' => 'dersler.php?cat=lise_matematik'
-    ],
-    [
-        'ad' => 'Fizik',
-        'alt' => 'Vektörler, Kuvvet, Optik...',
-        'ikon' => 'fas fa-atom',
-        'renk' => 'purple',
-        'link' => 'dersler.php?cat=lise_fizik'
-    ],
-    [
-        'ad' => 'Kimya',
-        'alt' => 'Organik, Mol Kavramı...',
-        'ikon' => 'fas fa-flask',
-        'renk' => 'red',
-        'link' => 'dersler.php?cat=lise_kimya'
-    ],
-    [
-        'ad' => 'Biyoloji',
-        'alt' => 'Hücre, Sistemler, Kalıtım...',
-        'ikon' => 'fas fa-dna',
-        'renk' => 'green',
-        'link' => 'dersler.php?cat=lise_biyoloji'
-    ],
-    [
-        'ad' => 'Edebiyat',
-        'alt' => 'Divan, Cumhuriyet Dönemi...',
-        'ikon' => 'fas fa-feather-alt',
-        'renk' => 'orange',
-        'link' => 'dersler.php?cat=lise_edebiyat'
-    ],
-    [
-        'ad' => 'Tarih',
-        'alt' => 'İnkılap, Osmanlı, Dünya...',
-        'ikon' => 'fas fa-history',
-        'renk' => 'amber',
-        'link' => 'dersler.php?cat=lise_tarih'
-    ],
-    [
-        'ad' => 'Coğrafya',
-        'alt' => 'Harita Bilgisi, İklim...',
-        'ikon' => 'fas fa-globe-africa',
-        'renk' => 'emerald',
-        'link' => 'dersler.php?cat=lise_cografya'
-    ],
-    [
-        'ad' => 'İngilizce',
-        'alt' => 'Grammar, Vocabulary...',
-        'ikon' => 'fas fa-language',
-        'renk' => 'indigo',
-        'link' => 'dersler.php?cat=lise_ingilizce'
-    ]
+// İkon eşleştirmesi
+$dersIkon = [
+    'Matematik' => 'fa-calculator', 'Geometri' => 'fa-shapes',
+    'Fizik' => 'fa-atom', 'Kimya' => 'fa-flask', 'Biyoloji' => 'fa-dna',
+    'Türk Dili ve Edebiyatı' => 'fa-feather-alt', 'Türk Edebiyatı' => 'fa-feather-alt',
+    'Tarih' => 'fa-landmark', 'Coğrafya' => 'fa-globe-africa',
+    'Felsefe' => 'fa-brain', 'Psikoloji' => 'fa-brain',
+    'İngilizce' => 'fa-language', 'Almanca' => 'fa-language',
+    'Din Kültürü ve Ahlak Bilgisi' => 'fa-mosque', 'Beden Eğitimi' => 'fa-futbol',
+    'Müzik' => 'fa-music', 'Görsel Sanatlar' => 'fa-palette',
+    'Bilgisayar Bilimi' => 'fa-laptop-code',
 ];
+$defaultIkon = 'fa-book';
 ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $sayfa_basligi; ?></title>
+    <title>Lise Notları | Dersini Seç</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .ders-card { transition: all 0.25s; }
+        .ders-card:hover { transform: translateY(-4px); border-color: #ef4444; box-shadow: 0 12px 24px rgba(239,68,68,0.15); }
+    </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-900">
+<body class="bg-slate-50 text-slate-900">
 
-    <nav class="bg-slate-900 p-4 text-white shadow-xl sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center cursor-pointer" onclick="window.location.href='index.php'">
-                <i class="fas fa-graduation-cap mr-3 text-red-500"></i> <?php echo $site_adi; ?> 
-            </h1>
-            <div class="flex items-center space-x-4">
-                <a href="index.php" class="text-sm hover:text-red-400 transition">Geri Dön</a>
-            </div>
+<nav class="bg-slate-900 p-4 text-white shadow-xl sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-xl font-bold cursor-pointer" onclick="window.location.href='index.php'">
+            <i class="fas fa-graduation-cap mr-3 text-red-500"></i> <?= $site_adi ?>
+        </h1>
+        <a href="index.php" class="text-sm hover:text-red-400 transition">← Geri Dön</a>
+    </div>
+</nav>
+
+<header class="py-16 bg-gradient-to-br from-red-600 to-rose-700 text-white text-center shadow-inner">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl md:text-5xl font-black mb-3 uppercase tracking-tight">Lise Notları</h2>
+        <p class="text-red-100 text-lg opacity-90">TYT, AYT, 9-10-11-12. sınıf · <?= count($dersler) ?> ders</p>
+
+        <!-- Lise türü filtresi -->
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-3 max-w-3xl mx-auto">
+            <select id="liseTuruFilt" class="bg-white/10 border border-white/20 text-white rounded-full py-2 px-5 text-sm font-medium outline-none">
+                <option value="">📚 Tüm Lise Türleri</option>
+                <?php foreach ($okullar as $o): ?>
+                    <option value="<?= htmlspecialchars($o) ?>" class="text-slate-800"><?= htmlspecialchars($o) ?></option>
+                <?php endforeach; ?>
+            </select>
+            <input type="text" id="dersAra" placeholder="Ders ara..." class="bg-white/10 border border-white/20 rounded-full py-2 px-5 text-sm text-white placeholder-white/40 outline-none w-56">
         </div>
-    </nav>
+    </div>
+</header>
 
-    <header class="py-16 bg-red-600 text-white text-center shadow-inner">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl font-black mb-2 uppercase tracking-tight">Lise Ders Notları</h2>
-            <p class="text-red-100 text-lg opacity-80">9, 10, 11 ve 12. Sınıf müfredatına uygun dökümanlar.</p>
-        </div>
-    </header>
-
-    <main class="container mx-auto py-12 px-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            <?php foreach ($dersler as $ders): ?>
-            <a href="./<?php echo $ders['link']; ?>" 
-               class="bg-white group border-2 border-transparent hover:border-<?php echo $ders['renk']; ?>-500 rounded-2xl p-6 transition-all shadow-md hover:shadow-xl text-center block">
-                
-                <div class="w-16 h-16 bg-<?php echo $ders['renk']; ?>-100 text-<?php echo $ders['renk']; ?>-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                    <i class="<?php echo $ders['ikon']; ?> text-2xl"></i>
+<main class="container mx-auto py-12 px-4">
+    <div id="dersGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <?php foreach ($dersler as $d):
+            $ikon = $dersIkon[$d] ?? $defaultIkon;
+        ?>
+            <a href="#" onclick="goDers('<?= htmlspecialchars(addslashes($d)) ?>'); return false;"
+               class="ders-card bg-white border-2 border-slate-100 rounded-2xl p-5 text-center block ders-item"
+               data-ad="<?= mb_strtolower(htmlspecialchars($d)) ?>">
+                <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center mx-auto mb-2">
+                    <i class="fas <?= $ikon ?> text-lg"></i>
                 </div>
-                
-                <h3 class="text-lg font-bold text-slate-800"><?php echo $ders['ad']; ?></h3>
-                <p class="text-slate-500 text-xs mt-1"><?php echo $ders['alt']; ?></p>
-                
-                <div class="mt-4 text-<?php echo $ders['renk']; ?>-600 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                    Notları Gör <i class="fas fa-arrow-right ml-1"></i>
-                </div>
+                <h3 class="font-bold text-slate-800 text-xs leading-tight"><?= htmlspecialchars($d) ?></h3>
             </a>
-            <?php endforeach; ?>
+        <?php endforeach; ?>
+    </div>
 
-        </div>
-    </main>
+    <p id="bosUyari" class="hidden text-center text-slate-400 py-12">Sonuç bulunamadı.</p>
+</main>
 
-    <footer class="py-8 text-center text-slate-400 text-xs">
-        &copy; <?php echo date("Y"); ?> NoteShare - Lise Akademik Birimi
-    </footer>
+<footer class="bg-slate-900 text-slate-400 py-8 text-center text-xs">
+    &copy; <?= date("Y") ?> NoteShare Lise Akademisi
+</footer>
 
+<script>
+function goDers(ders) {
+    const liseTuru = document.getElementById('liseTuruFilt').value;
+    const url = new URLSearchParams({ seviye: 'Lise', ders: ders });
+    if (liseTuru) url.set('okul', liseTuru);
+    window.location.href = 'dersler.php?' + url.toString();
+}
+
+const items = document.querySelectorAll('.ders-item');
+const bos = document.getElementById('bosUyari');
+document.getElementById('dersAra').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase().trim();
+    let say = 0;
+    items.forEach(el => {
+        const eslesti = !q || el.dataset.ad.includes(q);
+        el.style.display = eslesti ? '' : 'none';
+        if (eslesti) say++;
+    });
+    bos.classList.toggle('hidden', say > 0);
+});
+</script>
 </body>
 </html>

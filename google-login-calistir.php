@@ -1,92 +1,67 @@
 <?php
-// .env dosyasını okuyan basit bir fonksiyon
-$env = parse_ini_file('.env');
-$google_secret = $env['GOOGLE_CLIENT_SECRET'];
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/baglan.php';
 
-/** @var \Google_Service_Oauth2 $google_oauth */
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
-require_once 'vendor/autoload.php';
-
-// --- VERİTABANI BAĞLANTISI ---
-$host = 'localhost';
-$db_adi = 'notdeposu';
-$kullanici_adi = 'root';
-$sifre = '';
-
-try {
-    $db = new PDO("mysql:host=$host;dbname=$db_adi;charset=utf8", $kullanici_adi, $sifre);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Veritabanı bağlantı hatası: " . $e->getMessage());
-}
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Google Bilgilerin
-$clientID = '1007793617267-ts0rc8mvntlg4hkgc9103bu424uss51r.apps.googleusercontent.com';
-$clientSecret = 'anahtarınız'; 
-$redirectUri = 'http://localhost/norwarhouse.php/google-login-calistir.php'; 
+if (session_status() === PHP_SESSION_NONE) session_start();
 
 $client = new Google_Client();
-$client->setClientId($clientID);
-$client->setClientSecret($clientSecret);
-$client->setRedirectUri($redirectUri);
+$client->setClientId($config['GOOGLE_CLIENT_ID']);
+$client->setClientSecret($config['GOOGLE_CLIENT_SECRET']);
+$client->setRedirectUri($config['GOOGLE_REDIRECT_URI']);
 $client->addScope("email");
 $client->addScope("profile");
 
 if (isset($_GET['code'])) {
     $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
-    
-    if(!isset($token['error'])){
+
+    if (!isset($token['error'])) {
         $client->setAccessToken($token['access_token']);
         $google_oauth = new Google_Service_Oauth2($client);
         $google_account_info = $google_oauth->userinfo->get();
-        
-        $email = $google_account_info->email;
-        $_SESSION['user_email'] = $email; // Beğeni sistemi bu satır sayesinde çalışacak
-        $name  = $google_account_info->name;
 
-        // 1. Kontrol: Bu mail veritabanında var mı?
-     // 1. Kontrol: Veritabanında bu kullanıcı var mı bakıyoruz
+        $email   = $google_account_info->email;
+        $name    = $google_account_info->name;
+        $picture = $google_account_info->picture ?? null;
+
         $sorgu = $db->prepare("SELECT * FROM users WHERE email = ?");
         $sorgu->execute([$email]);
         $kullanici = $sorgu->fetch(PDO::FETCH_ASSOC);
 
+        $SUPER_ADMINS = ['mikailcelik4734@gmail.com'];
+        $rol = in_array(strtolower($email), $SUPER_ADMINS) ? 'admin' : 'user';
+
         if (!$kullanici) {
-            // 2. Kayıt: Kullanıcı yoksa oluştur
-            $kaydet = $db->prepare("INSERT INTO users (email, password) VALUES (?, ?)");
-            $kaydet->execute([$email, 'google_user']);
-            
-            // Yeni kayıt olduğu için bilgilerini (ve otomatik 'user' rolünü) çekiyoruz
+            $kaydet = $db->prepare("INSERT INTO users (ad, email, password, rol, durum) VALUES (?, ?, ?, ?, 1)");
+            $kaydet->execute([$name, $email, password_hash('google_user_' . uniqid(), PASSWORD_DEFAULT), $rol]);
             $sorgu->execute([$email]);
             $kullanici = $sorgu->fetch(PDO::FETCH_ASSOC);
+        } else if ($kullanici['rol'] !== 'admin' && in_array(strtolower($email), $SUPER_ADMINS)) {
+            $db->prepare("UPDATE users SET rol = 'admin' WHERE email = ?")->execute([$email]);
+            $kullanici['rol'] = 'admin';
         }
+
         if (isset($kullanici['durum']) && (int)$kullanici['durum'] === 0) {
-            // Kullanıcı engelliyse oturum bilgilerini sil ve hata sayfasına gönder
             session_unset();
             session_destroy();
-            header("Location: ../giris.php?hata=engellendiniz");
+            header("Location: giris.php?hata=engellendiniz");
             exit();
         }
 
-        // 3. Oturum Bilgilerini Hafızaya Al
-        $_SESSION['user_email'] = $email;
-        $_SESSION['user_name']  = $name;
-        $_SESSION['logged_in']  = true;
-        
-        // KRİTİK NOKTA: Veritabanındaki 'admin' veya 'user' bilgisini buraya yazıyoruz
-        $_SESSION['rol']        = $kullanici['rol']; 
+        $_SESSION['user_id']      = $kullanici['id'];
+        $_SESSION['user_email']   = $email;
+        $_SESSION['user_name']    = $name;
+        $_SESSION['user_picture'] = $picture;
+        $_SESSION['logged_in']    = true;
+        $_SESSION['rol']          = $kullanici['rol'] ?? 'user';
 
-        header("Location: index.php"); 
+        header("Location: index.php");
         exit();
     } else {
-        die("Token Hatası: " . $token['error_description']);
+        die("Google girişi başarısız. Lütfen tekrar dene. <a href='giris.php'>← Giriş</a>");
     }
 } else {
     header("Location: " . $client->createAuthUrl());
     exit();
 }
+?>

@@ -1,9 +1,9 @@
 <?php
-session_start(); // Mevcut oturuma eriş
-session_unset(); // Tüm oturum değişkenlerini temizle
-session_destroy(); // Oturumu tamamen yok et
+session_start(); 
+session_unset(); 
+session_destroy(); 
 
-// Ana sayfaya geri gönder
+
 header("Location: index.php");
 exit();
 ?>

@@ -15,7 +15,7 @@ try:
 
     unis = [u.text.strip() for u in uni_options if u.text.strip() not in ["", "Üniversite Seçiniz"]]
     
-    # Bölümleri manuel ekliyoruz (YÖK her üni için ayrı yüklediği için en mantıklısı bu)
+   
     bolumler = ["Bilgisayar Mühendisliği", "Yazılım Mühendisliği", "Yapay Zeka Mühendisliği", 
                 "Bilgisayar Programcılığı", "Yönetim Bilişim Sistemleri", "Hukuk", "Tıp"]
 
@@ -24,7 +24,7 @@ try:
         "bolumler": sorted(bolumler)
     }
 
-    # Dosyayı kaydet
+   
     with open('yok_verileri.json', 'w', encoding='utf-8') as f:
         json.dump(veri, f, ensure_ascii=False, indent=4)
 

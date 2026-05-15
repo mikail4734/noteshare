@@ -1,33 +1,66 @@
 <?php
-/**
- * NoteShare - PHP Versiyonu
- */
-// Giriş yapmış bir kullanıcı varsa durumunu kontrol et
-if (isset($_SESSION['user_email'])) {
-    $durum_sorgu = $db->prepare("SELECT durum FROM users WHERE email = ?");
-    $durum_sorgu->execute([$_SESSION['user_email']]);
-    $guncel_durum = $durum_sorgu->fetchColumn();
-
-    if ($guncel_durum == 0) {
-        // Eğer kullanıcı o an engellendiyse oturumu sonlandır ve kov
-        session_destroy();
-        header("Location: giris.php?hata=engellendiniz");
-        exit;
-    }
-}
-
-$profil_resmi = (isset($_SESSION['user_picture']) && !empty($_SESSION['user_picture'])) ? $_SESSION['user_picture'] : 'https://ui-avatars.com/api/?name=User&background=random';
-// Oturumu başlat (Profil resmini ve adını çekebilmek için şart)
+// Oturum ve veritabanı bağlantısı en başta
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+require_once 'baglan.php';
+require_once 'helpers.php';
 
-// Dinamik Değişkenler
+// Her giriş yapan kullanıcının streak'ini güncelle
+if (isset($_SESSION['user_email'])) {
+    streakGuncelle($db, $_SESSION['user_email']);
+}
+
+// Kullanıcı bilgilerini çek
+$kullaniciVerisi = null;
+if (isset($_SESSION['user_email'])) {
+    try {
+        $st = $db->prepare("SELECT xp, seviye, streak FROM users WHERE email = ?");
+        $st->execute([$_SESSION['user_email']]);
+        $kullaniciVerisi = $st->fetch(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {}
+}
+
+// Engellenmiş kullanıcı kontrolü
+if (isset($_SESSION['user_email'])) {
+    try {
+        $durum_sorgu = $db->prepare("SELECT durum FROM users WHERE email = ?");
+        $durum_sorgu->execute([$_SESSION['user_email']]);
+        $guncel_durum = $durum_sorgu->fetchColumn();
+
+        if ($guncel_durum !== false && $guncel_durum == 0) {
+            session_destroy();
+            header("Location: giris.php?hata=engellendiniz");
+            exit;
+        }
+    } catch (PDOException $e) { /* sessiz geç */ }
+}
+
+$profil_resmi = (isset($_SESSION['user_picture']) && !empty($_SESSION['user_picture']))
+    ? $_SESSION['user_picture']
+    : 'https://ui-avatars.com/api/?name=' . urlencode($_SESSION['user_name'] ?? 'User') . '&background=4f46e5&color=fff';
+
+// Okunmamış bildirim sayısı
+$okunmamisBildirim = 0;
+if (isset($_SESSION['user_email'])) {
+    try {
+        $s = $db->prepare("SELECT COUNT(*) FROM bildirimler WHERE kullanici_email = ? AND okundu = 0");
+        $s->execute([$_SESSION['user_email']]);
+        $okunmamisBildirim = (int)$s->fetchColumn();
+    } catch (Exception $e) {}
+}
+
+// Aktif site duyurusu
+$siteDuyurusu = null;
+try {
+    $siteDuyurusu = $db->query("SELECT * FROM site_duyurulari WHERE aktif=1 ORDER BY id DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+} catch (Exception $e) {}
+
 $site_title = "NoteShare | Not Deposu";
 $current_year = date("Y");
 $search_query = isset($_GET['q']) ? htmlspecialchars($_GET['q']) : '';
 
-// Eğitim Seviyeleri Verisi
+
 $levels = [
     [
         'link' => './universite.php', 
@@ -74,7 +107,33 @@ $levels = [
             background-color: white !important;
             color: #1e293b !important;
         }
+        /* DARK MODE */
+        html.dark body { background: #0f172a !important; color: #e2e8f0 !important; }
+        html.dark .bg-white, html.dark .bg-gray-50, html.dark .bg-slate-50, html.dark .bg-slate-100 { background: #1e293b !important; color: #e2e8f0 !important; }
+        html.dark .bg-slate-50\/50 { background: #1e293b !important; }
+        html.dark .border-gray-100, html.dark .border-slate-100, html.dark .border-slate-200 { border-color: #334155 !important; }
+        html.dark .text-gray-800, html.dark .text-slate-700, html.dark .text-slate-800, html.dark .text-slate-900 { color: #e2e8f0 !important; }
+        html.dark .text-gray-500, html.dark .text-slate-400, html.dark .text-slate-500 { color: #94a3b8 !important; }
+        html.dark .text-gray-400 { color: #64748b !important; }
+        html.dark footer { background: #020617 !important; }
     </style>
+    <script>
+    // Dark mode başlangıç
+    (function() {
+        const tema = localStorage.getItem('tema') || 'light';
+        if (tema === 'dark') document.documentElement.classList.add('dark');
+    })();
+    function temaDegistir() {
+        const yeni = document.documentElement.classList.toggle('dark') ? 'dark' : 'light';
+        localStorage.setItem('tema', yeni);
+        const ikon = document.getElementById('temaIkon');
+        if (ikon) ikon.className = yeni === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+        const ikon = document.getElementById('temaIkon');
+        if (ikon && document.documentElement.classList.contains('dark')) ikon.className = 'fas fa-sun';
+    });
+    </script>
 </head>
 <body class="bg-gray-50">
 
@@ -137,6 +196,30 @@ $levels = [
         </a>
 
         <?php if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
+            <?php if ($kullaniciVerisi): ?>
+                <!-- Streak -->
+                <a href="liderlik.php" title="<?= $kullaniciVerisi['streak'] ?> gündür üst üste" class="hidden md:flex items-center bg-white/10 hover:bg-white/20 text-white px-3 h-10 rounded-xl border border-white/30 transition text-xs font-bold">
+                    <span class="mr-1">🔥</span> <?= $kullaniciVerisi['streak'] ?>
+                </a>
+                <!-- XP & Seviye -->
+                <a href="rozetlerim.php" title="Seviye <?= $kullaniciVerisi['seviye'] ?> · <?= $kullaniciVerisi['xp'] ?> XP" class="hidden md:flex items-center bg-white/10 hover:bg-white/20 text-white px-3 h-10 rounded-xl border border-white/30 transition text-xs font-bold">
+                    <span class="mr-1">⭐</span> Lv<?= $kullaniciVerisi['seviye'] ?>
+                </a>
+            <?php endif; ?>
+
+            <!-- Dark mode -->
+            <button onclick="temaDegistir()" id="temaBtn" title="Tema" class="bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-xl border border-white/30 flex items-center justify-center transition">
+                <i id="temaIkon" class="fas fa-moon"></i>
+            </button>
+
+            <a href="bildirimlerim.php" title="Bildirimlerim" class="relative bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-xl border border-white/30 flex items-center justify-center transition">
+                <i class="fas fa-bell"></i>
+                <?php if ($okunmamisBildirim > 0): ?>
+                    <span class="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-black rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 border-2 border-[#4f46e5]">
+                        <?= $okunmamisBildirim > 9 ? '9+' : $okunmamisBildirim ?>
+                    </span>
+                <?php endif; ?>
+            </a>
             <div class="flex items-center space-x-3 bg-white/10 p-1 pr-4 rounded-full border border-white/20">
                <img src="<?php echo $profil_resmi; ?>" alt="Profil" class="w-8 h-8 rounded-full border border-white/50 shadow-sm object-cover">
                 <div class="flex flex-col">
@@ -159,9 +242,20 @@ $levels = [
 </nav>
 
 
+<?php if ($siteDuyurusu):
+    $renkler = ['info' => 'amber', 'warning' => 'rose', 'success' => 'emerald'];
+    $r = $renkler[$siteDuyurusu['tip']] ?? 'amber';
+?>
+<div class="bg-<?= $r ?>-50 border-b-2 border-<?= $r ?>-200 px-6 py-3 text-center">
+    <p class="text-sm font-bold text-<?= $r ?>-700">
+        <i class="fas fa-bullhorn mr-2"></i> <?= htmlspecialchars($siteDuyurusu['mesaj']) ?>
+    </p>
+</div>
+<?php endif; ?>
+
 <main class="container mx-auto py-16 px-6">
     <div class="text-center mb-12">
-        <h2 class="text-4xl font-extrabold text-gray-800">Eğitim Seviyesi Seçimi Yapın</h2>
+        <h1 class="text-4xl font-extrabold text-gray-800">Eğitim Seviyesi Seçimi Yapın</h1>
         <p class="text-gray-500 mt-2">Hangi alanda notlara göz atmak istersiniz?</p>
     </div>
 
@@ -245,24 +339,81 @@ $levels = [
         <div class="h-px bg-slate-100 my-4 mx-3"></div>
         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-3">Kişisel</p>
 
+        <a href="calisma_alani.php" class="flex items-center p-3 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-folder-open text-indigo-500 group-hover:scale-110 transition"></i></div>
+            Kişisel Çalışmalarım
+        </a>
+        <a href="yer_imlerim.php" class="flex items-center p-3 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-bookmark text-amber-500 group-hover:scale-110 transition"></i></div>
+            Yer İmlerim
+        </a>
+        <a href="rozetlerim.php" class="flex items-center p-3 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-medal text-amber-500 group-hover:scale-110 transition"></i></div>
+            Rozetlerim
+        </a>
+        <a href="liderlik.php" class="flex items-center p-3 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-trophy text-yellow-500 group-hover:scale-110 transition"></i></div>
+            Liderlik Tablosu
+        </a>
+        <a href="canli_sinavlar.php" class="flex items-center p-3 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-trophy text-rose-500 group-hover:scale-110 transition"></i></div>
+            🎯 Canlı Sınavlar
+        </a>
+        <a href="gruplarim.php" class="flex items-center p-3 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-users text-purple-500 group-hover:scale-110 transition"></i></div>
+            Gruplarım
+        </a>
+        <a href="bildirimlerim.php" class="flex items-center p-3 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-bell text-amber-500 group-hover:scale-110 transition"></i></div>
+            Bildirimlerim
+        </a>
         <a href="begendigim_notlar.php" class="flex items-center p-3 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl font-semibold transition group">
             <div class="w-8 flex justify-center"><i class="fas fa-heart text-red-500 group-hover:scale-110 transition"></i></div>
             Beğendiğim Notlar
+        </a>
+        <a href="dersbotu.php" class="flex items-center p-3 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-robot text-emerald-500 group-hover:scale-110 transition"></i></div>
+            DersBotu (AI)
         </a>
         <a href="ayarlar.php" class="flex items-center p-3 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl font-semibold transition group">
             <div class="w-8 flex justify-center"><i class="fas fa-cog text-slate-500 group-hover:rotate-90 transition duration-300"></i></div>
             Ayarlar
         </a>
-        <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
-    <div class="mb-8">
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">Yönetim Paneli</p>
-        <div class="space-y-1">
-            <a href="kullanicilar.php" class="sidebar-item flex items-center px-4 py-3 rounded-xl text-sm font-bold transition-all text-slate-600 hover:text-red-600 hover:bg-red-50">
-                <i class="fas fa-users-cog mr-3 w-5 text-center text-red-500"></i> Kullanıcı Yönetimi
-            </a>
-        </div>
-    </div>
-<?php endif; ?>
+
+        <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'):
+            // Bekleyen şikayet sayısı
+            $bekleyenSikayet = 0;
+            try { $bekleyenSikayet = (int)$db->query("SELECT COUNT(*) FROM sikayetler WHERE durum='bekliyor'")->fetchColumn(); } catch (Exception $e) {}
+        ?>
+        <div class="h-px bg-slate-100 my-4 mx-3"></div>
+        <p class="text-xs font-bold text-red-500 uppercase tracking-wider mb-2 ml-3"><i class="fas fa-shield-alt mr-1"></i> Yönetim Paneli</p>
+
+        <a href="admin_panel.php" class="flex items-center p-3 text-white bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 rounded-xl font-bold transition shadow-md mb-2">
+            <div class="w-8 flex justify-center"><i class="fas fa-tachometer-alt"></i></div>
+            🎛️ Admin Komuta Merkezi
+        </a>
+        <a href="kullanicilar.php" class="flex items-center p-3 text-slate-700 hover:bg-red-50 hover:text-red-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-users-cog text-red-500 group-hover:scale-110 transition"></i></div>
+            Kullanıcılar
+        </a>
+        <a href="notlar_admin.php" class="flex items-center p-3 text-slate-700 hover:bg-red-50 hover:text-red-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-clipboard-list text-red-500 group-hover:scale-110 transition"></i></div>
+            Notlar
+        </a>
+        <a href="sikayetler_admin.php" class="flex items-center p-3 text-slate-700 hover:bg-red-50 hover:text-red-600 rounded-xl font-semibold transition group justify-between">
+            <div class="flex items-center">
+                <div class="w-8 flex justify-center"><i class="fas fa-inbox text-red-500 group-hover:scale-110 transition"></i></div>
+                Mesajlar
+            </div>
+            <?php if ($bekleyenSikayet > 0): ?>
+                <span class="bg-amber-100 text-amber-700 text-[10px] font-black px-2 py-0.5 rounded-full"><?= $bekleyenSikayet ?></span>
+            <?php endif; ?>
+        </a>
+        <a href="bildirim_gonder.php" class="flex items-center p-3 text-slate-700 hover:bg-red-50 hover:text-red-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-paper-plane text-red-500 group-hover:scale-110 transition"></i></div>
+            Bildirim Gönder
+        </a>
+        <?php endif; ?>
 
         <div class="h-px bg-slate-100 my-4 mx-3"></div>
         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-3">Destek</p>
@@ -271,50 +422,55 @@ $levels = [
             <div class="w-8 flex justify-center"><i class="fas fa-question-circle text-blue-500 group-hover:scale-110 transition"></i></div>
             Sıkça Sorulan Sorular
         </a>
-        <a href="sikayet.php" class="flex items-center p-3 text-slate-700 hover:bg-red-50 hover:text-red-600 rounded-xl font-semibold transition group">
+        <a href="sikayet_olustur.php" class="flex items-center p-3 text-slate-700 hover:bg-red-50 hover:text-red-600 rounded-xl font-semibold transition group">
             <div class="w-8 flex justify-center"><i class="fas fa-exclamation-triangle text-red-500 group-hover:scale-110 transition"></i></div>
             Şikayet / Bildirim
         </a>
+        <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+        <a href="sikayetler_admin.php" class="flex items-center p-3 text-slate-700 hover:bg-red-50 hover:text-red-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-clipboard-list text-red-600 group-hover:scale-110 transition"></i></div>
+            Gelen Şikayetler (Admin)
+        </a>
+        <?php endif; ?>
     </div>
 </div>
 
 <script>
-    // Sayfa yüklendiğinde çalışacak fonksiyon
+   
     document.addEventListener('DOMContentLoaded', function() {
         
-        // Kullanıcı bu oturumda reklamı daha önce gördü mü kontrol et
-        // (Eğer her sayfa yenilemede çıksın istersen if satırını silebilirsin)
+      
         if (!sessionStorage.getItem('adShown')) {
             
-            // Sayfa açıldıktan 1.5 saniye sonra reklamı göster (Daha doğal bir hissiyat verir)
+           
             setTimeout(() => {
                 const modal = document.getElementById('adModal');
                 const content = document.getElementById('adContent');
                 
                 modal.classList.remove('hidden');
                 
-                // Küçük bir gecikme ile opacity ve scale animasyonlarını tetikle
+                
                 setTimeout(() => {
                     modal.classList.remove('opacity-0');
                     content.classList.remove('scale-95');
                 }, 50);
                 
-                // Reklamın gösterildiğini tarayıcı hafızasına kaydet
+                
                 sessionStorage.setItem('adShown', 'true');
             }, 1500); 
         }
     });
 
-    // Çarpıya veya arka plana basınca reklamı kapatan fonksiyon
+   
     function closeAd() {
         const modal = document.getElementById('adModal');
         const content = document.getElementById('adContent');
         
-        // Önce animasyonla yavaşça kaybolmasını sağla
+        
         modal.classList.add('opacity-0');
         content.classList.add('scale-95');
         
-        // Animasyon bitince (300ms sonra) tamamen gizle
+       
         setTimeout(() => {
             modal.classList.add('hidden');
         }, 300);
@@ -324,18 +480,18 @@ function toggleSidebar() {
         const sidebar = document.getElementById('sidebarMenu');
         const overlay = document.getElementById('sidebarOverlay');
         
-        // Menüyü aç/kapat
+       
         sidebar.classList.toggle('translate-x-full');
         
-        // Arka plan karartmasını aç/kapat
+        
         if (overlay.classList.contains('hidden')) {
             overlay.classList.remove('hidden');
             setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-            document.body.style.overflow = 'hidden'; // Sayfanın arkada kaymasını engelle
+            document.body.style.overflow = 'hidden'; 
         } else {
             overlay.classList.add('opacity-0');
             setTimeout(() => overlay.classList.add('hidden'), 300);
-            document.body.style.overflow = ''; // Kaymayı geri aç
+            document.body.style.overflow = ''; 
         }
     }
 

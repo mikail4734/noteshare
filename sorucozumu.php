@@ -1,9 +1,4 @@
 <?php
-/**
- * NoteShare - Matematik Notları Portalı (PHP Versiyonu)
- */
-
-// 1. Örnek Veri Seti (Gerçek uygulamada burası MySQL'den gelecek)
 $notlar = [
     [
         'id' => 1,
@@ -34,7 +29,7 @@ $notlar = [
     ]
 ];
 
-$toplamNot = 324; // Statik sayaç veya count($notlar)
+$toplamNot = 324; 
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -45,7 +40,7 @@ $toplamNot = 324; // Statik sayaç veya count($notlar)
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Kaydırma çubuğunu gizle ama işlevini koru */
+       
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -172,7 +167,7 @@ $toplamNot = 324; // Statik sayaç veya count($notlar)
             `;
             scrollChat();
             
-            // AI Cevap Simülasyonu
+            
             setTimeout(() => {
                 const lastMsg = chat.lastElementChild;
                 lastMsg.innerHTML = `

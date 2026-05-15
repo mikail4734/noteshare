@@ -2,7 +2,7 @@
 session_start();
 require_once 'baglan.php'; 
 
-// Kullanıcı giriş yapmamışsa giriş sayfasına yönlendir
+
 if (!isset($_SESSION['user_email'])) {
     header("Location: giris.php");
     exit;
@@ -12,7 +12,7 @@ $user_email = $_SESSION['user_email'];
 $user_role = isset($_SESSION['rol']) ? $_SESSION['rol'] : 'user';
 
 try {
-    // Kullanıcının e-posta adresiyle eşleşen beğendiği notları en yeniden eskiye sıralayarak getir
+   
     $sorgu = $db->prepare("
         SELECT notes.* FROM notes 
         INNER JOIN begeniler ON notes.id = begeniler.note_id 
@@ -24,7 +24,7 @@ try {
     $jsonNotes = json_encode($notlar);
 
 } catch (PDOException $e) {
-    // Eğer begeniler tablosu yoksa hata vermesin, boş döndürsün
+  
     $jsonNotes = json_encode([]);
 }
 ?>

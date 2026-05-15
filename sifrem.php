@@ -1,9 +1,5 @@
 <?php
-/**
- * NoteShare - Şifre Sıfırlama Sayfası (PHPMailer Entegreli)
- */
 
-// 1. PHPMailer Kütüphanesini Dahil Et
 require 'vendor/autoload.php'; 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -18,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         
-        // Onay kodu üret (Örn: 5821)
+        
         $onay_kodu = rand(1000, 9999);
         $_SESSION['onay_kodu'] = $onay_kodu;
         $_SESSION['sifirlama_email'] = $email;
@@ -30,17 +26,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'mikailcelik4734@gmail.com'; // Kendi Gmail adresini yaz
-            $mail->Password   = 'vbhh kzlr ucpl swkq'; // Google'dan aldığın 16 haneli Uygulama Şifresi
+            $mail->Username   = 'mikailcelik4734@gmail.com'; 
+            $mail->Password   = 'vbhh kzlr ucpl swkq'; 
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
             $mail->CharSet    = 'UTF-8';
 
-            // --- ALICI AYARLARI ---
+            
             $mail->setFrom('mikailcelik4734@gmail.com', 'NoteShare Destek');
             $mail->addAddress($email);
 
-            // --- İÇERİK ---
+           
             $mail->isHTML(true);
             $mail->Subject = 'NoteShare Şifre Sıfırlama Kodu';
             $mail->Body    = "
@@ -55,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $mail->send();
             
-            // Başarılıysa yönlendir (Önceki hatayı düzelttik: Buton içindeki <a> kaldırıldı)
+           
             header("Location: sifrem1.php"); 
             exit();
 

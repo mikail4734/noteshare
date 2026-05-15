@@ -2,7 +2,7 @@
 session_start();
 require_once 'baglan.php';
 
-// Kullanıcı banlıysa içeri sokma (Canlı kontrol)
+
 if (isset($_SESSION['user_email'])) {
     $ban_sorgu = $db->prepare("SELECT durum FROM users WHERE email = ?");
     $ban_sorgu->execute([$_SESSION['user_email']]);
@@ -118,12 +118,12 @@ if (isset($_SESSION['user_email'])) {
         function toggleFaq(btn) {
             const item = btn.parentElement;
             
-            // Diğer açık olanları kapat (Opsiyonel)
+          
             document.querySelectorAll('.faq-item').forEach(el => {
                 if (el !== item) el.classList.remove('active');
             });
 
-            // Seçilenin durumunu değiştir
+           
             item.classList.toggle('active');
         }
     </script>

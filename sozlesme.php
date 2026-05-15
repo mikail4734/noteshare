@@ -1,15 +1,11 @@
 <?php
-/**
- * NoteShare - Gizlilik Sözleşmesi Sayfası
- */
 
-// Sayfa Ayarları
 $sayfa_basligi = "Gizlilik Sözleşmesi";
 $versiyon = "1.0.2";
 $son_guncelleme = "10 Nisan 2026";
 $site_adi = "NoteShare";
 
-// İleride bu metinleri veritabanından çekmek istersen bu yapıyı kullanabilirsin
+
 $sozlesme_maddeleri = [
     [
         "icon" => "fa-user-secret",

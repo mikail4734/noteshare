@@ -1,9 +1,5 @@
 <?php
-/**
- * NoteShare - Matematik Notları Listesi (PHP)
- */
 
-// Örnek Veri Seti (Veritabanından çekilecek kısım)
 $notlar = [
     [
         'id' => 1,
@@ -31,7 +27,7 @@ $notlar = [
     ]
 ];
 
-$toplamNot = 324; // Dinamik olarak count($notlar) veya SQL'den gelebilir
+$toplamNot = 324; 
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -146,7 +142,7 @@ $toplamNot = 324; // Dinamik olarak count($notlar) veya SQL'den gelebilir
         function selectNote(noteName) {
             const chat = document.getElementById('chatMessages');
             
-            // Kullanıcı Mesajı
+           
             chat.innerHTML += `
                 <div class="flex justify-end">
                     <div class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[80%] shadow-lg shadow-indigo-100">
@@ -155,7 +151,7 @@ $toplamNot = 324; // Dinamik olarak count($notlar) veya SQL'den gelebilir
                 </div>
             `;
 
-            // AI Yanıtı (Yükleniyor simülasyonu)
+           
             const loadingId = 'loading-' + Date.now();
             chat.innerHTML += `
                 <div id="${loadingId}" class="bg-slate-50 p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 italic border border-slate-100 shadow-sm">
@@ -165,8 +161,7 @@ $toplamNot = 324; // Dinamik olarak count($notlar) veya SQL'den gelebilir
             
             chat.scrollTop = chat.scrollHeight;
 
-            // Gerçek projede burada PHP/AI API'sine fetch atılır.
-            // Örn: fetch('ai_backend.php?not=' + noteName)...
+          
         }
 
         function sendMessage() {
@@ -187,7 +182,7 @@ $toplamNot = 324; // Dinamik olarak count($notlar) veya SQL'den gelebilir
         }
 
         function filterType(type) {
-            // JS tabanlı filtreleme veya PHP'ye yönlendirme yapılabilir
+        
             console.log("Filtrelenen kategori: " + type);
         }
     </script>

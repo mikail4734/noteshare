@@ -2,14 +2,14 @@
 session_start();
 require_once 'baglan.php';
 
-// Güvenlik Duvarı: Sadece adminler girebilir!
+
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
     header("Location: index.php");
     exit;
 }
 
 try {
-    // Tüm kullanıcıları veritabanından çek (Kendini en üstte gör, diğerleri tarihe göre sıralansın)
+   
     $sorgu = $db->prepare("SELECT id, ad, email, rol, durum FROM users ORDER BY rol = 'admin' DESC, id DESC");
     $sorgu->execute();
     $kullanicilar = $sorgu->fetchAll(PDO::FETCH_ASSOC);
@@ -85,7 +85,7 @@ try {
                         </div>
 
                         <div class="text-right flex justify-end">
-                            <?php if($user['rol'] != 'admin'): // Kendini veya başka admini banlayamasın ?>
+                            <?php if($user['rol'] != 'admin'):  ?>
                                 <?php if($user['durum'] == 1): ?>
                                     <button onclick="kullaniciDurum(<?php echo $user['id']; ?>, 0)" class="text-[10px] font-extrabold text-white bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition-all uppercase shadow-sm flex items-center">
                                         <i class="fas fa-lock mr-2"></i> Engelle
@@ -107,12 +107,14 @@ try {
     </main>
 
 <script>
-    // PHP'deki rol bilgisini JavaScript'e aktarıyoruz (Hatanın çözümü burası)
+    
 const currentUserRole = '<?php echo $_SESSION['rol']; ?>';
 
 async function kullaniciDurum(userId, yeniDurum) {
-    const mesaj = yeniDurum === 0 ? "Bu kullanıcıyı engellemek istediğinize emin misiniz? Artık siteye giriş yapamayacak!" : "Bu kullanıcının engelini kaldırmak istiyor musunuz?";
-    
+    const mesaj = yeniDurum === 0
+        ? "⚠️ UYARI: Bu kullanıcı banlanacak!\n\n• Tüm notları silinecek\n• Beğenileri silinecek\n• Grup üyelikleri silinecek\n• Bildirimleri silinecek\n• Siteye giriş yapamayacak\n\nDevam edilsin mi?"
+        : "Bu kullanıcının banını kaldırmak istiyor musunuz?";
+
     if (confirm(mesaj)) {
         try {
             const response = await fetch('islem.php', {
@@ -121,9 +123,12 @@ async function kullaniciDurum(userId, yeniDurum) {
                 body: JSON.stringify({ islem: 'kullanici_durum', user_id: userId, durum: yeniDurum })
             });
             const result = await response.json();
-            
+
             if (result.success) {
-                location.reload(); // Başarılıysa sayfayı yenile ki butonlar ve yazılar güncellensin
+                if (yeniDurum === 0 && result.silinen_not > 0) {
+                    alert(`Kullanıcı banlandı. ${result.silinen_not} notu silindi.`);
+                }
+                location.reload();
             } else {
                 alert("Hata: " + result.error);
             }

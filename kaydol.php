@@ -1,9 +1,7 @@
 <?php
-/**
- * NoteShare - Kayıt Ol Sayfası (PHP)
- */
+
 session_start();
-require_once 'baglan.php'; // Veritabanı bağlantını dahil ediyoruz
+require_once 'baglan.php'; 
 
 // Giriş yapmış bir kullanıcı varsa durumunu kontrol et
 if (isset($_SESSION['user_email'])) {
@@ -12,7 +10,7 @@ if (isset($_SESSION['user_email'])) {
     $guncel_durum = $durum_sorgu->fetchColumn();
 
     if ($guncel_durum == 0) {
-        // Eğer kullanıcı o an engellendiyse oturumu sonlandır ve kov
+      
         session_destroy();
         header("Location: giris.php?hata=engellendiniz");
         exit;
@@ -22,41 +20,43 @@ if (isset($_SESSION['user_email'])) {
 $hata_mesaji = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Formdan gelen verileri al ve boşlukları temizle
+   
     $kullanici_adi = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $sifre = $_POST['password'] ?? '';
     $terms = isset($_POST['terms']) ? true : false;
 
-    // Basit doğrulama
+
     if (empty($kullanici_adi) || empty($email) || empty($sifre)) {
         $hata_mesaji = "Lütfen tüm alanları doldurun.";
     } elseif (!$terms) {
         $hata_mesaji = "Lütfen gizlilik sözleşmesini kabul edin.";
     } else {
         try {
-            // 1. Bu e-posta ile daha önce kayıt olunmuş mu kontrol et
+            
             $kontrolSorgu = $db->prepare("SELECT id FROM users WHERE email = ?");
             $kontrolSorgu->execute([$email]);
             
             if ($kontrolSorgu->rowCount() > 0) {
                 $hata_mesaji = "Bu e-posta adresi zaten kullanılıyor. Lütfen giriş yapmayı deneyin.";
             } else {
-                // 2. Şifreyi güvenli hale getir (Hashleme)
+                
                 $guvenli_sifre = password_hash($sifre, PASSWORD_DEFAULT);
 
-                // 3. Veritabanına Kaydet
-                // Formdaki username'i tablodaki 'ad' sütununa yazıyoruz. Varsayılan rol 'user', durum '1' (aktif).
-                $kayitSorgu = $db->prepare("INSERT INTO users (ad, email, password, rol, durum) VALUES (?, ?, ?, 'user', 1)");
-                $kayitSorgu->execute([$kullanici_adi, $email, $guvenli_sifre]);
+                // Süper admin kontrolü
+                $SUPER_ADMINS = ['mikailcelik4734@gmail.com'];
+                $rol = in_array(strtolower($email), $SUPER_ADMINS) ? 'admin' : 'user';
 
-                // 4. Kayıt başarılıysa anında giriş yapmış say (Session tanımlama)
+                $kayitSorgu = $db->prepare("INSERT INTO users (ad, email, password, rol, durum) VALUES (?, ?, ?, ?, 1)");
+                $kayitSorgu->execute([$kullanici_adi, $email, $guvenli_sifre, $rol]);
+
                 $_SESSION['logged_in'] = true;
+                $_SESSION['user_id'] = $db->lastInsertId();
                 $_SESSION['user_email'] = $email;
                 $_SESSION['user_name'] = $kullanici_adi;
-                $_SESSION['rol'] = 'user'; // Yeni kayıt olan herkes standart kullanıcıdır
+                $_SESSION['rol'] = $rol;
 
-                // 5. Ana sayfaya yönlendir
+               
                 header("Location: index.php");
                 exit();
             }
@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Sosyal butonlar için özel hover efekti */
+      
         .social-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);

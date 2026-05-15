@@ -1,13 +1,11 @@
 <?php
-/**
- * NoteShare - Kullanım Koşulları (PHP)
- */
+
 
 $sayfa_basligi = "Kullanım Koşulları | NoteShare";
 $guncelleme_tarihi = "Mart 2026";
 $iletisim_email = "iletisim@noteshare.com";
 
-// Koşullar verisini bir dizi olarak tutuyoruz (Yönetimi daha kolaydır)
+
 $kosullar = [
     [
         'id' => 1,

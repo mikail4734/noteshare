@@ -2,21 +2,21 @@
 session_start();
 require_once 'baglan.php';
 
-// Giriş yapmış bir kullanıcı varsa durumunu kontrol et
+
 if (isset($_SESSION['user_email'])) {
     $durum_sorgu = $db->prepare("SELECT durum FROM users WHERE email = ?");
     $durum_sorgu->execute([$_SESSION['user_email']]);
     $guncel_durum = $durum_sorgu->fetchColumn();
 
     if ($guncel_durum == 0) {
-        // Eğer kullanıcı o an engellendiyse oturumu sonlandır ve kov
+        
         session_destroy();
         header("Location: giris.php?hata=engellendiniz");
         exit;
     }
 }
 
-// Eğer kullanıcı zaten giriş yapmışsa onu direkt anasayfaya gönderelim
+
 if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
     header("Location: index.php");
     exit;
@@ -24,40 +24,47 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 
 $hata_mesaji = "";
 
-// Form Gönderildiğinde Çalışacak Kısım
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['loginsubmit'])) {
     
     // Formdan gelen verileri al
-    $kullanici_bilgisi = trim($_POST['username'] ?? ''); // Hem email hem kullanıcı adı olabilir
+    $kullanici_bilgisi = trim($_POST['username'] ?? ''); 
     $sifre = $_POST['password'] ?? '';
 
     if (empty($kullanici_bilgisi) || empty($sifre)) {
         $hata_mesaji = "Lütfen e-posta/kullanıcı adı ve şifrenizi girin.";
     } else {
         try {
-            // 1. Veritabanında hem E-POSTA hem de KULLANICI ADI (ad) sütunlarında ara
+           
             $sorgu = $db->prepare("SELECT * FROM users WHERE email = ? OR ad = ?");
             $sorgu->execute([$kullanici_bilgisi, $kullanici_bilgisi]);
             $kullanici = $sorgu->fetch(PDO::FETCH_ASSOC);
 
-            // Eğer böyle bir kullanıcı veritabanında varsa
+            
             if ($kullanici) {
                 
-                // 2. Kullanıcı Admin Tarafından Engellenmiş mi Kontrol Et (Durum = 0 ise engelli)
+               
                 if (isset($kullanici['durum']) && $kullanici['durum'] == 0) {
                     $hata_mesaji = "Hesabınız yönetici tarafından engellenmiştir.";
                 } else {
                     
-                    // 3. Şifreyi Doğrula (Kayıt olurken hashlediğimiz şifreyi çözüyoruz)
+                    
                     if (password_verify($sifre, $kullanici['password'])) {
-                        
+
+                        // SÜPER ADMIN OTOMATİK YETKİLENDİRME
+                        $SUPER_ADMINS = ['mikailcelik4734@gmail.com'];
+                        if (in_array(strtolower($kullanici['email']), $SUPER_ADMINS) && $kullanici['rol'] !== 'admin') {
+                            $db->prepare("UPDATE users SET rol = 'admin' WHERE email = ?")->execute([$kullanici['email']]);
+                            $kullanici['rol'] = 'admin';
+                        }
+
                         // Şifre doğru! Oturum bilgilerini kaydet
                         $_SESSION['logged_in'] = true;
+                        $_SESSION['user_id'] = $kullanici['id'];
                         $_SESSION['user_email'] = $kullanici['email'];
                         $_SESSION['user_name'] = $kullanici['ad'];
-                        $_SESSION['rol'] = $kullanici['rol']; // Admin mi User mı bilgisini alıyoruz
+                        $_SESSION['rol'] = $kullanici['rol'];
 
-                        // Başarılı girişten sonra anasayfaya yönlendir
                         header("Location: index.php");
                         exit;
 

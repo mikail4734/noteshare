@@ -1,0 +1,95 @@
+{
+  "ilkokul": {
+    "okullar": ["İlkokul"],
+    "dersler": [
+      "Türkçe", "Matematik", "Hayat Bilgisi", "Fen Bilimleri",
+      "Sosyal Bilgiler", "İngilizce", "Din Kültürü ve Ahlak Bilgisi",
+      "Görsel Sanatlar", "Müzik", "Beden Eğitimi", "Trafik Güvenliği"
+    ]
+  },
+  "ortaokul": {
+    "okullar": ["Ortaokul", "İmam Hatip Ortaokulu"],
+    "dersler": [
+      "Türkçe", "Matematik", "Fen Bilimleri", "Sosyal Bilgiler",
+      "T.C. İnkılap Tarihi ve Atatürkçülük", "İngilizce", "Din Kültürü ve Ahlak Bilgisi",
+      "Görsel Sanatlar", "Müzik", "Beden Eğitimi ve Spor",
+      "Teknoloji ve Tasarım", "Bilişim Teknolojileri", "Almanca", "Fransızca",
+      "Kuran-ı Kerim", "Arapça"
+    ]
+  },
+  "lise": {
+    "okullar": [
+      "Anadolu Lisesi", "Fen Lisesi", "Sosyal Bilimler Lisesi",
+      "Anadolu İmam Hatip Lisesi", "Mesleki ve Teknik Anadolu Lisesi",
+      "Güzel Sanatlar Lisesi", "Spor Lisesi",
+      "Çok Programlı Anadolu Lisesi", "Açık Öğretim Lisesi"
+    ],
+    "dersler": [
+      "Matematik", "Geometri", "Fizik", "Kimya", "Biyoloji",
+      "Türk Dili ve Edebiyatı", "Türk Edebiyatı", "Dil ve Anlatım",
+      "Tarih", "Coğrafya", "Felsefe", "Psikoloji", "Sosyoloji", "Mantık",
+      "İngilizce", "Almanca", "Fransızca", "Arapça",
+      "Din Kültürü ve Ahlak Bilgisi", "Kuran-ı Kerim", "Arapça (İHL)",
+      "T.C. İnkılap Tarihi ve Atatürkçülük",
+      "Sağlık Bilgisi", "Trafik ve İlk Yardım",
+      "Görsel Sanatlar", "Müzik", "Beden Eğitimi",
+      "Bilgisayar Bilimi", "Bilişim Teknolojileri",
+      "Seçmeli Matematik", "Seçmeli Fizik", "Seçmeli Kimya", "Seçmeli Biyoloji",
+      "AYT Matematik", "AYT Fizik", "AYT Kimya", "AYT Biyoloji",
+      "AYT Edebiyat", "AYT Tarih", "AYT Coğrafya", "AYT Felsefe",
+      "TYT Matematik", "TYT Türkçe", "TYT Fen Bilimleri", "TYT Sosyal Bilimler"
+    ]
+  },
+  "universite": {
+    "bolumler": [
+      "Bilgisayar Mühendisliği", "Yazılım Mühendisliği", "Elektrik-Elektronik Mühendisliği",
+      "Endüstri Mühendisliği", "Makine Mühendisliği", "İnşaat Mühendisliği",
+      "Mekatronik Mühendisliği", "Kimya Mühendisliği", "Çevre Mühendisliği",
+      "Gıda Mühendisliği", "Biyomedikal Mühendisliği", "Havacılık ve Uzay Mühendisliği",
+      "Matematik", "Fizik", "Kimya", "Biyoloji", "İstatistik",
+      "Tıp", "Diş Hekimliği", "Eczacılık", "Hemşirelik", "Beslenme ve Diyetetik",
+      "Fizyoterapi ve Rehabilitasyon", "Veteriner",
+      "Hukuk", "İşletme", "İktisat", "Maliye", "Uluslararası İlişkiler",
+      "Siyaset Bilimi ve Kamu Yönetimi", "Ekonomi", "Pazarlama", "İnsan Kaynakları",
+      "Psikoloji", "Sosyoloji", "Felsefe", "Tarih", "Coğrafya", "Antropoloji",
+      "Türk Dili ve Edebiyatı", "İngiliz Dili ve Edebiyatı", "Mütercim Tercümanlık",
+      "Amerikan Kültürü ve Edebiyatı", "Alman Dili ve Edebiyatı",
+      "Mimarlık", "İç Mimarlık", "Şehir ve Bölge Planlama", "Peyzaj Mimarlığı",
+      "Endüstriyel Tasarım", "Grafik Tasarım",
+      "Sınıf Öğretmenliği", "Okul Öncesi Öğretmenliği", "Matematik Öğretmenliği",
+      "Türkçe Öğretmenliği", "Sosyal Bilgiler Öğretmenliği", "Fen Bilgisi Öğretmenliği",
+      "İngilizce Öğretmenliği", "Rehberlik ve Psikolojik Danışmanlık",
+      "Gazetecilik", "Halkla İlişkiler ve Tanıtım", "Radyo Televizyon ve Sinema",
+      "İletişim ve Tasarımı", "Yeni Medya",
+      "Bilgisayar Programcılığı", "Web Tasarımı ve Kodlama", "Grafik ve Animasyon"
+    ],
+    "dersler_ornekleri": [
+      "Algoritma ve Programlama", "Veri Yapıları", "Veritabanı Yönetim Sistemleri",
+      "İşletim Sistemleri", "Bilgisayar Ağları", "Yapay Zeka", "Makine Öğrenmesi",
+      "Web Programlama", "Mobil Programlama", "Yazılım Mühendisliği",
+      "Nesne Yönelimli Programlama", "Bilgisayar Mimarisi",
+      "Kalkülüs 1", "Kalkülüs 2", "Lineer Cebir", "Diferansiyel Denklemler",
+      "Olasılık ve İstatistik", "Sayısal Analiz", "Diferansiyel Geometri",
+      "Genel Fizik 1", "Genel Fizik 2", "Modern Fizik", "Kuantum Mekaniği",
+      "Termodinamik", "Mekanik", "Elektromanyetizma", "Optik",
+      "Genel Kimya", "Organik Kimya", "Analitik Kimya", "Biyokimya",
+      "Mikrobiyoloji", "Hücre Biyolojisi", "Genetik", "Moleküler Biyoloji", "Ekoloji",
+      "Anatomi", "Fizyoloji", "Patoloji", "Farmakoloji", "Histoloji",
+      "Mikroekonomi", "Makroekonomi", "Para ve Banka", "Uluslararası İktisat",
+      "Finansal Muhasebe", "Maliyet Muhasebesi", "Yönetim Muhasebesi",
+      "Pazarlama İlkeleri", "Tüketici Davranışı", "Stratejik Yönetim",
+      "Anayasa Hukuku", "Medeni Hukuk", "Borçlar Hukuku", "Ceza Hukuku",
+      "Ticaret Hukuku", "İdare Hukuku", "Uluslararası Hukuk",
+      "Genel Psikoloji", "Gelişim Psikolojisi", "Sosyal Psikoloji", "Klinik Psikoloji",
+      "Eğitim Bilimine Giriş", "Öğretim İlke ve Yöntemleri", "Ölçme ve Değerlendirme"
+    ]
+  },
+  "kategoriler": [
+    {"value": "Konu Anlatımı", "icon": "📖", "renk": "indigo"},
+    {"value": "Soru Çözümü",   "icon": "✏️", "renk": "amber"},
+    {"value": "Özet",          "icon": "📝", "renk": "emerald"},
+    {"value": "Kod",           "icon": "💻", "renk": "slate"},
+    {"value": "Formül",        "icon": "🧮", "renk": "rose"},
+    {"value": "Deney",         "icon": "🔬", "renk": "teal"}
+  ]
+}

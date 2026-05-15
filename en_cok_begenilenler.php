@@ -5,7 +5,7 @@ require_once 'baglan.php';
 $user_role = isset($_SESSION['rol']) ? $_SESSION['rol'] : 'user';
 
 try {
-    // Beğenisi 50 ve üzeri olanları en çoktan en aza sırala
+  
     $sorgu = $db->prepare("SELECT * FROM notes WHERE likes >= 50 ORDER BY likes DESC");
     $sorgu->execute();
     $notlar = $sorgu->fetchAll(PDO::FETCH_ASSOC);
@@ -85,11 +85,11 @@ let allNotes = <?php echo $jsonNotes; ?>;
 const currentUserRole = '<?php echo $user_role; ?>';
 
 window.onload = () => {
-    // Sayfa ilk yüklendiğinde listeyi bas
+   
     ilkKontrol(allNotes);
 };
 
-// 50 beğeni altı not yoksa gösterilecek mesaj
+
 function ilkKontrol(liste) {
     if(liste.length === 0) {
         document.getElementById("noteTableBody").innerHTML = `
@@ -103,12 +103,10 @@ function ilkKontrol(liste) {
         displayNotes(liste);
     }
 }
-
-// ARAMA FONKSİYONU
 function araNotlari() {
     const inputVal = document.getElementById('searchInput').value.toLowerCase();
     
-    // Girilen metne göre notları filtrele (Başlığa, kategoriye veya yazara göre)
+    
     const filteredNotes = allNotes.filter(note => {
         return (note.title && note.title.toLowerCase().includes(inputVal)) || 
                (note.category && note.category.toLowerCase().includes(inputVal)) ||
@@ -118,7 +116,7 @@ function araNotlari() {
     displayNotes(filteredNotes);
 }
 
-// LİSTELEME FONKSİYONU
+
 function displayNotes(notesList) {
     const tableBody = document.getElementById("noteTableBody");
     if (!tableBody) return;

@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Eğer e-posta girilmeden bu sayfaya gelinmişse geri gönder
 if (!isset($_SESSION['onay_kodu'])) {
     header("Location: sifre-sifirla.php");
     exit();
@@ -15,13 +14,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $yeni_sifre = $_POST['yeni_sifre'];
 
     if ($girilen_kod == $_SESSION['onay_kodu']) {
-        // --- BURADA VERİTABANI GÜNCELLEME YAPILIR ---
-        // Örn: $db->query("UPDATE users SET password = '$yeni_sifre' WHERE email = '$_SESSION[sifirlama_email]'");
+     
 
         $mesaj = "Şifreniz başarıyla güncellendi!";
         $mesaj_turu = "basari";
         
-        session_destroy(); // İşlem bitti, session'ı temizle
+        session_destroy(); 
         header("Refresh: 3; url=giris.php");
     } else {
         $mesaj = "Onay kodu hatalı!";

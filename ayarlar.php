@@ -1,9 +1,5 @@
 <?php
-/**
- * NoteShare - Ayarlar Sayfası (PHP)
- */
 
-// Normalde bu veriler Session veya Veri Tabanından gelir
 $user = [
     'ad' => 'Mikail',
     'email' => 'mikail@example.com',
@@ -138,27 +134,27 @@ $sayfa_basligi = "Ayarlar | NoteShare";
 
     <script>
         function showTab(tabName) {
-            // Tüm içerikleri gizle
+           
             document.querySelectorAll('.settings-content').forEach(content => {
                 content.classList.add('hidden');
             });
-            // Tüm buton stillerini sıfırla
+          
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-100');
                 btn.classList.add('bg-white', 'text-slate-500');
             });
 
-            // Seçilen sekmeyi göster
+           
             document.getElementById(tabName + '-tab').classList.remove('hidden');
             
-            // Tıklanan butonu aktif yap
+          
             const activeBtn = event.currentTarget;
             activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-100');
             activeBtn.classList.remove('bg-white', 'text-slate-500');
         }
 
         function saveSettings() {
-            // Bu kısım AJAX ile PHP tarafına gönderilebilir
+           
             alert("✅ Ayarlarınız başarıyla güncellendi!");
         }
     </script>

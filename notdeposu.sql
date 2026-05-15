@@ -33,9 +33,7 @@ CREATE TABLE `begeni_verileri` (
   `dislikes` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tablo döküm verisi `begeni_verileri`
---
+
 
 INSERT INTO `begeni_verileri` (`note_id`, `likes`, `dislikes`) VALUES
 (1, 2, 0),
@@ -44,11 +42,7 @@ INSERT INTO `begeni_verileri` (`note_id`, `likes`, `dislikes`) VALUES
 (4, 0, 1),
 (5, 1, 0);
 
--- --------------------------------------------------------
 
---
--- Tablo için tablo yapısı `etkilesim_kayitlari`
---
 
 CREATE TABLE `etkilesim_kayitlari` (
   `id` int(11) NOT NULL,
@@ -57,18 +51,12 @@ CREATE TABLE `etkilesim_kayitlari` (
   `action_type` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tablo döküm verisi `etkilesim_kayitlari`
---
+
 
 INSERT INTO `etkilesim_kayitlari` (`id`, `note_id`, `user_ip`, `action_type`) VALUES
 (1, 4, '::1', 'dislike');
 
--- --------------------------------------------------------
 
---
--- Tablo için tablo yapısı `notes`
---
 
 CREATE TABLE `notes` (
   `id` int(11) NOT NULL,
@@ -77,9 +65,7 @@ CREATE TABLE `notes` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tablo döküm verisi `notes`
---
+
 
 INSERT INTO `notes` (`id`, `title`, `content`, `created_at`) VALUES
 (1, 'v dxvx', '<p>vxdf</p>', '2026-04-05 18:22:45'),
@@ -90,11 +76,7 @@ INSERT INTO `notes` (`id`, `title`, `content`, `created_at`) VALUES
 (6, 'vfdv', '<p>veeevve</p>', '2026-04-09 00:25:43'),
 (7, 'vfdv', '<p>veeevve</p>', '2026-04-09 00:25:43');
 
--- --------------------------------------------------------
 
---
--- Tablo için tablo yapısı `users`
---
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
@@ -103,64 +85,37 @@ CREATE TABLE `users` (
   `reset_code` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tablo döküm verisi `users`
---
+
 
 INSERT INTO `users` (`id`, `email`, `password`, `reset_code`) VALUES
 (1, 'mikailcelik4734@gmail.com', '4747', NULL);
 
---
--- Dökümü yapılmış tablolar için indeksler
---
 
---
--- Tablo için indeksler `begeni_verileri`
---
 ALTER TABLE `begeni_verileri`
   ADD PRIMARY KEY (`note_id`);
 
---
--- Tablo için indeksler `etkilesim_kayitlari`
---
+
 ALTER TABLE `etkilesim_kayitlari`
   ADD PRIMARY KEY (`id`);
 
---
--- Tablo için indeksler `notes`
---
+
 ALTER TABLE `notes`
   ADD PRIMARY KEY (`id`);
 
---
--- Tablo için indeksler `users`
---
+
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
---
--- Dökümü yapılmış tablolar için AUTO_INCREMENT değeri
---
 
---
--- Tablo için AUTO_INCREMENT değeri `etkilesim_kayitlari`
---
 ALTER TABLE `etkilesim_kayitlari`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
---
--- Tablo için AUTO_INCREMENT değeri `notes`
---
+
 ALTER TABLE `notes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
---
--- Tablo için AUTO_INCREMENT değeri `users`
---
+
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

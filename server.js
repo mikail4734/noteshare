@@ -2,50 +2,53 @@ const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
 const nodemailer = require('nodemailer');
-const { OpenAI } = require("openai"); // OpenAI kütüphanesini ekledik
-require('dotenv').config(); // En üste ekle
+const { OpenAI } = require("openai");
+require('dotenv').config();
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("."));
 
-// API anahtarını kullanırken şifreyi sil ve şunu yaz:
+// OpenAI istemcisi — anahtar .env'den alınır
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, 
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Veritabanı Bağlantısı (image_073d13'teki bilgilerine göre)
 const db = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "", 
-  database: "notdeposu",
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASS || "",
+  database: process.env.DB_NAME || "notdeposu",
   waitForConnections: true,
   connectionLimit: 10
 });
 
-// 1. OpenAI Kurulumu (Kendi API anahtarını buraya yapıştır)
-
-// 2. Yapay Zeka Sohbet Rotası
 app.post('/askAI', async (req, res) => {
   try {
       const userMessage = req.body.mesaj;
+      const userEmail = req.body.email;
 
-      // OpenAI'ye mesajı gönderiyoruz
       const response = await openai.chat.completions.create({
-          model: "gpt-4o-mini", // İstediğin modeli seçebilirsin (gpt-4o-mini de çok hızlıdır)
+          model: "gpt-4o-mini",
           messages: [
               { role: "system", content: "Sen NoteShare uygulamasının yardımcı yapay zekasısın. Öğrencilere kısa ve net cevaplar ver." },
               { role: "user", content: userMessage }
           ],
       });
 
-      // Gelen cevabı frontend'e yolla
-      res.json({ reply: response.choices[0].message.content });
+      const botReply = response.choices[0].message.content;
+
+      if (userEmail && userEmail !== "") {
+          const sql = "INSERT INTO sohbet_gecmisi (kullanici_email, kullanici_mesaji, bot_cevabi) VALUES (?, ?, ?)";
+          db.query(sql, [userEmail, userMessage, botReply], (err, result) => {
+              if (err) console.error("Veritabanı kayıt hatası:", err);
+          });
+      }
+
+      res.json({ reply: botReply });
 
   } catch (error) {
       console.error("OpenAI Hatası:", error);
@@ -53,7 +56,21 @@ app.post('/askAI', async (req, res) => {
   }
 });
 
-// Bağlantı Testi
+app.post('/getChatHistory', (req, res) => {
+    const userEmail = req.body.email;
+
+    if (!userEmail) return res.json([]);
+
+    const sql = "SELECT * FROM sohbet_gecmisi WHERE kullanici_email = ? ORDER BY id DESC LIMIT 20";
+    db.query(sql, [userEmail], (err, results) => {
+        if (err) {
+            console.error("Geçmiş çekme hatası:", err);
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
 db.getConnection((err, connection) => {
   if (err) {
     console.error("❌ MySQL Bağlantı Hatası:", err.message);
@@ -63,47 +80,12 @@ db.getConnection((err, connection) => {
   }
 });
 
-function shareOnWhatsApp() {
-    // Sayfa linkini ve not başlığını alıyoruz
-    const url = encodeURIComponent(window.location.href);
-    const titleText = document.getElementById('title').value || "NoteShare'daki bu nota göz at!";
-    const text = encodeURIComponent(titleText + " - ");
-    
-    // WhatsApp API'sine yönlendir
-    window.open(`https://api.whatsapp.com/send?text=${text}${url}`, '_blank');
-}
-
-function shareOnX() {
-    const url = encodeURIComponent(window.location.href);
-    const titleText = encodeURIComponent(document.getElementById('title').value || "Harika bir not buldum!");
-    
-    // X (Twitter) paylaşım sayfasına yönlendir
-    window.open(`https://twitter.com/intent/tweet?text=${titleText}&url=${url}`, '_blank');
-}
-// Notları Getir
 app.get('/getNotes', (req, res) => {
   db.query("SELECT * FROM notes ORDER BY id DESC", (err, results) => {
     if (err) return res.status(500).send(err);
     res.json(results);
   });
 });
-function shareOnWhatsApp() {
-    // Sayfa linkini ve not başlığını alıyoruz
-    const url = encodeURIComponent(window.location.href);
-    const titleText = document.getElementById('title').value || "NoteShare'daki bu nota göz at!";
-    const text = encodeURIComponent(titleText + " - ");
-    
-    // WhatsApp web veya uygulama üzerinden paylaşım linki
-    window.open(`https://api.whatsapp.com/send?text=${text}${url}`, '_blank');
-}
-
-function shareOnX() {
-    const url = encodeURIComponent(window.location.href);
-    const titleText = encodeURIComponent(document.getElementById('title').value || "Harika bir not buldum!");
-    
-    // X (Twitter) paylaşım sayfasına yönlendir
-    window.open(`https://twitter.com/intent/tweet?text=${titleText}&url=${url}`, '_blank');
-}
 
 app.listen(3000, () => {
   console.log("🚀 Server http://localhost:3000 üzerinde aktif.");

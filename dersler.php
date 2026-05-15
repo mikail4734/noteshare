@@ -1,12 +1,12 @@
 <?php
 
-session_start(); // Oturumu başlat (En üstte olmalı)
+session_start(); 
 require_once 'baglan.php'; 
 
 $noteId = isset($_GET['id']) ? intval($_GET['id']) : null;
 $mevcutNot = null;
 
-// Eğer URL'den bir ID geldiyse, notun bilgilerini veritabanından çek
+
 if ($noteId) {
     $sorgu = $db->prepare("SELECT * FROM notes WHERE id = ?");
     $sorgu->execute([$noteId]);
@@ -14,28 +14,38 @@ if ($noteId) {
 }
 
 
-// İŞTE EKSİK OLAN VE SİSTEMİ ÇÖKERTEN SATIR BURASI:
+
 $user_role = isset($_SESSION['rol']) ? $_SESSION['rol'] : 'user';
 
-// URL'den gelen ders adını alıyoruz (Örn: dersler.php?ders=Algoritmalar)
-$secilenDers = isset($_GET['ders']) ? $_GET['ders'] : null;
+
+// URL parametreleri: ders, seviye/edu (edu_level), okul (school_name), kategori
+$secilenDers     = isset($_GET['ders']) ? $_GET['ders'] : null;
+$secilenSeviye   = $_GET['seviye'] ?? $_GET['edu'] ?? null; // edu = alias
+$secilenOkul     = isset($_GET['okul']) ? $_GET['okul'] : null;
+$secilenKategori = isset($_GET['kategori']) ? $_GET['kategori'] : null;
 
 try {
-    if ($secilenDers) {
-        // Ders seçildiyse SADECE o dersi getir
-        $sorgu = $db->prepare("SELECT * FROM notes WHERE subject = ? ORDER BY id DESC");
-        $sorgu->execute([$secilenDers]);
-        $sayfaBaslik = htmlspecialchars($secilenDers) . " Notları";
-    } else {
-        // Ders seçilmediyse TÜMÜNÜ getir
-        $sorgu = $db->prepare("SELECT * FROM notes ORDER BY id DESC");
-        $sorgu->execute();
-        $sayfaBaslik = "Tüm Notlar";
-    }
-    
-    $notlar = $sorgu->fetchAll(PDO::FETCH_ASSOC);
-    $jsonNotes = json_encode($notlar);
+    $where = [];
+    $params = [];
+    if ($secilenDers)     { $where[] = "subject = ?";     $params[] = $secilenDers; }
+    if ($secilenSeviye)   { $where[] = "edu_level = ?";   $params[] = $secilenSeviye; }
+    if ($secilenOkul)     { $where[] = "school_name = ?"; $params[] = $secilenOkul; }
+    if ($secilenKategori) { $where[] = "category = ?";    $params[] = $secilenKategori; }
 
+    $sql = "SELECT * FROM notes";
+    if (!empty($where)) $sql .= " WHERE " . implode(" AND ", $where);
+    $sql .= " ORDER BY id DESC";
+
+    $sorgu = $db->prepare($sql);
+    $sorgu->execute($params);
+    $notlar = $sorgu->fetchAll(PDO::FETCH_ASSOC);
+
+    $baslikParcalari = array_filter([$secilenSeviye, $secilenOkul, $secilenDers, $secilenKategori]);
+    $sayfaBaslik = !empty($baslikParcalari)
+        ? htmlspecialchars(implode(" · ", $baslikParcalari)) . " Notları"
+        : "Tüm Notlar";
+
+    $jsonNotes = json_encode($notlar);
 } catch (PDOException $e) {
     $jsonNotes = json_encode([]);
     $sayfaBaslik = "Hata Oluştu";
@@ -102,7 +112,7 @@ try {
             <div class="flex space-x-3 mb-8 overflow-x-auto pb-2 no-scrollbar">
                 <button onclick="filterNotes('Tümü')" class="bg-slate-900 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-lg">Tümü</button>
                 <button onclick="filterNotes('Konu Anlatımı')" class="bg-white text-slate-600 border border-slate-200 px-5 py-2 rounded-xl text-xs font-bold hover:bg-slate-50 transition">Konu Anlatımı</button>
-                <button onclick="filterNotes('Soru Çözümü')" class="bg-white text-slate-600 border border-slate-200 px-5 py-2 rounded-xl text-xs font-bold hover:bg-slate-50 transition">Soru Çözümü</button>
+               <button onclick="filterNotes('Soru Çözümü')" class="bg-white text-slate-600 border border-slate-200 px-5 py-2 rounded-xl text-xs font-bold hover:bg-slate-50 transition">Soru Çözümü</button>
                 <button onclick="filterNotes('Özet')" class="bg-white text-slate-600 border border-slate-200 px-5 py-2 rounded-xl text-xs font-bold hover:bg-slate-50 transition">Özetler</button>
             </div>
 
@@ -158,9 +168,9 @@ try {
 </div>
 </body>
 <script>
-// PHP'den gelen veriyi JS değişkenine aktarıyoruz
+
 let allNotes = <?php echo $jsonNotes; ?>;
-const currentUserRole = '<?php echo $user_role; ?>'; // PHP'deki admin bilgisini JS'ye aktardık
+const currentUserRole = '<?php echo $user_role; ?>'; 
 
 window.onload = () => {
     displayNotes(allNotes);
@@ -171,24 +181,24 @@ function displayNotes(notesList) {
     if (!tableBody) return;
     tableBody.innerHTML = ""; 
 
-    // Önizleme kutusunu sayfadan seçiyoruz
+   
     const previewBox = document.getElementById('hoverPreviewBox');
-    let hideTimeout; // Kapanma süresini kontrol etmek için değişken
+    let hideTimeout; 
 
     notesList.forEach(note => {
         const dateStr = new Date(note.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
         const noteRow = document.createElement("div");
         noteRow.className = "grid grid-cols-5 items-center px-6 py-6 hover:bg-indigo-50/30 transition-all group cursor-pointer border-b border-slate-100 relative";
         
-        // 1. Satırın tamamına tıklama özelliği (Notu açma)
+       
         noteRow.onclick = () => {
             window.location.href = `notlar.php?id=${note.id}`;
         };
 
-        // --- 2. FARE ÜZERİNE İLK GELDİĞİ AN ---
+        
         noteRow.onmouseenter = (e) => {
             if(!previewBox) return; 
-            clearTimeout(hideTimeout); // Eğer daha önce gizlenmek üzereyse iptal et
+            clearTimeout(hideTimeout); 
             
             document.getElementById('previewTitle').innerText = note.title;
             document.getElementById('previewCategory').innerText = note.category || 'Genel';
@@ -198,10 +208,10 @@ function displayNotes(notesList) {
             const plainText = tempDiv.textContent || tempDiv.innerText || "";
             document.getElementById('previewContent').innerText = plainText.substring(0, 150) + '...';
 
-            // KRİTİK: Kutu hiçbir şekilde farenin tıklamasını veya varlığını algılamasın
+            
             previewBox.style.pointerEvents = 'none';
 
-            // Kutunun pozisyonu
+            
             previewBox.style.top = (e.clientY + 20) + 'px';
             previewBox.style.left = (e.clientX + 20) + 'px';
 
@@ -209,25 +219,31 @@ function displayNotes(notesList) {
             setTimeout(() => previewBox.classList.remove('opacity-0'), 10);
         };
 
-        // --- 3. FARE SATIR İÇİNDE HAREKET ETTİKÇE (KUTU TAKİP ETSİN) ---
+        
         noteRow.onmousemove = (e) => {
             if(!previewBox) return;
-            // Fare hareket ettikçe kutuyu farenin ucundan ayırma
+           
             previewBox.style.top = (e.clientY + 20) + 'px';
             previewBox.style.left = (e.clientX + 20) + 'px';
         };
 
-        // --- 4. FARE SATIRDAN TAMAMEN ÇIKINCA ---
+       
         noteRow.onmouseleave = () => {
             if(!previewBox) return;
             previewBox.classList.add('opacity-0');
-            // Anında gizlemek yerine 200 milisaniye animasyonu bekle
+          
             hideTimeout = setTimeout(() => previewBox.classList.add('hidden'), 200);
         };
 
         let adminButtons = '';
         if (typeof currentUserRole !== 'undefined' && currentUserRole === 'admin') {
             adminButtons = `<button onclick="event.stopPropagation(); deleteNote(${note.id})" class="text-[10px] font-extrabold text-red-600 bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition-all uppercase ml-2">Sil</button>`;
+        }
+
+        // Soru Çözümü notuysa "Testi Çöz" butonu göster
+        let quizBtn = '';
+        if (note.category === 'Soru Çözümü' || note.category === 'soru_cozumu') {
+            quizBtn = `<button onclick="event.stopPropagation(); window.location.href='quiz_coz.php?id=${note.id}'" class="text-[10px] font-extrabold text-white bg-emerald-500 px-3 py-1.5 rounded-lg hover:bg-emerald-600 transition-all uppercase shadow-md ml-2"><i class="fas fa-play mr-1"></i>Testi Çöz</button>`;
         }
 
         noteRow.innerHTML = `
@@ -237,16 +253,17 @@ function displayNotes(notesList) {
             </div>
             <div class="text-xs font-semibold text-slate-600 text-center">@${note.author || 'Anonim'}</div>
             <div class="text-[11px] font-medium text-slate-400 text-center">${dateStr}</div>
-            
+
             <div class="flex items-center justify-center space-x-3">
                 <button onclick="event.stopPropagation(); updateReaction(${note.id}, 'like')" class="flex items-center space-x-1 text-slate-400 hover:text-emerald-500"><i class="far fa-thumbs-up text-xs"></i><span id="like-count-${note.id}" class="text-[11px] font-bold">${note.likes || 0}</span></button>
                 <button onclick="event.stopPropagation(); updateReaction(${note.id}, 'dislike')" class="flex items-center space-x-1 text-slate-400 hover:text-rose-500"><i class="far fa-thumbs-down text-xs"></i><span id="dislike-count-${note.id}" class="text-[11px] font-bold">${note.dislikes || 0}</span></button>
             </div>
 
-            <div class="text-right flex justify-end">
+            <div class="text-right flex justify-end items-center">
                 <button onclick="event.stopPropagation(); sendToAI(${note.id})" class="text-[10px] font-extrabold text-white bg-indigo-600 px-3 py-1.5 rounded-lg hover:bg-indigo-800 transition-all uppercase shadow-md">
                     Analiz Et
                 </button>
+                ${quizBtn}
                 ${adminButtons}
             </div>
         `;
@@ -255,17 +272,17 @@ function displayNotes(notesList) {
 }
 
 function sendToAI(noteId) {
-    // Listeden ilgili notu bul
+   
     const selectedNote = allNotes.find(n => n.id == noteId);
     if (!selectedNote) return;
 
-    // Chat alanını temizle ve başlangıç mesajını ver
+  
     const chat = document.getElementById('chatMessages');
     chat.innerHTML = `<div class="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl text-[13px] text-indigo-700 font-bold mb-4">
         "${selectedNote.title}" adlı dökümanı seçtiniz. Ne yapmak istersiniz?
     </div>`;
 
-    // Seçenek butonlarını oluştur
+   
     const optionsHTML = `
         <div class="flex flex-col space-y-2 mt-4" id="aiOptions">
             <button onclick="processAINote(${noteId}, 'anlat')" class="bg-white border border-slate-200 p-3 rounded-xl text-[12px] font-bold text-slate-700 hover:bg-indigo-50 hover:border-indigo-200 transition text-left flex items-center">
@@ -286,7 +303,7 @@ function sendToAI(noteId) {
 async function processAINote(noteId, type) {
     const selectedNote = allNotes.find(n => n.id == noteId);
     const optionsDiv = document.getElementById('aiOptions');
-    if (optionsDiv) optionsDiv.remove(); // Butonları gizle
+    if (optionsDiv) optionsDiv.remove(); 
 
     let prompt = "";
     if (type === 'anlat') prompt = `Aşağıdaki ders notunu bir öğretmen gibi sesli anlatıma uygun şekilde açıkla: ${selectedNote.content}`;
@@ -295,7 +312,7 @@ async function processAINote(noteId, type) {
 
     addMessageToChat(type === 'anlat' ? "Sesli anlatım hazırla." : (type === 'ozet' ? "Özet çıkar." : "20 soru hazırla."), 'user');
     
-    // Yükleniyor mesajı
+   
     addMessageToChat("Hazırlıyorum, lütfen bekleyin...", 'ai');
 
     try {
@@ -306,10 +323,10 @@ async function processAINote(noteId, type) {
         });
         const data = await response.json();
         
-        // Chat alanındaki son "Hazırlıyorum" mesajını silip cevabı yazdırabilirsin veya üstüne ekle:
+       
         addMessageToChat(data.reply, 'ai');
         
-        // Eğer 'anlat' seçildiyse tarayıcının seslendirme özelliğini kullanabiliriz
+       
         if(type === 'anlat') {
             const utterance = new SpeechSynthesisUtterance(data.reply);
             utterance.lang = 'tr-TR';
@@ -321,7 +338,7 @@ async function processAINote(noteId, type) {
     }
 }
 
-// Yeni: Silme İşlemini Yapan Fonksiyon
+
 function deleteNote(noteId) {
     if (confirm("Bu notu tamamen silmek istediğinize emin misiniz? Bu işlem geri alınamaz!")) {
         fetch('islem.php', {
@@ -336,7 +353,7 @@ function deleteNote(noteId) {
         .then(data => {
             if (data.success) {
                 alert("Not başarıyla silindi!");
-                location.reload(); // Sayfayı yenileyerek notun kaybolmasını sağla
+                location.reload(); 
             } else {
                 alert("Hata: " + (data.error || "Silinemedi."));
             }
@@ -344,7 +361,7 @@ function deleteNote(noteId) {
         .catch(err => console.error("Silme hatası:", err));
     }
 }
-// ... (Diğer filterNotes, updateReaction fonksiyonları aynı kalacak)
+
 
 
 
@@ -357,11 +374,11 @@ function filterNotes(category) {
     }
 }
 
-// Tepki (like/dislike) sistemi güncellendi
+
 function updateReaction(noteId, type) {
     fetch('islem.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, // Veriyi JSON olarak gönderiyoruz
+        headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify({ 
             islem: 'reaksiyon', 
             note_id: noteId, 
@@ -371,11 +388,9 @@ function updateReaction(noteId, type) {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            // İşlem başarılıysa sayacı güncelle
             const span = document.getElementById(`${type}-count-${noteId}`);
             span.innerText = data.new_count;
         } else {
-            // Hata varsa ekrana 'undefined' yerine gerçek hatayı yazdır
             alert(data.error || "Bir hata oluştu");
         }
     })
@@ -388,11 +403,11 @@ async function sendMessage() {
     const msg = input.value;
     input.value = '';
     
-    // Kullanıcının mesajını ekrana yazdır
+    
     addMessageToChat(msg, 'user');
     
     try {
-        // Node.js sunucusundaki /askAI rotasına JSON olarak istek atıyoruz
+       
         const response = await fetch('http://localhost:3000/askAI', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -401,7 +416,7 @@ async function sendMessage() {
 
         const data = await response.json();
         
-        // Yapay zekadan gelen cevabı ekrana yazdır
+       
         addMessageToChat(data.reply, 'ai');
 
     } catch (error) {
