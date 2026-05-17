@@ -18,11 +18,12 @@ $dersIkon = [
 ];
 $defaultIkon = 'fa-book';
 ?>
+<?php require_once __DIR__ . '/seo.php'; ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Ortaokul Notları | Dersini Seç</title>
+    <?php seoMeta('Ortaokul Notları', 'LGS hazırlık ve 5-8. sınıf ortaokul ders notları. Türkçe, Matematik, Fen Bilimleri, Sosyal Bilgiler, İngilizce ve daha fazlası için ücretsiz notlar.'); ?>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>

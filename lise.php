@@ -25,11 +25,12 @@ $dersIkon = [
 ];
 $defaultIkon = 'fa-book';
 ?>
+<?php require_once __DIR__ . '/seo.php'; ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Lise Notları | Dersini Seç</title>
+    <?php seoMeta('Lise Notları', 'TYT, AYT ve 9-12. sınıf lise ders notları. Matematik, Fizik, Kimya, Biyoloji, Edebiyat, Tarih ve 40+ ders için ücretsiz notlar.'); ?>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
