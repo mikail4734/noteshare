@@ -5,13 +5,17 @@
 # UTF-8 zorla
 AddDefaultCharset UTF-8
 
+# sitemap.xml URL'sini sitemap.php'ye yönlendir (SEO için)
+RewriteEngine On
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
 # .env, .git, .htaccess gibi gizli dosyalara erişimi engelle
 <FilesMatch "^\.">
     Require all denied
 </FilesMatch>
 
-# Composer ve config dosyalarını engelle
-<FilesMatch "^(composer\.(json|lock)|package(-lock)?\.json|.*\.sql|.*\.md)$">
+# Composer ve config dosyalarını engelle (sitemap.xml hariç tüm .xml de engellenmesin)
+<FilesMatch "^(composer\.(json|lock)|package(-lock)?\.json|.*\.sql)$">
     Require all denied
 </FilesMatch>
 

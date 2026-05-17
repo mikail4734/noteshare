@@ -1,0 +1,33 @@
+User-agent: *
+Allow: /
+Disallow: /islem.php
+Disallow: /baglan.php
+Disallow: /config.php
+Disallow: /helpers.php
+Disallow: /dosya_yukle.php
+Disallow: /admin_panel.php
+Disallow: /kullanicilar.php
+Disallow: /notlar_admin.php
+Disallow: /sikayetler_admin.php
+Disallow: /bildirim_gonder.php
+Disallow: /setup_admin.php
+Disallow: /vendor/
+Disallow: /uploads/
+Disallow: /.env
+Disallow: /.htaccess
+Disallow: /not-defteri/
+
+# Google özel
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Yandex özel
+User-agent: YandexBot
+Allow: /
+
+# Bing özel
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://notewarehouse.com/sitemap.xml
