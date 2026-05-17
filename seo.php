@@ -6,7 +6,7 @@
  */
 
 function seoMeta($title = '', $description = '', $image = '') {
-    $siteAdi = 'NoteShare';
+    $siteAdi = 'notewarehouse';
     $siteUrl = 'https://notewarehouse.com';
 
     // Mevcut sayfa URL'si (canonical için)
@@ -17,12 +17,12 @@ function seoMeta($title = '', $description = '', $image = '') {
 
     // Title
     $fullTitle = $title
-        ? htmlspecialchars($title) . ' | ' . $siteAdi
-        : $siteAdi . ' - Ücretsiz Ders Notu Paylaşım Platformu';
+        ? htmlspecialchars($title) . ' | notewarehouse'
+        : 'notewarehouse - Ücretsiz Ders Notu Paylaşım Platformu';
 
     // Description
     $desc = $description
-        ?: 'NoteShare; üniversite, lise, ortaokul ve ilkokul öğrencilerinin ders notlarını ücretsiz paylaştığı, yapay zeka destekli not deposu platformudur.';
+        ?: 'notewarehouse; üniversite, lise, ortaokul ve ilkokul öğrencilerinin ders notlarını ücretsiz paylaştığı, yapay zeka destekli not deposu platformudur.';
     $desc = htmlspecialchars($desc);
 
     // Image

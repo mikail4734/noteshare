@@ -153,6 +153,54 @@ CREATE TABLE `grup_davetleri` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
+-- TABLO: `newsletter_aboneleri`  (Newsletter kayıt)
+-- --------------------------------------------------------
+CREATE TABLE `newsletter_aboneleri` (
+  `id`          INT(11)      NOT NULL AUTO_INCREMENT,
+  `email`       VARCHAR(255) NOT NULL,
+  `ad`          VARCHAR(100) DEFAULT NULL,
+  `aktif`       TINYINT(1)   DEFAULT 1,
+  `tarih`       TIMESTAMP    NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+-- TABLO: `haberler`  (Blog / Duyurular)
+-- --------------------------------------------------------
+CREATE TABLE `haberler` (
+  `id`           INT(11)      NOT NULL AUTO_INCREMENT,
+  `baslik`       VARCHAR(255) NOT NULL,
+  `slug`         VARCHAR(255) NOT NULL,
+  `ozet`         TEXT         DEFAULT NULL,
+  `icerik`       LONGTEXT     DEFAULT NULL,
+  `kapak_resim`  VARCHAR(500) DEFAULT NULL,
+  `yazar`        VARCHAR(255) DEFAULT 'notewarehouse',
+  `kategori`     VARCHAR(100) DEFAULT 'genel',
+  `goruntulenme` INT(11)      DEFAULT 0,
+  `yayinda`      TINYINT(1)   DEFAULT 1,
+  `tarih`        TIMESTAMP    NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`),
+  KEY `yayinda` (`yayinda`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Örnek haberler
+INSERT INTO `haberler` (`baslik`, `slug`, `ozet`, `icerik`, `kategori`, `yazar`) VALUES
+('notewarehouse Açıldı!', 'notewarehouse-acildi',
+ 'Türkiye''nin ücretsiz öğrenci not paylaşım platformu notewarehouse hizmete girdi.',
+ '<p>Sevgili öğrenciler! Uzun bir geliştirme sürecinin ardından <strong>notewarehouse</strong> resmen hizmete girdi. Platform şu özellikleri sunuyor:</p><ul><li>Ücretsiz not paylaşımı ve okuma</li><li>Yapay zeka destekli özet ve soru üretimi</li><li>Çoktan seçmeli test çözücü</li><li>XP ve rozet sistemi</li><li>Canlı sınav simülasyonları</li><li>Çalışma grupları</li></ul><p>Hemen kaydolun, eğitim yolculuğunuza başlayın!</p>',
+ 'duyuru', 'notewarehouse Ekibi'),
+('Yapay Zeka ile Çalışmak: 5 İpucu', 'ai-ile-calismak-5-ipucu',
+ 'AI asistanı en verimli şekilde nasıl kullanılır? İşte 5 pratik ipucu.',
+ '<p>notewarehouse''un AI asistanı (Anthropic Claude destekli) öğrenme deneyimini bambaşka bir seviyeye taşıyor.</p><h3>1. Özetle Komutunu Kullan</h3><p>Uzun notları okumak yerine "Özetle" butonuyla 30 saniyede anahtar noktaları çıkar.</p><h3>2. Bana Anlat Modu</h3><p>Karmaşık konuları öğretmen gibi açıklasın diye AI''ya sor.</p><h3>3. Sesli Dinle</h3><p>Yolda gidiyorsan veya gözün yorulduysa, AI notu senin için sesli okur.</p><h3>4. AI ile Soru Üret</h3><p>Notunu okuduktan sonra AI''nın ürettiği sorularla kendini test et.</p><h3>5. Düzenli Quiz Çöz</h3><p>Quiz çözdükçe XP ve rozet kazanırsın. Streak''ini koru!</p>',
+ 'rehber', 'notewarehouse Ekibi'),
+('AYT 2026 İçin Hazırlık Stratejileri', 'ayt-2026-hazirlik-stratejileri',
+ 'AYT''ye az kaldı. İşte son sprintte verim almak için stratejiler.',
+ '<p>AYT öncesi son haftalar kritik. Şu stratejileri uygula:</p><ul><li><strong>Konu Eksiklerini Belirle:</strong> Quiz çözerek hangi konularda zayıfsın gör.</li><li><strong>Tekrar Modu:</strong> En çok beğenilen AYT notlarını oku.</li><li><strong>Çalışma Grubu:</strong> 3-5 kişilik bir grup kurup soru yarıştır.</li><li><strong>Canlı Sınav Simülasyonu:</strong> Gerçek sınav gibi 3 saatlik test çöz.</li><li><strong>Düzenli Dinlen:</strong> 25 dk çalış-5 dk mola (Pomodoro).</li></ul>',
+ 'rehber', 'notewarehouse Ekibi');
+
+-- --------------------------------------------------------
 -- TABLO: `site_duyurulari`  (Admin'in siteye duyuru asması)
 -- --------------------------------------------------------
 CREATE TABLE `site_duyurulari` (

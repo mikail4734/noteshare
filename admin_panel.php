@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="notlar_admin.php" class="bg-emerald-500 text-white p-4 rounded-2xl font-bold text-sm text-center hover:bg-emerald-600 transition shadow-md"><i class="fas fa-file-alt block text-2xl mb-2"></i> Notlar</a>
         <a href="sikayetler_admin.php" class="bg-amber-500 text-white p-4 rounded-2xl font-bold text-sm text-center hover:bg-amber-600 transition shadow-md"><i class="fas fa-inbox block text-2xl mb-2"></i> Mesajlar</a>
         <a href="bildirim_gonder.php" class="bg-indigo-600 text-white p-4 rounded-2xl font-bold text-sm text-center hover:bg-indigo-700 transition shadow-md"><i class="fas fa-paper-plane block text-2xl mb-2"></i> Bildirim</a>
-        <a href="arama.php" class="bg-slate-700 text-white p-4 rounded-2xl font-bold text-sm text-center hover:bg-slate-800 transition shadow-md"><i class="fas fa-search block text-2xl mb-2"></i> Arama</a>
+        <a href="haberler_admin.php" class="bg-pink-600 text-white p-4 rounded-2xl font-bold text-sm text-center hover:bg-pink-700 transition shadow-md"><i class="fas fa-newspaper block text-2xl mb-2"></i> Haberler</a>
     </div>
 
     <!-- SİTE DUYURUSU -->

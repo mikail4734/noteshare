@@ -5,6 +5,9 @@
 # UTF-8 zorla
 AddDefaultCharset UTF-8
 
+# Özel 404 sayfası
+ErrorDocument 404 /404.php
+
 # sitemap.xml URL'sini sitemap.php'ye yönlendir (SEO için)
 RewriteEngine On
 RewriteRule ^sitemap\.xml$ sitemap.php [L]

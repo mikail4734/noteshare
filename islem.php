@@ -591,6 +591,25 @@ if ($data && isset($db)) {
             exit;
         }
 
+        // ==========================================
+        // NEWSLETTER ABONELİĞİ
+        // ==========================================
+        if (isset($data['islem']) && $data['islem'] === 'newsletter_abone') {
+            $email = filter_var(trim($data['email'] ?? ''), FILTER_VALIDATE_EMAIL);
+            $ad = trim($data['ad'] ?? '');
+            if (!$email) {
+                echo json_encode(['success'=>false,'error'=>'Geçersiz e-posta']); exit;
+            }
+            try {
+                $db->prepare("INSERT INTO newsletter_aboneleri (email, ad) VALUES (?, ?) ON DUPLICATE KEY UPDATE aktif = 1, ad = VALUES(ad)")
+                   ->execute([$email, $ad]);
+                echo json_encode(['success'=>true, 'msg'=>'Abone oldun! Teşekkürler 🎉']);
+            } catch (Exception $e) {
+                echo json_encode(['success'=>false,'error'=>'Kayıt başarısız']);
+            }
+            exit;
+        }
+
         echo json_encode(['success' => false, 'error' => 'Tanımsız işlem.']);
 
     } catch (PDOException $e) {

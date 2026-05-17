@@ -95,10 +95,10 @@ $levels = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- ANA SEO -->
-    <title>NoteShare - Ücretsiz Ders Notu Paylaşım Platformu | Üniversite, Lise, Ortaokul Notları</title>
-    <meta name="description" content="NoteShare; üniversite, lise, ortaokul ve ilkokul öğrencilerinin ders notlarını ücretsiz paylaştığı, yapay zeka destekli not deposu ve test çözüm platformudur. AYT, TYT, LGS, üniversite ders notları, çıkmış sorular ve özetler.">
-    <meta name="keywords" content="not paylaşımı, ders notları, ücretsiz not, üniversite notları, lise notları, ortaokul notları, AYT notları, TYT notları, LGS notları, ders özeti, konu anlatımı, soru çözümü, online not deposu, öğrenci notu, yapay zeka ders, bilgisayar mühendisliği notları, matematik notları, fizik notları">
-    <meta name="author" content="NoteShare - Mikail Çelik & Mustafa Kabataş">
+    <title>notewarehouse - Ücretsiz Ders Notu Paylaşım Platformu | Üniversite, Lise, Ortaokul Notları</title>
+    <meta name="description" content="notewarehouse; üniversite, lise, ortaokul ve ilkokul öğrencilerinin ders notlarını ücretsiz paylaştığı, yapay zeka destekli not deposu ve test çözüm platformudur. AYT, TYT, LGS, üniversite ders notları, çıkmış sorular ve özetler.">
+    <meta name="keywords" content="notewarehouse, not paylaşımı, ders notları, ücretsiz not, üniversite notları, lise notları, ortaokul notları, AYT notları, TYT notları, LGS notları, ders özeti, konu anlatımı, soru çözümü, online not deposu, öğrenci notu, yapay zeka ders, bilgisayar mühendisliği notları, matematik notları, fizik notları">
+    <meta name="author" content="notewarehouse - Mikail Çelik & Mustafa Kabataş">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="googlebot" content="index, follow">
     <meta name="language" content="Turkish">
@@ -109,29 +109,30 @@ $levels = [
 
     <!-- OPEN GRAPH (WhatsApp, Facebook, LinkedIn) -->
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="NoteShare">
-    <meta property="og:title" content="NoteShare - Türkiye'nin Ücretsiz Ders Notu Paylaşım Platformu">
+    <meta property="og:site_name" content="notewarehouse">
+    <meta property="og:title" content="notewarehouse - Türkiye'nin Ücretsiz Ders Notu Paylaşım Platformu">
     <meta property="og:description" content="20.000+ ders notu, AI destekli özet/anlatım, çoktan seçmeli test çözücü, çalışma grupları ve canlı sınav simülasyonları. Ücretsiz kaydol, hemen başla!">
     <meta property="og:url" content="https://notewarehouse.com/">
-    <meta property="og:image" content="https://notewarehouse.com/notwarehouse.jpg">
+    <meta property="og:image" content="https://notewarehouse.com/og-image.png">
     <meta property="og:locale" content="tr_TR">
 
     <!-- TWITTER CARD -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="NoteShare - Ücretsiz Ders Notu Paylaşım Platformu">
+    <meta name="twitter:title" content="notewarehouse - Ücretsiz Ders Notu Paylaşım Platformu">
     <meta name="twitter:description" content="Üniversite, lise, ortaokul notları + AI özet + test çözücü + canlı sınav. Hemen ücretsiz kaydol!">
-    <meta name="twitter:image" content="https://notewarehouse.com/notwarehouse.jpg">
+    <meta name="twitter:image" content="https://notewarehouse.com/og-image.png">
 
-    <!-- FAVICON -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+    <!-- Eski emoji favicon kaldırıldı, yeni profesyonel favicon yukarıda -->
+
 
     <!-- JSON-LD Structured Data (Google için zengin sonuçlar) -->
+    <!-- JSON-LD: WebSite -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "NoteShare",
-      "alternateName": "Not Deposu",
+      "name": "notewarehouse",
+      "alternateName": ["notewarehouse.com", "Not Deposu"],
       "url": "https://notewarehouse.com/",
       "description": "Türkiye'nin ücretsiz ders notu paylaşım platformu",
       "inLanguage": "tr-TR",
@@ -142,17 +143,71 @@ $levels = [
       }
     }
     </script>
+
+    <!-- JSON-LD: Organization -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "EducationalOrganization",
-      "name": "NoteShare",
+      "name": "notewarehouse",
       "url": "https://notewarehouse.com/",
-      "logo": "https://notewarehouse.com/notwarehouse.jpg",
-      "sameAs": [],
-      "description": "Öğrenci ders notu paylaşım platformu"
+      "logo": "https://notewarehouse.com/logo.png",
+      "description": "Öğrenci ders notu paylaşım platformu",
+      "sameAs": [
+        "https://instagram.com/notewarehouse",
+        "https://twitter.com/notewarehouse",
+        "https://facebook.com/notewarehouse"
+      ]
     }
     </script>
+
+    <!-- JSON-LD: FAQ (Google'da SSS kutusu) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "notewarehouse nedir?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "notewarehouse, öğrencilerin ücretsiz ders notu paylaştığı, yapay zeka destekli not deposu ve test çözücü platformudur. İlkokul, ortaokul, lise ve üniversite seviyelerinde 20+ kategori sunar."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "notewarehouse ücretsiz mi?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Evet, notewarehouse tamamen ücretsizdir. Kayıt olmak, not paylaşmak, not okumak, AI özelliklerini kullanmak — hepsi ücretsizdir."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Notlarımı kimler görür?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Paylaştığın notları tüm kayıtlı kullanıcılar görebilir. Sadece çalışma grubuna özel notlar oluşturduğunda yalnızca grup üyeleri görür."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "AI özet ve soru üretme nasıl çalışır?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Anthropic Claude AI ile entegre olan notewarehouse, notunun anahtar noktalarını özetler, öğretmen gibi anlatım yapar ve otomatik çoktan seçmeli test soruları üretir."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Favicon (profesyonel) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png">
+    <link rel="apple-touch-icon" href="/favicon-180.png">
+    <link rel="shortcut icon" href="/favicon-32.png" type="image/png">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -356,14 +411,7 @@ $levels = [
     </div>
 </section>
 
-<footer class="bg-gray-900 text-gray-400 py-8 text-center text-sm">
-    <p>&copy; <?php echo $current_year; ?> NoteShare - Tüm Hakları Saklıdır.</p>
-    <div class="mt-2 space-x-4">
-        <a href="kosullar.php" class="hover:text-white transition">Kullanım Koşulları</a>
-        <a href="bizeUlasın.php" class="hover:text-white transition">Bize Ulaşın</a>
-        <a href="sozlesme.php" class="hover:text-white transition">Sözleşme</a>
-    </div>
-</footer>
+<?php include __DIR__ . '/footer_partial.php'; ?>
 <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 z-[60] hidden backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
 
 <div id="sidebarMenu" class="fixed top-0 right-0 w-80 h-full bg-white shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
@@ -468,7 +516,23 @@ $levels = [
             <div class="w-8 flex justify-center"><i class="fas fa-paper-plane text-red-500 group-hover:scale-110 transition"></i></div>
             Bildirim Gönder
         </a>
+        <a href="haberler_admin.php" class="flex items-center p-3 text-slate-700 hover:bg-red-50 hover:text-red-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-newspaper text-red-500 group-hover:scale-110 transition"></i></div>
+            Haberler Yönetimi
+        </a>
         <?php endif; ?>
+
+        <div class="h-px bg-slate-100 my-4 mx-3"></div>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-3">Kurumsal</p>
+
+        <a href="hakkimizda.php" class="flex items-center p-3 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-info-circle text-cyan-500 group-hover:scale-110 transition"></i></div>
+            Hakkımızda
+        </a>
+        <a href="haberler.php" class="flex items-center p-3 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl font-semibold transition group">
+            <div class="w-8 flex justify-center"><i class="fas fa-newspaper text-pink-500 group-hover:scale-110 transition"></i></div>
+            Haberler & Blog
+        </a>
 
         <div class="h-px bg-slate-100 my-4 mx-3"></div>
         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-3">Destek</p>
