@@ -1,5 +1,5 @@
 ﻿<?php
-session_start();
+require_once __DIR__ . '/oturum_baslat.php';
 require_once 'baglan.php';
 
 if (!isset($_SESSION['user_email'])) { header("Location: giris.php"); exit; }

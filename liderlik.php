@@ -1,5 +1,5 @@
 ﻿<?php
-session_start();
+require_once __DIR__ . '/oturum_baslat.php';
 require_once 'baglan.php';
 
 $mod = $_GET['mod'] ?? 'xp'; // xp, streak, takipci

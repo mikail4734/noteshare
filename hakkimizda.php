@@ -1,5 +1,5 @@
 ﻿<?php
-if (session_status() === PHP_SESSION_NONE) session_start();
+require_once __DIR__ . '/oturum_baslat.php';
 require_once __DIR__ . '/baglan.php';
 require_once __DIR__ . '/seo.php';
 

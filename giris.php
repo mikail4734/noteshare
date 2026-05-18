@@ -1,5 +1,5 @@
 ﻿<?php
-session_start();
+require_once __DIR__ . '/oturum_baslat.php';
 require_once 'baglan.php';
 
 
@@ -64,6 +64,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['loginsubmit'])) {
                         $_SESSION['user_email'] = $kullanici['email'];
                         $_SESSION['user_name'] = $kullanici['ad'];
                         $_SESSION['rol'] = $kullanici['rol'];
+
+                        // Beni hatırla işaretliyse 30 günlük kalıcı cookie
+                        // (varsayılan olarak da 30 gün set ediliyor ama burada açıkça yeniliyoruz)
+                        $sessionOmru = 30 * 24 * 60 * 60;
+                        $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+                        setcookie(session_name(), session_id(), [
+                            'expires'  => time() + $sessionOmru,
+                            'path'     => '/',
+                            'domain'   => '',
+                            'secure'   => $secure,
+                            'httponly' => true,
+                            'samesite' => 'Lax'
+                        ]);
 
                         header("Location: index.php");
                         exit;

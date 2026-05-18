@@ -1,6 +1,6 @@
 ﻿<?php
 
-session_start();
+require_once __DIR__ . '/oturum_baslat.php';
 require_once 'baglan.php'; 
 
 // Giriş yapmış bir kullanıcı varsa durumunu kontrol et

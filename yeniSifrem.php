@@ -1,5 +1,5 @@
-<?php
-session_start();
+﻿<?php
+require_once __DIR__ . '/oturum_baslat.php';
 require_once __DIR__ . '/baglan.php';
 
 // Önceki adımlar tamamlanmadıysa baştan başla

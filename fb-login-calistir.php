@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 /**
  * Facebook OAuth 2.0 — SDK kullanmadan saf cURL ile
  */
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/baglan.php';
 
-if (session_status() === PHP_SESSION_NONE) session_start();
+require_once __DIR__ . '/oturum_baslat.php';
 
 // Yapılandırma .env'den
 $fb_app_id     = $config['FB_APP_ID'] ?? '';

@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 /**
  * Dosya yükleme endpoint'i (PDF / Resim / Word)
  * FormData ile POST: file=<dosya>, note_id=<opsiyonel>
  */
-session_start();
+require_once __DIR__ . '/oturum_baslat.php';
 require_once 'baglan.php';
 
 header('Content-Type: application/json');

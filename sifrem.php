@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 require __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/baglan.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-if (session_status() === PHP_SESSION_NONE) session_start();
+require_once __DIR__ . '/oturum_baslat.php';
 
 $mesaj = "";
 $mesaj_turu = "";
