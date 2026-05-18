@@ -57,7 +57,6 @@ try {
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏗️</text></svg>">
     
    <title><?php echo $sayfaBaslik; ?> | notewarehouse</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -131,24 +130,64 @@ try {
             </div>
         </div>
 
-        <div class="w-full lg:w-[380px] shrink-0">
-            <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-200 flex flex-col h-[700px] sticky top-28 overflow-hidden">
-                <div class="p-6 border-b border-slate-100 bg-white">
-                    <h3 class="font-bold text-[15px] text-slate-900 tracking-tight">notewarehouse AI</h3>
+        <div class="w-full lg:w-[420px] shrink-0">
+            <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-200 flex flex-col h-[750px] sticky top-28 overflow-hidden">
+
+                <!-- TAB HEADER -->
+                <div class="grid grid-cols-3 border-b border-slate-100 bg-slate-50/50">
+                    <button onclick="tabAc('not')" id="tab-not" class="tabBtn py-4 text-xs font-bold text-slate-400 hover:text-indigo-600 transition border-b-2 border-transparent">
+                        <i class="fas fa-file-alt block mb-1"></i> Not
+                    </button>
+                    <button onclick="tabAc('yorum')" id="tab-yorum" class="tabBtn py-4 text-xs font-bold text-slate-400 hover:text-indigo-600 transition border-b-2 border-transparent">
+                        <i class="fas fa-comments block mb-1"></i> <span>Yorumlar</span>
+                        <span id="yorumSayisi" class="hidden ml-1 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">0</span>
+                    </button>
+                    <button onclick="tabAc('ai')" id="tab-ai" class="tabBtn py-4 text-xs font-bold text-indigo-600 border-b-2 border-indigo-600 transition">
+                        <i class="fas fa-robot block mb-1"></i> AI
+                    </button>
                 </div>
-                <div id="chatMessages" class="flex-1 p-8 overflow-y-auto space-y-6 no-scrollbar bg-[#FDFDFD]">
-                    <div class="bg-slate-100/70 p-5 rounded-2xl text-[14px] text-slate-700 italic serif-font">
-                        "Selam Mikail! Bir doküman seçtiğinde onu senin için özetleyebilirim."
+
+                <!-- TAB İÇERİKLERİ -->
+
+                <!-- 1) NOT ÖNİZLEME -->
+                <div id="content-not" class="hidden flex-1 overflow-y-auto p-6 no-scrollbar bg-white">
+                    <div id="notIcerik" class="text-slate-400 text-center italic py-12">
+                        <i class="fas fa-arrow-left text-3xl mb-3"></i><br>
+                        Önce sol taraftan bir not seç ve <b>Analiz Et</b>'e bas
                     </div>
                 </div>
-                <div class="p-6 bg-white border-t border-slate-100">
-                    <form onsubmit="event.preventDefault(); sendMessage();" class="relative">
-                        <input type="text" id="aiInput" placeholder="Soru sor..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-6 pr-14 text-sm outline-none">
-                        <button type="submit" class="absolute right-3 top-2.5 bg-indigo-600 text-white w-10 h-10 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-arrow-up text-sm"></i>
+
+                <!-- 2) YORUMLAR -->
+                <div id="content-yorum" class="hidden flex-1 overflow-y-auto p-4 no-scrollbar bg-white">
+                    <div id="yorumListesi" class="text-slate-400 text-center italic py-12">
+                        Bir not seçtikten sonra yorumlar burada görünecek
+                    </div>
+                    <div id="yorumFormKutu" class="hidden mt-4 pt-4 border-t border-slate-100">
+                        <textarea id="yorumInput" rows="2" placeholder="Yorum yaz..."
+                                  class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm outline-none focus:border-indigo-400 mb-2"></textarea>
+                        <button onclick="yorumGonder()" class="w-full bg-indigo-600 text-white py-2 rounded-xl text-sm font-bold hover:bg-indigo-700">
+                            <i class="fas fa-paper-plane mr-1"></i> Gönder
                         </button>
-                    </form>
+                    </div>
                 </div>
+
+                <!-- 3) AI CHAT -->
+                <div id="content-ai" class="flex-1 flex flex-col overflow-hidden">
+                    <div id="chatMessages" class="flex-1 p-6 overflow-y-auto space-y-4 no-scrollbar bg-[#FDFDFD]">
+                        <div class="bg-slate-100/70 p-4 rounded-2xl text-[13px] text-slate-700 italic">
+                            "Selam! Bir not seçip <b>Analiz Et</b>'e bas, sana özetleyeyim, soru hazırlayayım veya anlatayım."
+                        </div>
+                    </div>
+                    <div class="p-4 bg-white border-t border-slate-100">
+                        <form onsubmit="event.preventDefault(); sendMessage();" class="relative">
+                            <input type="text" id="aiInput" placeholder="Soru sor..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-5 pr-12 text-sm outline-none">
+                            <button type="submit" class="absolute right-2 top-1.5 bg-indigo-600 text-white w-9 h-9 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-arrow-up text-xs"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -272,12 +311,130 @@ function displayNotes(notesList) {
     });
 }
 
+let aktifNotId = null;
+
+// TAB YÖNETİMİ
+function tabAc(tab) {
+    ['not', 'yorum', 'ai'].forEach(t => {
+        const btn = document.getElementById('tab-' + t);
+        const cnt = document.getElementById('content-' + t);
+        if (t === tab) {
+            btn.classList.add('text-indigo-600', 'border-indigo-600');
+            btn.classList.remove('text-slate-400', 'border-transparent');
+            cnt.classList.remove('hidden');
+            if (cnt.id === 'content-ai') cnt.classList.add('flex');
+        } else {
+            btn.classList.remove('text-indigo-600', 'border-indigo-600');
+            btn.classList.add('text-slate-400', 'border-transparent');
+            cnt.classList.add('hidden');
+            if (cnt.id === 'content-ai') cnt.classList.remove('flex');
+        }
+    });
+}
+
+// NOT İÇERİĞİNİ SAĞ PANELE YÜKLE
+function notuPanelGoster(note) {
+    aktifNotId = note.id;
+    const kutu = document.getElementById('notIcerik');
+    const dateStr = new Date(note.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    kutu.innerHTML = `
+        <div class="mb-4 pb-4 border-b border-slate-100">
+            <span class="text-[10px] bg-indigo-100 text-indigo-700 font-black px-2 py-1 rounded uppercase">${note.category || 'Genel'}</span>
+            <h2 class="font-extrabold text-xl text-slate-800 mt-2 leading-tight">${note.title}</h2>
+            <p class="text-xs text-slate-500 mt-2 font-medium">
+                <i class="fas fa-user mr-1"></i>@${note.author || 'Anonim'} · ${dateStr}
+            </p>
+            <div class="flex gap-3 mt-3 text-xs">
+                <span class="text-emerald-600 font-bold"><i class="fas fa-thumbs-up mr-1"></i>${note.likes || 0}</span>
+                <span class="text-rose-400 font-bold"><i class="fas fa-thumbs-down mr-1"></i>${note.dislikes || 0}</span>
+                <a href="notlar.php?id=${note.id}" class="ml-auto text-indigo-600 font-bold hover:underline">
+                    Tam sayfa <i class="fas fa-external-link-alt text-[10px]"></i>
+                </a>
+            </div>
+        </div>
+        <div class="prose prose-sm max-w-none text-slate-700 leading-relaxed">
+            ${note.content || '<p class="text-slate-400 italic">İçerik boş.</p>'}
+        </div>
+    `;
+}
+
+// YORUMLARI YÜKLE
+async function yorumlariYukle(noteId) {
+    const liste = document.getElementById('yorumListesi');
+    const sayisi = document.getElementById('yorumSayisi');
+    liste.innerHTML = '<div class="text-center py-6 text-slate-400 text-sm"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>';
+
+    try {
+        const r = await fetch('islem.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ islem: 'yorumlari_getir', note_id: noteId })
+        });
+        const yorumlar = await r.json();
+
+        if (!Array.isArray(yorumlar) || yorumlar.length === 0) {
+            liste.innerHTML = '<p class="text-center text-slate-400 text-sm py-6 italic">Henüz yorum yok. İlk yorumu sen yap! 💬</p>';
+            sayisi.classList.add('hidden');
+        } else {
+            sayisi.classList.remove('hidden');
+            sayisi.innerText = yorumlar.length;
+            liste.innerHTML = yorumlar.map(y => `
+                <div class="bg-slate-50 rounded-2xl p-3 mb-2">
+                    <div class="flex items-center mb-1">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(y.kullanici_ad)}&background=4f46e5&color=fff&size=64" class="w-7 h-7 rounded-full mr-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-xs">@${y.kullanici_ad}</p>
+                            <p class="text-[10px] text-slate-400">${new Date(y.tarih).toLocaleDateString('tr-TR', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-700 ml-9">${y.mesaj.replace(/\n/g, '<br>')}</p>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('yorumFormKutu').classList.remove('hidden');
+    } catch(e) {
+        liste.innerHTML = '<p class="text-rose-500 text-sm text-center py-6">Yorumlar yüklenemedi</p>';
+    }
+}
+
+// YORUM GÖNDER
+async function yorumGonder() {
+    if (!aktifNotId) return;
+    const inp = document.getElementById('yorumInput');
+    const mesaj = inp.value.trim();
+    if (mesaj.length < 2) { alert("Çok kısa!"); return; }
+
+    const r = await fetch('islem.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ islem: 'yorum_ekle', note_id: aktifNotId, mesaj })
+    });
+    const data = await r.json();
+    if (data.success) {
+        inp.value = '';
+        yorumlariYukle(aktifNotId);
+    } else {
+        alert(data.error || 'Hata');
+    }
+}
+
 function sendToAI(noteId) {
-   
+
     const selectedNote = allNotes.find(n => n.id == noteId);
     if (!selectedNote) return;
 
-  
+    // 1) Sağ panele not içeriğini göster
+    notuPanelGoster(selectedNote);
+
+    // 2) Yorumları yükle
+    yorumlariYukle(noteId);
+
+    // 3) "Not" sekmesini aç (kullanıcı içeriği görsün)
+    tabAc('not');
+
+    // 4) AI chat alanını da hazırla
     const chat = document.getElementById('chatMessages');
     chat.innerHTML = `<div class="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl text-[13px] text-indigo-700 font-bold mb-4">
         "${selectedNote.title}" adlı dökümanı seçtiniz. Ne yapmak istersiniz?

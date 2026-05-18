@@ -525,6 +525,20 @@ if ($data && isset($db)) {
             exit;
         }
 
+        // YORUMLARI GETİR (dersler.php sağ panel için)
+        if (isset($data['islem']) && $data['islem'] === 'yorumlari_getir') {
+            $note_id = intval($data['note_id'] ?? 0);
+            if (!$note_id) { echo json_encode([]); exit; }
+            try {
+                $s = $db->prepare("SELECT id, kullanici_ad, mesaj, tarih FROM yorumlar WHERE note_id = ? ORDER BY tarih DESC LIMIT 30");
+                $s->execute([$note_id]);
+                echo json_encode($s->fetchAll(PDO::FETCH_ASSOC));
+            } catch (Exception $e) {
+                echo json_encode([]);
+            }
+            exit;
+        }
+
         if (isset($data['islem']) && $data['islem'] === 'yorum_sil') {
             if (!isset($_SESSION['user_email'])) { echo json_encode(['success'=>false]); exit; }
             $id = intval($data['id']);

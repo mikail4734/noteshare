@@ -53,6 +53,10 @@ $config = [
     'GOOGLE_CLIENT_ID'     => cfg('GOOGLE_CLIENT_ID', ''),
     'GOOGLE_CLIENT_SECRET' => cfg('GOOGLE_CLIENT_SECRET', ''),
     'GOOGLE_REDIRECT_URI'  => cfg('GOOGLE_REDIRECT_URI', 'http://localhost/norwarhouse.php/google-login-calistir.php'),
+
+    'FB_APP_ID'        => cfg('FB_APP_ID', ''),
+    'FB_APP_SECRET'    => cfg('FB_APP_SECRET', ''),
+    'FB_REDIRECT_URI'  => cfg('FB_REDIRECT_URI', 'https://notewarehouse.com/fb-login-calistir.php'),
 ];
 
 // Production'da hata gösterimi kapalı

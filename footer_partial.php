@@ -67,10 +67,10 @@
                     </a>
                 </div>
                 <p class="text-xs leading-relaxed">
-                    📧 <a href="mailto:iletisim@notewarehouse.com" class="hover:text-white">iletisim@notewarehouse.com</a>
+                    📧 <a href="mailto:notewarehouses@gmail.com" class="hover:text-white">notewarehouses@gmail.com</a>
                 </p>
                 <p class="text-xs mt-2 text-slate-400">
-                    @note_warehouse
+                    notewarehouses@gmail.com
                 </p>
             </div>
 
