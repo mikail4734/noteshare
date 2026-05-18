@@ -67,10 +67,7 @@
                     </a>
                 </div>
                 <p class="text-xs leading-relaxed">
-                    📧 <a href="notewarehouses@gmail.com" class="hover:text-white">notewarehouses@gmail.com</a>
-                </p>
-                <p class="text-xs mt-2 text-slate-400">
-                    notewarehouses@gmail.com
+                    📧 <a href="mailto:notewarehouses@gmail.com?subject=notewarehouse%20Hakk%C4%B1nda" class="hover:text-white underline">notewarehouses@gmail.com</a>
                 </p>
             </div>
 
