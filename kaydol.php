@@ -56,7 +56,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['user_name'] = $kullanici_adi;
                 $_SESSION['rol'] = $rol;
 
-               
+                // 30 günlük kalıcı cookie (Beni hatırla)
+                $sessionOmru = 30 * 24 * 60 * 60;
+                $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+                setcookie(session_name(), session_id(), [
+                    'expires'  => time() + $sessionOmru,
+                    'path'     => '/',
+                    'domain'   => '',
+                    'secure'   => $secure,
+                    'httponly' => true,
+                    'samesite' => 'Lax'
+                ]);
+
                 header("Location: index.php");
                 exit();
             }

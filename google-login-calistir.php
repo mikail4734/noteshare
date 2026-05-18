@@ -55,6 +55,18 @@ if (isset($_GET['code'])) {
         $_SESSION['logged_in']    = true;
         $_SESSION['rol']          = $kullanici['rol'] ?? 'user';
 
+        // 30 günlük kalıcı cookie (Beni hatırla)
+        $sessionOmru = 30 * 24 * 60 * 60;
+        $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+        setcookie(session_name(), session_id(), [
+            'expires'  => time() + $sessionOmru,
+            'path'     => '/',
+            'domain'   => '',
+            'secure'   => $secure,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+
         header("Location: index.php");
         exit();
     } else {
