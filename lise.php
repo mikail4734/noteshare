@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $jsonPath = __DIR__ . '/egitim_verileri.json';
 $dersler = [];
 $okullar = [];
@@ -29,6 +29,9 @@ $defaultIkon = 'fa-book';
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png">
+    <link rel="apple-touch-icon" href="/favicon-180.png">
     <meta charset="UTF-8">
     <?php seoMeta('Lise Notları', 'TYT, AYT ve 9-12. sınıf lise ders notları. Matematik, Fizik, Kimya, Biyoloji, Edebiyat, Tarih ve 40+ ders için ücretsiz notlar.'); ?>
     <script src="https://cdn.tailwindcss.com"></script>

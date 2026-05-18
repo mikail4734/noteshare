@@ -12,6 +12,9 @@ $kullanicilar = $db->query("SELECT email, ad FROM users ORDER BY ad")->fetchAll(
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png">
+    <link rel="apple-touch-icon" href="/favicon-180.png">
     <meta charset="UTF-8">
     <title>Bildirim Gönder | Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>

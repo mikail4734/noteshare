@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $jsonPath = __DIR__ . '/egitim_verileri.json';
 $dersler = [];
 if (file_exists($jsonPath)) {
@@ -22,6 +22,9 @@ $defaultIkon = 'fa-book';
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png">
+    <link rel="apple-touch-icon" href="/favicon-180.png">
     <meta charset="UTF-8">
     <?php seoMeta('Ortaokul Notları', 'LGS hazırlık ve 5-8. sınıf ortaokul ders notları. Türkçe, Matematik, Fen Bilimleri, Sosyal Bilgiler, İngilizce ve daha fazlası için ücretsiz notlar.'); ?>
     <script src="https://cdn.tailwindcss.com"></script>

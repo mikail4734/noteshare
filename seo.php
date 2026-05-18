@@ -1,6 +1,6 @@
 <?php
 /**
- * SEO Yardımcısı — her sayfanın <head> bölümünde include edilir.
+ * SEO Yardımcısı - her sayfanın head bölümünde include edilir.
  * Kullanım:
  *   <?php require_once 'seo.php'; seoMeta('Sayfa Başlığı', 'Sayfa açıklaması'); ?>
  */
@@ -11,7 +11,6 @@ function seoMeta($title = '', $description = '', $image = '') {
 
     // Mevcut sayfa URL'si (canonical için)
     $currentPath = $_SERVER['REQUEST_URI'] ?? '/';
-    // Query string'i temizle ve trailing slash'i normalize et
     $cleanPath = strtok($currentPath, '?');
     $canonical = $siteUrl . $cleanPath;
 
@@ -26,13 +25,18 @@ function seoMeta($title = '', $description = '', $image = '') {
     $desc = htmlspecialchars($desc);
 
     // Image
-    $img = $image ?: ($siteUrl . '/notwarehouse.jpg');
+    $img = $image ?: ($siteUrl . '/og-image.png');
 
     echo "    <title>$fullTitle</title>\n";
     echo "    <meta name=\"description\" content=\"$desc\">\n";
     echo "    <meta name=\"robots\" content=\"index, follow, max-image-preview:large\">\n";
     echo "    <meta name=\"language\" content=\"Turkish\">\n";
     echo "    <link rel=\"canonical\" href=\"$canonical\">\n";
+
+    // Favicon
+    echo "    <link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/favicon-32.png\">\n";
+    echo "    <link rel=\"icon\" type=\"image/png\" sizes=\"180x180\" href=\"/favicon-180.png\">\n";
+    echo "    <link rel=\"apple-touch-icon\" href=\"/favicon-180.png\">\n";
 
     // Open Graph
     echo "    <meta property=\"og:type\" content=\"website\">\n";
