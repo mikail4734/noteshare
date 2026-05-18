@@ -7,6 +7,7 @@
     <title>Matematik Notları | notewarehouse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body class="bg-slate-50 text-slate-800">
 
@@ -142,5 +143,6 @@
             chat.scrollTop = chat.scrollHeight;
         }
     </script>
+<?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 </html>

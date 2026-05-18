@@ -41,6 +41,7 @@ $defaultIkon = 'fa-book';
         .ders-card { transition: all 0.25s; }
         .ders-card:hover { transform: translateY(-4px); border-color: #ef4444; box-shadow: 0 12px 24px rgba(239,68,68,0.15); }
     </style>
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
@@ -115,5 +116,6 @@ document.getElementById('dersAra').addEventListener('input', e => {
     bos.classList.toggle('hidden', say > 0);
 });
 </script>
+<?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 </html>

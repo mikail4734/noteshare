@@ -34,6 +34,7 @@ $toplamBegeni = array_sum(array_column($notlar, 'likes'));
         .note-row { transition: all 0.2s ease; }
         .note-row:hover { background: rgba(79,70,229,0.05); }
     </style>
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body class="text-slate-800">
 
@@ -140,5 +141,6 @@ function notSil(id) {
     });
 }
 </script>
+<?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 </html>

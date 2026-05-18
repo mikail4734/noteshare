@@ -68,6 +68,7 @@ $dersler = [
     <?php seoMeta('İlkokul Notları', 'İlkokul 1-4. sınıf ders notları. Türkçe, Matematik, Hayat Bilgisi, Fen Bilimleri, Sosyal Bilgiler, İngilizce ve daha fazlası için renkli ve eğlenceli notlar.'); ?>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body class="bg-orange-50 font-sans">
 
@@ -118,5 +119,6 @@ $dersler = [
         </div>
     </footer>
 
+<?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 </html>

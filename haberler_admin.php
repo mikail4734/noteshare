@@ -64,6 +64,7 @@ $haberler = $db->query("SELECT * FROM haberler ORDER BY tarih DESC")->fetchAll(P
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <style>body{font-family:'Inter',sans-serif;background:#F8FAFC}#editor{min-height:300px;background:white}</style>
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body>
 
@@ -195,5 +196,6 @@ const quill = new Quill('#editor', {
     }
 });
 </script>
+<?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 </html>

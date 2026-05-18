@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Oturum ve veritabanı bağlantısı en başta
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -243,6 +243,7 @@ $levels = [
         if (ikon && document.documentElement.classList.contains('dark')) ikon.className = 'fas fa-sun';
     });
     </script>
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body class="bg-gray-50">
 

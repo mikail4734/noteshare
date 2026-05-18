@@ -26,6 +26,7 @@ $site_adi = "notewarehouse";
         .bolum-card { transition: all 0.25s ease; }
         .bolum-card:hover { transform: translateY(-3px); border-color: #6366f1; box-shadow: 0 12px 24px rgba(99, 102, 241, 0.15); }
     </style>
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
@@ -100,5 +101,6 @@ aramaInput.addEventListener('input', () => {
     bos.classList.toggle('hidden', bulundu > 0);
 });
 </script>
+<?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 </html>

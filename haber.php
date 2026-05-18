@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/baglan.php';
 require_once __DIR__ . '/seo.php';
@@ -62,6 +62,7 @@ $digerler = $digerler->fetchAll(PDO::FETCH_ASSOC);
       "mainEntityOfPage": "https://notewarehouse.com/haber.php?slug=<?= urlencode($haber['slug']) ?>"
     }
     </script>
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body class="bg-slate-50">
 

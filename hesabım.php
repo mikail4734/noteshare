@@ -69,6 +69,7 @@ $katIkon = [
         body { font-family: 'Inter', sans-serif; }
         .smooth { transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
     </style>
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body class="bg-slate-50 flex flex-col min-h-screen">
 
@@ -211,5 +212,6 @@ $katIkon = [
 <footer class="bg-white border-t border-slate-200 text-slate-400 py-8 text-center text-sm">
     &copy; <?= date("Y") ?> notewarehouse
 </footer>
+<?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 </html>

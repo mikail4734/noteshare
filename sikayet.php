@@ -23,6 +23,7 @@ $aktif_sayfa = isset($sayfa_basliklari[$dosya_adi]) ? $sayfa_basliklari[$dosya_a
     <title><?php echo $aktif_sayfa['baslik']; ?> | notewarehouse</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body class="bg-slate-50">
 
@@ -49,5 +50,6 @@ $aktif_sayfa = isset($sayfa_basliklari[$dosya_adi]) ? $sayfa_basliklari[$dosya_a
         </div>
     </main>
 
+<?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 </html>

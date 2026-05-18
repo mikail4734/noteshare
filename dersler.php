@@ -69,6 +69,7 @@ try {
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body class="bg-[#F9FAFB] text-[#1F2937]">
 
@@ -92,7 +93,17 @@ try {
 
     <nav class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div class="flex items-center space-x-4">
-            <a href="index.php" class="text-slate-400 hover:text-indigo-600 transition"><i class="fas fa-chevron-left text-lg"></i></a>
+<?php
+                // Akıllı geri navigasyon: seviyeye göre üst sayfa
+                $geriUrl = 'index.php';
+                if ($secilenSeviye === 'Üniversite') $geriUrl = 'universite.php';
+                elseif ($secilenSeviye === 'Lise') $geriUrl = 'lise.php';
+                elseif ($secilenSeviye === 'Orta Okul' || $secilenSeviye === 'Ortaokul') $geriUrl = 'ortaokul.php';
+                elseif ($secilenSeviye === 'İlkokul') $geriUrl = 'ilkokul.php';
+            ?>
+            <a href="<?= $geriUrl ?>" class="text-slate-400 hover:text-indigo-600 transition" title="Geri">
+                <i class="fas fa-chevron-left text-lg"></i>
+            </a>
            <h1 class="font-extrabold text-2xl tracking-tight flex items-center text-slate-900">
     <span class="bg-indigo-50 text-indigo-600 p-2.5 rounded-xl mr-3 shadow-sm border border-indigo-100">
         <i class="fas fa-book-open"></i>
@@ -206,6 +217,7 @@ try {
         Okumak için tıklayın <i class="fas fa-arrow-right ml-1"></i>
     </div>
 </div>
+<?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 <script>
 
@@ -599,5 +611,6 @@ function closeNote() {
     document.getElementById('noteModal').classList.add('hidden');
 }
 </script>
+<?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 </html>

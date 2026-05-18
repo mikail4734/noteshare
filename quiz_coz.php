@@ -41,6 +41,7 @@ if (!$mevcutNot || count($sorular) === 0) {
         .wrong-ans { background-color: #ef4444 !important; color: white !important; border-color: #ef4444 !important; }
         .show-correct { border: 2px solid #22c55e !important; background-color: #f0fdf4 !important; }
     </style>
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen pb-20">
 
@@ -199,5 +200,6 @@ if (!$mevcutNot || count($sorular) === 0) {
             document.getElementById('resultModal').classList.add('hidden');
         }
     </script>
+<?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 </html>

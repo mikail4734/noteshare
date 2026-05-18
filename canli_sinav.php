@@ -79,6 +79,7 @@ $bitisZamani = min($bit, $simdi + $sinav['sure_dakika'] * 60);
         .opt:hover{background:#1e293b;border-color:#6366f1}
         .opt.secili{background:#6366f1;color:white;border-color:#4f46e5}
     </style>
+    <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
 <body class="min-h-screen">
 
@@ -152,5 +153,6 @@ function tick() {
 tick(); setInterval(tick, 1000);
 </script>
 <?php endif; ?>
+<?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 </html>
