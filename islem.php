@@ -631,6 +631,21 @@ if ($data && isset($db)) {
         echo json_encode(['success' => false, 'error' => 'Veritabanı Hatası: ' . $e->getMessage()]);
     }
 } else {
-    echo json_encode(['success' => false, 'error' => 'Veri veya veritabanı bağlantısı eksik.']);
+    // Daha açıklayıcı hata
+    $hata = [];
+    if (!$data) {
+        $rawInput = file_get_contents('php://input');
+        if (empty($rawInput)) {
+            $hata[] = 'İstek gövdesi boş';
+        } else {
+            $hata[] = 'JSON parse edilemedi (giriş: ' . substr($rawInput, 0, 100) . ')';
+        }
+    }
+    if (!isset($db)) $hata[] = 'Veritabanı bağlantısı yok';
+
+    echo json_encode([
+        'success' => false,
+        'error'   => count($hata) ? implode(' | ', $hata) : 'Bilinmeyen hata'
+    ]);
 }
 ?>

@@ -2,6 +2,7 @@
 .env
 *.log
 *.sql
+!eksik_tablolar.sql
 
 # Composer / Node bağımlılıkları (server'da kurulur)
 vendor/

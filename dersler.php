@@ -473,38 +473,67 @@ function sendToAI(noteId) {
 async function processAINote(noteId, type) {
     const selectedNote = allNotes.find(n => n.id == noteId);
     const optionsDiv = document.getElementById('aiOptions');
-    if (optionsDiv) optionsDiv.remove(); 
-
-    let prompt = "";
-    if (type === 'anlat') prompt = `Aşağıdaki ders notunu bir öğretmen gibi sesli anlatıma uygun şekilde açıkla: ${selectedNote.content}`;
-    if (type === 'ozet') prompt = `Aşağıdaki ders notunun en önemli yerlerini içeren kısa ve öz bir özet çıkar: ${selectedNote.content}`;
-    if (type === 'soru') prompt = `Aşağıdaki ders notundan 20 adet çoktan seçmeli soru hazırla (Cevap anahtarı ile birlikte): ${selectedNote.content}`;
+    if (optionsDiv) optionsDiv.remove();
 
     addMessageToChat(type === 'anlat' ? "Sesli anlatım hazırla." : (type === 'ozet' ? "Özet çıkar." : "20 soru hazırla."), 'user');
-    
-   
     addMessageToChat("Hazırlıyorum, lütfen bekleyin...", 'ai');
 
     try {
-        const response = await fetch('http://localhost:3000/askAI', {
+        // Soru üretimi farklı endpoint kullanır
+        if (type === 'soru') {
+            const response = await fetch('islem.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    islem: 'ai_soru_uret',
+                    icerik: selectedNote.content,
+                    adet: 10
+                })
+            });
+            const data = await response.json();
+            if (data.success && Array.isArray(data.sorular)) {
+                let html = '<strong>📝 ' + data.sorular.length + ' soru üretildi:</strong><br><br>';
+                data.sorular.forEach((s, i) => {
+                    html += `<div style="margin-bottom:12px;padding:8px;background:#f8fafc;border-radius:6px;">
+                        <strong>${i+1}. ${s.soru_metni}</strong><br>
+                        A) ${s.secenek_a}<br>B) ${s.secenek_b}<br>C) ${s.secenek_c}<br>D) ${s.secenek_d}<br>
+                        <span style="color:#22c55e;font-weight:bold;">✓ Doğru: ${s.dogru_cevap}</span>
+                    </div>`;
+                });
+                addMessageToChat(html, 'ai');
+            } else {
+                addMessageToChat("❌ " + (data.error || "Soru üretilemedi"), 'ai');
+            }
+            return;
+        }
+
+        // Özet ve Anlat için ai_ozet endpoint'i
+        const response = await fetch('islem.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mesaj: prompt })
+            body: JSON.stringify({
+                islem: 'ai_ozet',
+                icerik: selectedNote.content,
+                mod: type === 'anlat' ? 'anlat' : 'ozet'
+            })
         });
         const data = await response.json();
-        
-       
-        addMessageToChat(data.reply, 'ai');
-        
-       
-        if(type === 'anlat') {
-            const utterance = new SpeechSynthesisUtterance(data.reply);
-            utterance.lang = 'tr-TR';
-            window.speechSynthesis.speak(utterance);
+
+        if (data.success) {
+            addMessageToChat(data.sonuc.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'), 'ai');
+
+            // Sesli anlatım için TTS
+            if (type === 'anlat') {
+                const utterance = new SpeechSynthesisUtterance(data.sonuc.replace(/<[^>]*>/g, ''));
+                utterance.lang = 'tr-TR';
+                window.speechSynthesis.speak(utterance);
+            }
+        } else {
+            addMessageToChat("❌ " + (data.error || "AI yanıt vermedi"), 'ai');
         }
 
     } catch (error) {
-        addMessageToChat("Hata oluştu, Node.js sunucusunu kontrol et.", 'ai');
+        addMessageToChat("❌ Sunucu hatası: " + error.message, 'ai');
     }
 }
 
@@ -569,29 +598,48 @@ function updateReaction(noteId, type) {
 async function sendMessage() {
     const input = document.getElementById('aiInput');
     if(!input.value.trim()) return;
-    
+
     const msg = input.value;
     input.value = '';
-    
-    
+
     addMessageToChat(msg, 'user');
-    
+
+    // Yazıyor göstergesi
+    addMessageToChat('<i class="fas fa-spinner fa-spin"></i> AI düşünüyor...', 'ai');
+
     try {
-       
-        const response = await fetch('http://localhost:3000/askAI', {
+        // session_id (sohbet geçmişi için)
+        if (!window._aiSessionId) {
+            window._aiSessionId = 'dersler-' + Date.now();
+        }
+
+        const response = await fetch('islem.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mesaj: msg })
+            body: JSON.stringify({
+                islem: 'dersbotu',
+                mesaj: msg,
+                session_id: window._aiSessionId
+            })
         });
 
         const data = await response.json();
-        
-       
-        addMessageToChat(data.reply, 'ai');
+
+        // Spinner mesajını kaldır
+        const chat = document.getElementById('chatMessages');
+        if (chat && chat.lastChild) chat.removeChild(chat.lastChild);
+
+        if (data.success) {
+            addMessageToChat(data.cevap.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'), 'ai');
+        } else {
+            addMessageToChat("❌ " + (data.error || "AI yanıt vermedi"), 'ai');
+        }
 
     } catch (error) {
         console.error("İletişim Hatası:", error);
-        addMessageToChat("Sunucuya ulaşılamıyor. Lütfen Node.js sunucusunun açık olduğundan emin ol.", 'ai');
+        const chat = document.getElementById('chatMessages');
+        if (chat && chat.lastChild) chat.removeChild(chat.lastChild);
+        addMessageToChat("❌ Sunucu hatası: " + error.message, 'ai');
     }
 }
 
