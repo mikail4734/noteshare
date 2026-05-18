@@ -57,29 +57,20 @@
             <div>
                 <h4 class="text-white font-black mb-4 uppercase tracking-wider text-xs">Bizi Takip Et</h4>
                 <div class="flex gap-3 mb-4">
-                    <a href="https://instagram.com/notewarehouse" target="_blank" rel="noopener" title="Instagram"
-                       class="w-10 h-10 bg-gradient-to-tr from-purple-600 to-pink-500 rounded-xl flex items-center justify-center text-white hover:scale-110 transition">
-                        <i class="fab fa-instagram"></i>
+                    <a href="https://instagram.com/note_warehouse/" target="_blank" rel="noopener" title="Instagram: @note_warehouse"
+                       class="w-12 h-12 bg-gradient-to-tr from-purple-600 via-pink-500 to-orange-400 rounded-xl flex items-center justify-center text-white hover:scale-110 hover:rotate-3 transition shadow-lg">
+                        <i class="fab fa-instagram text-xl"></i>
                     </a>
-                    <a href="https://facebook.com/notewarehouse" target="_blank" rel="noopener" title="Facebook"
-                       class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white hover:scale-110 transition">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://twitter.com/notewarehouse" target="_blank" rel="noopener" title="X (Twitter)"
-                       class="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white hover:scale-110 transition">
-                        <i class="fab fa-x-twitter"></i>
-                    </a>
-                    <a href="https://tiktok.com/@notewarehouse" target="_blank" rel="noopener" title="TikTok"
-                       class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center text-white hover:scale-110 transition">
-                        <i class="fab fa-tiktok"></i>
-                    </a>
-                    <a href="https://youtube.com/@notewarehouse" target="_blank" rel="noopener" title="YouTube"
-                       class="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center text-white hover:scale-110 transition">
-                        <i class="fab fa-youtube"></i>
+                    <a href="https://www.facebook.com/profile.php?id=61590216140180" target="_blank" rel="noopener" title="Facebook: Notewarehouse"
+                       class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white hover:scale-110 hover:rotate-3 transition shadow-lg">
+                        <i class="fab fa-facebook-f text-xl"></i>
                     </a>
                 </div>
-                <p class="text-xs">
+                <p class="text-xs leading-relaxed">
                     📧 <a href="mailto:iletisim@notewarehouse.com" class="hover:text-white">iletisim@notewarehouse.com</a>
+                </p>
+                <p class="text-xs mt-2 text-slate-400">
+                    @note_warehouse
                 </p>
             </div>
 

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 session_start(); 
 require_once 'baglan.php'; 
@@ -55,10 +55,11 @@ try {
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏗️</text></svg>">
     
-   <title><?php echo $sayfaBaslik; ?> | NoteShare</title>
+   <title><?php echo $sayfaBaslik; ?> | notewarehouse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -133,7 +134,7 @@ try {
         <div class="w-full lg:w-[380px] shrink-0">
             <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-200 flex flex-col h-[700px] sticky top-28 overflow-hidden">
                 <div class="p-6 border-b border-slate-100 bg-white">
-                    <h3 class="font-bold text-[15px] text-slate-900 tracking-tight">NoteShare AI</h3>
+                    <h3 class="font-bold text-[15px] text-slate-900 tracking-tight">notewarehouse AI</h3>
                 </div>
                 <div id="chatMessages" class="flex-1 p-8 overflow-y-auto space-y-6 no-scrollbar bg-[#FDFDFD]">
                     <div class="bg-slate-100/70 p-5 rounded-2xl text-[14px] text-slate-700 italic serif-font">

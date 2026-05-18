@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 require 'vendor/autoload.php'; 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -33,15 +33,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->CharSet    = 'UTF-8';
 
             
-            $mail->setFrom('mikailcelik4734@gmail.com', 'NoteShare Destek');
+            $mail->setFrom('mikailcelik4734@gmail.com', 'notewarehouse Destek');
             $mail->addAddress($email);
 
            
             $mail->isHTML(true);
-            $mail->Subject = 'NoteShare Şifre Sıfırlama Kodu';
+            $mail->Subject = 'notewarehouse Şifre Sıfırlama Kodu';
             $mail->Body    = "
                 <div style='font-family: sans-serif; border: 1px solid #e2e8f0; padding: 20px; border-radius: 10px;'>
-                    <h2 style='color: #4f46e5;'>NoteShare Güvenlik</h2>
+                    <h2 style='color: #4f46e5;'>notewarehouse Güvenlik</h2>
                     <p>Merhaba, şifreni sıfırlamak için kullanman gereken onay kodu:</p>
                     <div style='background: #f8fafc; padding: 15px; font-size: 24px; font-weight: bold; text-align: center; color: #1e293b; letter-spacing: 5px; border: 2px dashed #cbd5e1;'>
                         $onay_kodu
@@ -69,8 +69,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoteShare | Şifremi Unuttum</title>
+    <title>notewarehouse | Şifremi Unuttum</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -132,7 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <p class="text-center text-indigo-200 text-[10px] mt-8 font-black uppercase tracking-widest">
-            &copy; <?php echo date("Y"); ?> NoteShare Güvenlik Katmanı v2.0
+            &copy; <?php echo date("Y"); ?> notewarehouse Güvenlik Katmanı v2.0
         </p>
     </div>
 

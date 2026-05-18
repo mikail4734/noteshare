@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once 'baglan.php';
 
@@ -19,7 +19,7 @@ $db->prepare("UPDATE bildirimler SET okundu = 1 WHERE kullanici_email = ?")->exe
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Bildirimlerim | NoteShare</title>
+    <title>Bildirimlerim | notewarehouse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -29,7 +29,7 @@ $db->prepare("UPDATE bildirimler SET okundu = 1 WHERE kullanici_email = ?")->exe
     <div class="flex items-center space-x-4">
         <a href="index.php" class="text-slate-400 hover:text-indigo-600"><i class="fas fa-chevron-left"></i></a>
         <h1 class="font-extrabold text-2xl flex items-center">
-            <span class="bg-indigo-50 text-indigo-600 p-2.5 rounded-xl mr-3 border border-indigo-100"><i class="fas fa-bell"></i></span>
+            <img src="/favicon-180.png" alt="notewarehouse" class="w-8 h-8 rounded-lg mr-2 inline-block"><span class="bg-indigo-50 text-indigo-600 p-2.5 rounded-xl mr-3 border border-indigo-100"><i class="fas fa-bell"></i></span>
             Bildirimlerim
         </h1>
     </div>

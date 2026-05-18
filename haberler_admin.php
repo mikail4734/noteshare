@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once __DIR__ . '/baglan.php';
 
@@ -71,7 +71,7 @@ $haberler = $db->query("SELECT * FROM haberler ORDER BY tarih DESC")->fetchAll(P
     <div class="flex items-center space-x-4">
         <a href="index.php" class="text-slate-400 hover:text-red-500"><i class="fas fa-arrow-left"></i></a>
         <h1 class="font-extrabold text-2xl flex items-center">
-            <span class="bg-red-50 text-red-500 p-2.5 rounded-xl mr-3 border border-red-100"><i class="fas fa-newspaper"></i></span>
+            <img src="/favicon-180.png" alt="notewarehouse" class="w-8 h-8 rounded-lg mr-2 inline-block"><span class="bg-red-50 text-red-500 p-2.5 rounded-xl mr-3 border border-red-100"><i class="fas fa-newspaper"></i></span>
             Haberler Yönetimi
         </h1>
     </div>

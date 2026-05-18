@@ -6,7 +6,7 @@ if (file_exists($jsonPath)) {
     $dersler = $data['ortaokul']['dersler'] ?? [];
     sort($dersler);
 }
-$site_adi = "NoteShare";
+$site_adi = "notewarehouse";
 
 $dersIkon = [
     'Türkçe' => 'fa-pen-nib', 'Matematik' => 'fa-calculator',
@@ -70,7 +70,7 @@ $defaultIkon = 'fa-book';
 </main>
 
 <footer class="bg-emerald-900 text-emerald-200 py-8 text-center text-xs">
-    &copy; <?= date("Y") ?> NoteShare Ortaokul Akademisi
+    &copy; <?= date("Y") ?> notewarehouse Ortaokul Akademisi
 </footer>
 
 <script>

@@ -1,9 +1,9 @@
-<?php include("baglan.php"); ?>
+﻿<?php include("baglan.php"); ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Not Listesi | NoteShare</title>
+    <title>Not Listesi | notewarehouse</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 p-10">

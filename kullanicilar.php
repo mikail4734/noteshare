@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once 'baglan.php';
 
@@ -22,7 +22,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kullanıcı Yönetimi | NoteShare Admin</title>
+    <title>Kullanıcı Yönetimi | notewarehouse Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -34,7 +34,7 @@ try {
         <div class="flex items-center space-x-4">
             <a href="index.php" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-arrow-left text-lg"></i></a>
             <h1 class="font-extrabold text-2xl tracking-tight flex items-center text-slate-900">
-                <span class="bg-red-50 text-red-500 p-2.5 rounded-xl mr-3 shadow-sm border border-red-100">
+                <img src="/favicon-180.png" alt="notewarehouse" class="w-8 h-8 rounded-lg mr-2 inline-block"><span class="bg-red-50 text-red-500 p-2.5 rounded-xl mr-3 shadow-sm border border-red-100">
                     <i class="fas fa-shield-alt"></i>
                 </span>
                 Kullanıcı Yönetimi

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once 'baglan.php';
 
@@ -60,7 +60,8 @@ $katIkon = [
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Hesabım | NoteShare</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
+    <title>Hesabım | notewarehouse</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -74,7 +75,7 @@ $katIkon = [
 <nav class="bg-[#4f46e5] px-8 py-4 shadow-lg flex items-center justify-between sticky top-0 z-50">
     <div class="flex items-center space-x-2 cursor-pointer" onclick="window.location.href='index.php'">
         <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center"><i class="fas fa-book-open text-white"></i></div>
-        <span class="text-white font-black tracking-tighter text-xl">NoteShare</span>
+        <span class="text-white font-black tracking-tighter text-xl">notewarehouse</span>
     </div>
     <div class="flex items-center space-x-4">
         <a href="notlar.php" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl border border-white/30 text-sm font-bold smooth flex items-center">
@@ -208,7 +209,7 @@ $katIkon = [
 </main>
 
 <footer class="bg-white border-t border-slate-200 text-slate-400 py-8 text-center text-sm">
-    &copy; <?= date("Y") ?> NoteShare
+    &copy; <?= date("Y") ?> notewarehouse
 </footer>
 </body>
 </html>

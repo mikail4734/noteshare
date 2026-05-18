@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once 'baglan.php';
 
@@ -51,7 +51,7 @@ $katIkon = [
     <div class="flex items-center space-x-4">
         <a href="gruplarim.php" class="text-slate-400 hover:text-purple-600"><i class="fas fa-chevron-left"></i></a>
         <h1 class="font-extrabold text-2xl flex items-center">
-            <span class="bg-purple-50 text-purple-600 p-2.5 rounded-xl mr-3 border border-purple-100"><i class="fas fa-folder-open"></i></span>
+            <img src="/favicon-180.png" alt="notewarehouse" class="w-8 h-8 rounded-lg mr-2 inline-block"><span class="bg-purple-50 text-purple-600 p-2.5 rounded-xl mr-3 border border-purple-100"><i class="fas fa-folder-open"></i></span>
             <?= htmlspecialchars($grup['grup_adi']) ?>
             <span class="ml-3 text-xs text-slate-400 font-normal"><?= $grup['uye_sayisi'] ?> üye · <?= count($notlar) ?> not</span>
         </h1>

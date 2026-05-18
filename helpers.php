@@ -1,6 +1,6 @@
 <?php
 /**
- * NoteShare Helpers — XP / Streak / Rozet sistemi
+ * notewarehouse Helpers — XP / Streak / Rozet sistemi
  * baglan.php sonrasında include et: require_once 'helpers.php';
  */
 
@@ -55,7 +55,7 @@ function xpVer($db, $email, $miktar, $sebep = '') {
                        $email,
                        "🎉 Seviye Atladın!",
                        "Tebrikler! Seviye $yeniSeviye'a yükseldin. Yeni hedef: Seviye " . ($yeniSeviye + 1) . " için " . sonrakiSeviyeIcinXp($yeniXp) . " XP daha kazan!",
-                       'NoteShare Sistemi'
+                       'notewarehouse Sistemi'
                    ]);
             } catch (Exception $e) {}
         }
@@ -116,7 +116,7 @@ function streakGuncelle($db, $email) {
                        $email,
                        "🔥 $yeniStreak Gündür Üst Üste!",
                        "Harikasın! $yeniStreak gündür her gün geliyorsun. Devam et!",
-                       'NoteShare Sistemi'
+                       'notewarehouse Sistemi'
                    ]);
             } catch (Exception $e) {}
         }
@@ -162,7 +162,7 @@ function rozetKazandi($db, $email, $kod) {
                        $email,
                        "🎖️ Yeni Rozet: " . $r['ad'],
                        $r['ikon'] . " " . $r['aciklama'] . " — " . $r['xp'] . " XP kazandın!",
-                       'NoteShare Sistemi'
+                       'notewarehouse Sistemi'
                    ]);
             } catch (Exception $e) {}
             // XP ver (rozet kontrolünü yapmadan!)

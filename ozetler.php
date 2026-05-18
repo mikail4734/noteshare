@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matematik Notları | NoteShare</title>
+    <title>Matematik Notları | notewarehouse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -86,7 +87,7 @@
                             <i class="fas fa-robot"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-sm text-indigo-900">NoteShare AI</h3>
+                            <h3 class="font-bold text-sm text-indigo-900">notewarehouse AI</h3>
                             <p class="text-[10px] text-indigo-400 font-bold">Özetleyici & Yardımcı</p>
                         </div>
                     </div>

@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 
 $sayfa_basligi = "Gizlilik Sözleşmesi";
 $versiyon = "1.0.2";
 $son_guncelleme = "10 Nisan 2026";
-$site_adi = "NoteShare";
+$site_adi = "notewarehouse";
 
 
 $sozlesme_maddeleri = [
@@ -43,6 +43,7 @@ $sozlesme_maddeleri = [
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $sayfa_basligi; ?> | <?php echo $site_adi; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 $user = [
     'ad' => 'Mikail',
@@ -7,12 +7,13 @@ $user = [
     'bas harf' => 'M'
 ];
 
-$sayfa_basligi = "Ayarlar | NoteShare";
+$sayfa_basligi = "Ayarlar | notewarehouse";
 ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $sayfa_basligi; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -26,7 +27,7 @@ $sayfa_basligi = "Ayarlar | NoteShare";
                 <a href="index.php" class="text-slate-400 hover:text-indigo-600 transition text-xl">
                     <i class="fas fa-arrow-left"></i>
                 </a>
-                <h1 class="font-bold text-xl text-indigo-600 italic">NoteShare</h1>
+                <h1 class="font-bold text-xl text-indigo-600 italic">notewarehouse</h1>
             </div>
             <div class="flex items-center space-x-3">
                 <span class="text-sm font-medium text-slate-500 hidden md:block"><?php echo $user['ad']; ?></span>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once 'baglan.php';
 
@@ -24,7 +24,7 @@ $siralama = $s->fetchAll(PDO::FETCH_ASSOC);
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Liderlik Tablosu | NoteShare</title>
+    <title>Liderlik Tablosu | notewarehouse</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -36,7 +36,7 @@ $siralama = $s->fetchAll(PDO::FETCH_ASSOC);
     <div class="flex items-center space-x-4">
         <a href="index.php" class="text-slate-400 hover:text-indigo-600"><i class="fas fa-chevron-left"></i></a>
         <h1 class="font-extrabold text-2xl flex items-center">
-            <span class="bg-yellow-50 text-yellow-500 p-2.5 rounded-xl mr-3 border border-yellow-100"><i class="fas fa-trophy"></i></span>
+            <img src="/favicon-180.png" alt="notewarehouse" class="w-8 h-8 rounded-lg mr-2 inline-block"><span class="bg-yellow-50 text-yellow-500 p-2.5 rounded-xl mr-3 border border-yellow-100"><i class="fas fa-trophy"></i></span>
             <?= $baslik ?>
         </h1>
     </div>

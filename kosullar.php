@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 
 
-$sayfa_basligi = "Kullanım Koşulları | NoteShare";
+$sayfa_basligi = "Kullanım Koşulları | notewarehouse";
 $guncelleme_tarihi = "Mart 2026";
-$iletisim_email = "iletisim@noteshare.com";
+$iletisim_email = "iletisim@notewarehouse.com";
 
 
 $kosullar = [
@@ -11,19 +11,19 @@ $kosullar = [
         'id' => 1,
         'baslik' => 'Kabul Edilme',
         'ikon' => 'fas fa-info-circle',
-        'icerik' => 'NoteShare platformuna erişerek veya kullanarak, bu kullanım koşullarının tamamını okuduğunuzu, anladığınızı ve kabul ettiğinizi beyan etmiş olursunuz.'
+        'icerik' => 'notewarehouse platformuna erişerek veya kullanarak, bu kullanım koşullarının tamamını okuduğunuzu, anladığınızı ve kabul ettiğinizi beyan etmiş olursunuz.'
     ],
     [
         'id' => 2,
         'baslik' => 'Kullanıcı Sorumlulukları',
         'ikon' => 'fas fa-user-shield',
-        'icerik' => 'Kullanıcılar, paylaştıkları notların içeriğinden tamamen sorumludur. Telif hakkı içeren, hakaret vari veya yasa dışı içeriklerin paylaşılması yasaktır. Paylaşılan içeriklerin doğruluğu NoteShare tarafından garanti edilmez.'
+        'icerik' => 'Kullanıcılar, paylaştıkları notların içeriğinden tamamen sorumludur. Telif hakkı içeren, hakaret vari veya yasa dışı içeriklerin paylaşılması yasaktır. Paylaşılan içeriklerin doğruluğu notewarehouse tarafından garanti edilmez.'
     ],
     [
         'id' => 3,
         'baslik' => 'Fikri Mülkiyet',
         'ikon' => 'fas fa-copyright',
-        'icerik' => 'NoteShare markası, tasarımı ve kod yapısı NoteShare ekibine aittir. Kullanıcıların paylaştığı notlar üzerinde ise NoteShare, platformun işleyişi için sınırsız kullanım ve sergileme hakkına sahiptir.'
+        'icerik' => 'notewarehouse markası, tasarımı ve kod yapısı notewarehouse ekibine aittir. Kullanıcıların paylaştığı notlar üzerinde ise notewarehouse, platformun işleyişi için sınırsız kullanım ve sergileme hakkına sahiptir.'
     ]
 ];
 ?>
@@ -31,6 +31,7 @@ $kosullar = [
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $sayfa_basligi; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -44,7 +45,7 @@ $kosullar = [
                 <a href="index.php" class="text-slate-400 hover:text-indigo-600 transition">
                     <i class="fas fa-arrow-left"></i>
                 </a>
-                <h1 class="font-bold text-xl text-indigo-600 italic">NoteShare</h1>
+                <h1 class="font-bold text-xl text-indigo-600 italic">notewarehouse</h1>
             </div>
             <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">
                 Son Güncelleme: <?php echo $guncelleme_tarihi; ?>
@@ -83,7 +84,7 @@ $kosullar = [
                     <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center">
                         <i class="fas fa-exclamation-triangle text-indigo-500 mr-2"></i> 5. Sorumluluk Sınırı
                     </h3>
-                    <p>NoteShare, platformdaki herhangi bir teknik arıza, veri kaybı veya yanlış bilgiden dolayı doğabilecek zararlardan sorumlu tutulamaz. Platform "olduğu gibi" sunulmaktadır.</p>
+                    <p>notewarehouse, platformdaki herhangi bir teknik arıza, veri kaybı veya yanlış bilgiden dolayı doğabilecek zararlardan sorumlu tutulamaz. Platform "olduğu gibi" sunulmaktadır.</p>
                 </section>
 
                 <div class="mt-12 p-6 bg-indigo-50 rounded-2xl border border-indigo-100">
@@ -98,7 +99,7 @@ $kosullar = [
     </main>
 
     <footer class="py-8 text-center text-slate-400 text-xs uppercase tracking-widest">
-        &copy; <?php echo date("Y"); ?> NoteShare Platformu
+        &copy; <?php echo date("Y"); ?> notewarehouse Platformu
     </footer>
 
 </body>

@@ -7,7 +7,7 @@ if (file_exists($jsonPath)) {
     $bolumler = $data['universite']['bolumler'] ?? [];
     sort($bolumler);
 }
-$site_adi = "NoteShare";
+$site_adi = "notewarehouse";
 ?>
 <?php require_once __DIR__ . '/seo.php'; ?>
 <!DOCTYPE html>
@@ -77,7 +77,7 @@ $site_adi = "NoteShare";
 
 <footer class="bg-slate-900 text-slate-500 py-12 border-t border-slate-800">
     <div class="container mx-auto text-center px-4">
-        <p class="text-xs uppercase tracking-widest">&copy; <?= date("Y") ?> NoteShare University Network</p>
+        <p class="text-xs uppercase tracking-widest">&copy; <?= date("Y") ?> notewarehouse University Network</p>
     </div>
 </footer>
 

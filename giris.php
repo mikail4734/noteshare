@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once 'baglan.php';
 
@@ -85,8 +85,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['loginsubmit'])) {
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoteShare | Giriş Yap</title>
+    <title>notewarehouse | Giriş Yap</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -109,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['loginsubmit'])) {
             <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-xl mb-4 text-indigo-600 text-3xl">
                 <i class="fas fa-file-signature"></i>
             </div>
-            <h1 class="text-white text-3xl font-extrabold tracking-tight">NoteShare Pro</h1>
+            <h1 class="text-white text-3xl font-extrabold tracking-tight">notewarehouse Pro</h1>
             <p class="text-indigo-100 text-sm mt-2 font-medium">Bilgi paylaştıkça çoğalır.</p>
         </div>
 
@@ -183,7 +184,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['loginsubmit'])) {
         </div>
 
         <p class="text-center text-indigo-200 text-xs mt-8 font-medium">
-            &copy; <?php echo date("Y"); ?> NoteShare Engineering. Tüm hakları saklıdır.
+            &copy; <?php echo date("Y"); ?> notewarehouse Engineering. Tüm hakları saklıdır.
         </p>
     </div>
 

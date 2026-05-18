@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once 'baglan.php';
 
@@ -17,8 +17,9 @@ if (isset($_SESSION['user_email'])) {
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sıkça Sorulan Sorular | NoteShare</title>
+    <title>Sıkça Sorulan Sorular | notewarehouse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -48,18 +49,18 @@ if (isset($_SESSION['user_email'])) {
         
         <div class="text-center mb-12">
             <h2 class="text-4xl font-black text-slate-900 mb-4">Size nasıl yardımcı olabiliriz?</h2>
-            <p class="text-slate-500 font-medium">NoteShare kullanımı, not paylaşımı ve üyelik hakkında en çok sorulan soruları aşağıda bulabilirsiniz.</p>
+            <p class="text-slate-500 font-medium">notewarehouse kullanımı, not paylaşımı ve üyelik hakkında en çok sorulan soruları aşağıda bulabilirsiniz.</p>
         </div>
 
         <div class="space-y-4">
             
             <div class="faq-item bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all hover:border-indigo-200 shadow-sm">
                 <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-6 text-left">
-                    <span class="font-bold text-slate-700 text-lg">NoteShare nedir ve nasıl çalışır?</span>
+                    <span class="font-bold text-slate-700 text-lg">notewarehouse nedir ve nasıl çalışır?</span>
                     <i class="fas fa-chevron-down faq-icon transition-transform text-slate-300"></i>
                 </button>
                 <div class="faq-answer px-6 pb-6 text-slate-500 leading-relaxed text-sm">
-                    NoteShare, üniversite ve lise öğrencilerinin ders notlarını paylaştığı, birbirlerine yardımcı olduğu sosyal bir platformdur. Google hesabınızla giriş yaparak notlarınızı yükleyebilir, beğendiğiniz notları kendi arşivinize ekleyebilirsiniz.
+                    notewarehouse, üniversite ve lise öğrencilerinin ders notlarını paylaştığı, birbirlerine yardımcı olduğu sosyal bir platformdur. Google hesabınızla giriş yaparak notlarınızı yükleyebilir, beğendiğiniz notları kendi arşivinize ekleyebilirsiniz.
                 </div>
             </div>
 
@@ -85,11 +86,11 @@ if (isset($_SESSION['user_email'])) {
 
             <div class="faq-item bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all hover:border-indigo-200 shadow-sm">
                 <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-6 text-left">
-                    <span class="font-bold text-slate-700 text-lg">NoteShare AI özelliğini nasıl kullanırım?</span>
+                    <span class="font-bold text-slate-700 text-lg">notewarehouse AI özelliğini nasıl kullanırım?</span>
                     <i class="fas fa-chevron-down faq-icon transition-transform text-slate-300"></i>
                 </button>
                 <div class="faq-answer px-6 pb-6 text-slate-500 leading-relaxed text-sm">
-                    Okuduğunuz notun yanındaki "Analiz Et" butonuna basarak NoteShare AI'ya ulaşabilirsiniz. Yapay zeka, seçtiğiniz notu sizin için özetler, anahtar kelimeleri çıkarır ve çalışma planı hazırlar.
+                    Okuduğunuz notun yanındaki "Analiz Et" butonuna basarak notewarehouse AI'ya ulaşabilirsiniz. Yapay zeka, seçtiğiniz notu sizin için özetler, anahtar kelimeleri çıkarır ve çalışma planı hazırlar.
                 </div>
             </div>
 

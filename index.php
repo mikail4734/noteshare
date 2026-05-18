@@ -56,7 +56,7 @@ try {
     $siteDuyurusu = $db->query("SELECT * FROM site_duyurulari WHERE aktif=1 ORDER BY id DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
 } catch (Exception $e) {}
 
-$site_title = "NoteShare | Not Deposu";
+$site_title = "notewarehouse | Not Deposu";
 $current_year = date("Y");
 $search_query = isset($_GET['q']) ? htmlspecialchars($_GET['q']) : '';
 
@@ -154,9 +154,8 @@ $levels = [
       "logo": "https://notewarehouse.com/logo.png",
       "description": "Öğrenci ders notu paylaşım platformu",
       "sameAs": [
-        "https://instagram.com/notewarehouse",
-        "https://twitter.com/notewarehouse",
-        "https://facebook.com/notewarehouse"
+        "https://instagram.com/note_warehouse/",
+        "https://www.facebook.com/profile.php?id=61590216140180"
       ]
     }
     </script>
@@ -260,7 +259,7 @@ $levels = [
 
         <div class="p-8 text-center bg-white">
             <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-600 font-black text-[10px] rounded-full mb-3 uppercase tracking-widest">Özel Kampanya</span>
-            <h2 class="text-2xl font-black text-slate-800 mb-2">NoteShare Premium'a Geç!</h2>
+            <h2 class="text-2xl font-black text-slate-800 mb-2">notewarehouse Premium'a Geç!</h2>
             <p class="text-sm text-slate-500 mb-6 font-medium">Reklamsız deneyim, sınırsız soru indirme ve öncelikli destek için Premium'u keşfet. İlk ay %50 indirimli!</p>
             
             <div class="flex flex-col space-y-3">
@@ -281,7 +280,7 @@ $levels = [
             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
                 <i class="fas fa-book-open text-white"></i>
             </div>
-            <span class="text-white font-black tracking-tighter text-xl hidden sm:block">NoteShare</span>
+            <span class="text-white font-black tracking-tighter text-xl hidden sm:block">notewarehouse</span>
         </div>
 
         <form action="arama.php" method="GET" class="relative w-full max-w-xs group flex items-center">
@@ -404,7 +403,7 @@ $levels = [
                     <span class="absolute bottom-0 left-0 w-1/2 h-1 bg-indigo-600"></span>
                 </h2>
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    <strong>NoteShare</strong>, öğrencilerin bilgiye daha hızlı ve ücretsiz bir şekilde ulaşması amacıyla kurulmuş bir yardımlaşma platformudur.
+                    <strong>notewarehouse</strong>, öğrencilerin bilgiye daha hızlı ve ücretsiz bir şekilde ulaşması amacıyla kurulmuş bir yardımlaşma platformudur.
                 </p>
             </div>
         </div>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -115,8 +115,9 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $mevcutNot ? htmlspecialchars($mevcutNot['title']) . ' | NoteShare' : 'NoteShare | Profesyonel Not Editörü' ?></title>
+    <title><?= $mevcutNot ? htmlspecialchars($mevcutNot['title']) . ' | notewarehouse' : 'notewarehouse | Profesyonel Not Editörü' ?></title>
 
     <?php if ($mevcutNot): ?>
         <?php
@@ -128,8 +129,8 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
         <meta property="og:title" content="<?= htmlspecialchars($mevcutNot['title']) ?>">
         <meta property="og:description" content="<?= htmlspecialchars($ogOzet) ?>">
         <meta property="og:url" content="<?= htmlspecialchars($ogUrl) ?>">
-        <meta property="og:site_name" content="NoteShare">
-        <meta property="article:author" content="<?= htmlspecialchars($mevcutNot['author'] ?? 'NoteShare') ?>">
+        <meta property="og:site_name" content="notewarehouse">
+        <meta property="article:author" content="<?= htmlspecialchars($mevcutNot['author'] ?? 'notewarehouse') ?>">
         <meta property="article:section" content="<?= htmlspecialchars($mevcutNot['category'] ?? '') ?>">
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="<?= htmlspecialchars($mevcutNot['title']) ?>">
@@ -213,7 +214,7 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
 
     <nav id="mainNav" class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div class="flex items-center space-x-4">
-            <div class="font-black text-xl text-indigo-600 tracking-tighter">NoteShare</div>
+            <div class="font-black text-xl text-indigo-600 tracking-tighter">notewarehouse</div>
             <div class="h-6 w-px bg-slate-200 mx-2"></div>
             <h1 id="navTitle" class="font-bold text-slate-500 text-sm italic uppercase tracking-wider">Editor Mode</h1>
         </div>
@@ -758,7 +759,7 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
         }
         function shareOnWhatsApp() {
             const url = encodeURIComponent(window.location.href);
-            const titleText = document.getElementById('title').value || "NoteShare'daki bu nota göz at!";
+            const titleText = document.getElementById('title').value || "notewarehouse'daki bu nota göz at!";
             const text = encodeURIComponent(titleText + " - ");
             window.open(`https://api.whatsapp.com/send?text=${text}${url}`, '_blank');
         }

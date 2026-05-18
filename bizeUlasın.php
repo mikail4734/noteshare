@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 
-$site_adi = "NoteShare";
+$site_adi = "notewarehouse";
 $sayfa_basligi = "Bize Ulaşın | " . $site_adi;
 $admin_email = "mikailcelik4734@gmail.com";
 $telefon = "+90 (212) 555 01 01";
@@ -9,6 +9,7 @@ $telefon = "+90 (212) 555 01 01";
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $sayfa_basligi; ?></title>
     

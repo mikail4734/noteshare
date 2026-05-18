@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
 
@@ -18,8 +18,9 @@ $aktif_sayfa = isset($sayfa_basliklari[$dosya_adi]) ? $sayfa_basliklari[$dosya_a
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $aktif_sayfa['baslik']; ?> | NoteShare</title>
+    <title><?php echo $aktif_sayfa['baslik']; ?> | notewarehouse</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -29,7 +30,7 @@ $aktif_sayfa = isset($sayfa_basliklari[$dosya_adi]) ? $sayfa_basliklari[$dosya_a
         <a href="index.php" class="text-white hover:text-indigo-200 transition flex items-center font-bold">
             <i class="fas fa-arrow-left mr-2"></i> Ana Sayfaya Dön
         </a>
-        <span class="text-white font-black tracking-tighter text-xl">NoteShare</span>
+        <span class="text-white font-black tracking-tighter text-xl">notewarehouse</span>
     </nav>
 
     <main class="container mx-auto py-16 px-6 max-w-4xl">

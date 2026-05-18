@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 session_start();
 require_once 'baglan.php'; 
@@ -70,8 +70,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png"><link rel="apple-touch-icon" href="/favicon-180.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kayıt Ol | NoteShare</title>
+    <title>Kayıt Ol | notewarehouse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -97,7 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
                         <i class="fas fa-book-reader text-xl"></i>
                     </div>
-                    <span class="font-black text-2xl tracking-tighter">NoteShare</span>
+                    <span class="font-black text-2xl tracking-tighter">notewarehouse</span>
                 </div>
                 <h1 class="text-4xl font-bold leading-tight mb-6">Geleceğin Notlarını Birlikte Tutalım.</h1>
                 <p class="text-indigo-100 text-sm leading-relaxed opacity-90">

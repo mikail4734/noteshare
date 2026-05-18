@@ -8,9 +8,24 @@ AddDefaultCharset UTF-8
 # Özel 404 sayfası
 ErrorDocument 404 /404.php
 
-# sitemap.xml URL'sini sitemap.php'ye yönlendir (SEO için)
 RewriteEngine On
+
+# sitemap.xml URL'sini sitemap.php'ye yönlendir (SEO için)
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
+# =============================================
+# .PHP UZANTISINI URL'DE GİZLE (TEMİZ URL)
+# =============================================
+
+# 1. Eğer kullanıcı .php yazarsa otomatik .php'siz hale yönlendir (301)
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^\s]+)\.php[\s?]
+RewriteRule ^ /%1 [R=301,L,NE]
+
+# 2. /lise gibi istek geldiğinde içeriden lise.php çalıştır
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.+?)/?$ $1.php [L]
 
 # .env, .git, .htaccess gibi gizli dosyalara erişimi engelle
 <FilesMatch "^\.">

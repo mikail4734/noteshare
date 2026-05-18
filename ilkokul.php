@@ -2,7 +2,7 @@
 
 
 $sayfa_basligi = "İlkokul Notları | Eğlenerek Öğren";
-$site_adi = "NoteShare";
+$site_adi = "notewarehouse";
 
 
 $dersler = [

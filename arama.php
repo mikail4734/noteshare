@@ -42,7 +42,7 @@ function ozet($html, $uzunluk = 150) {
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Arama: <?= htmlspecialchars($q) ?> | NoteShare</title>
+    <title>Arama: <?= htmlspecialchars($q) ?> | notewarehouse</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -52,7 +52,7 @@ function ozet($html, $uzunluk = 150) {
 
 <nav class="bg-[#4f46e5] px-8 py-4 shadow-lg flex items-center justify-between sticky top-0 z-50">
     <a href="index.php" class="text-white font-black text-xl tracking-tighter flex items-center">
-        <i class="fas fa-book-open mr-2"></i> NoteShare
+        <i class="fas fa-book-open mr-2"></i> notewarehouse
     </a>
     <form action="arama.php" method="GET" class="flex-1 max-w-xl mx-8 relative">
         <input type="text" name="q" value="<?= htmlspecialchars($q) ?>" autofocus placeholder="Notlarda ara..."

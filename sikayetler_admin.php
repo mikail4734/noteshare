@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once 'baglan.php';
 
@@ -61,7 +61,7 @@ $bekleyen = count(array_filter($sikayetler, fn($s) => $s['durum'] === 'bekliyor'
     <div class="flex items-center space-x-4">
         <a href="index.php" class="text-slate-400 hover:text-red-500"><i class="fas fa-arrow-left"></i></a>
         <h1 class="font-extrabold text-2xl flex items-center">
-            <span class="bg-red-50 text-red-500 p-2.5 rounded-xl mr-3 border border-red-100"><i class="fas fa-inbox"></i></span>
+            <img src="/favicon-180.png" alt="notewarehouse" class="w-8 h-8 rounded-lg mr-2 inline-block"><span class="bg-red-50 text-red-500 p-2.5 rounded-xl mr-3 border border-red-100"><i class="fas fa-inbox"></i></span>
             Şikayet Yönetimi
             <?php if ($bekleyen > 0): ?>
                 <span class="ml-3 bg-amber-100 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full"><?= $bekleyen ?> bekliyor</span>

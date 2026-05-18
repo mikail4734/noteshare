@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once 'baglan.php';
 
@@ -17,7 +17,7 @@ $notlar = $s->fetchAll(PDO::FETCH_ASSOC);
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Yer İmlerim | NoteShare</title>
+    <title>Yer İmlerim | notewarehouse</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -29,7 +29,7 @@ $notlar = $s->fetchAll(PDO::FETCH_ASSOC);
     <div class="flex items-center space-x-4">
         <a href="index.php" class="text-slate-400 hover:text-amber-500"><i class="fas fa-chevron-left"></i></a>
         <h1 class="font-extrabold text-2xl flex items-center">
-            <span class="bg-amber-50 text-amber-500 p-2.5 rounded-xl mr-3 border border-amber-100"><i class="fas fa-bookmark"></i></span>
+            <img src="/favicon-180.png" alt="notewarehouse" class="w-8 h-8 rounded-lg mr-2 inline-block"><span class="bg-amber-50 text-amber-500 p-2.5 rounded-xl mr-3 border border-amber-100"><i class="fas fa-bookmark"></i></span>
             Yer İmlerim · Sonra Oku
             <span class="ml-3 text-xs text-slate-400 font-normal">(<?= count($notlar) ?>)</span>
         </h1>

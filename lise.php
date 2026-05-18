@@ -9,7 +9,7 @@ if (file_exists($jsonPath)) {
     sort($dersler);
     sort($okullar);
 }
-$site_adi = "NoteShare";
+$site_adi = "notewarehouse";
 
 // İkon eşleştirmesi
 $dersIkon = [
@@ -88,7 +88,7 @@ $defaultIkon = 'fa-book';
 </main>
 
 <footer class="bg-slate-900 text-slate-400 py-8 text-center text-xs">
-    &copy; <?= date("Y") ?> NoteShare Lise Akademisi
+    &copy; <?= date("Y") ?> notewarehouse Lise Akademisi
 </footer>
 
 <script>
