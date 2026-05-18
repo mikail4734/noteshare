@@ -238,7 +238,14 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
                 </button>
             <?php endif; ?>
 
-            <button onclick="downloadNote()" class="text-slate-500 hover:text-indigo-600 transition p-2"><i class="fas fa-file-download"></i></button>
+            <?php if ($noteId): ?>
+                <a href="not_pdf.php?id=<?= $noteId ?>" target="_blank" title="Profesyonel PDF İndir (Kapaklı + Filigranlı)" class="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-4 py-2 rounded-xl font-bold shadow-md transition active:scale-95 text-sm flex items-center gap-2">
+                    <i class="fas fa-file-pdf"></i>
+                    <span class="hidden sm:inline">PDF</span>
+                </a>
+            <?php else: ?>
+                <button onclick="downloadNote()" title="Hızlı PDF (kaydetmeden)" class="text-slate-500 hover:text-indigo-600 transition p-2"><i class="fas fa-file-download"></i></button>
+            <?php endif; ?>
 
             <?php if ($noteId && $mevcutNot && ($mevcutNot['category'] === 'Soru Çözümü' || $mevcutNot['category'] === 'soru_cozumu')): ?>
                 <a href="quiz_coz.php?id=<?= $noteId ?>" class="bg-amber-500 text-white px-5 py-2 rounded-xl font-bold hover:bg-amber-600 shadow-md transition active:scale-95 text-sm">
@@ -750,11 +757,18 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
         }
 
         function downloadNote() {
+            <?php if ($noteId): ?>
+            // Mevcut not açıksa: Profesyonel sunucu tabanlı PDF (kapak + filigran + sayfa numaraları)
+            window.open('not_pdf.php?id=<?= $noteId ?>', '_blank');
+            <?php else: ?>
+            // Yeni not (henüz kaydedilmemiş): Basit istemci tabanlı PDF
             const title = document.getElementById('title').value || 'Not';
             const content = quill.root.innerHTML;
             const element = document.createElement('div');
-            element.innerHTML = `<div style="padding:40px;"><h1>${title}</h1><hr>${content}</div>`;
+            element.innerHTML = `<div style="padding:40px;font-family:sans-serif;"><h1 style="color:#4f46e5;">${title}</h1><hr>${content}<p style="margin-top:30px;color:#94a3b8;font-size:11px;">notewarehouse.com — Profesyonel PDF için notu önce kaydet.</p></div>`;
             html2pdf().from(element).save(`${title}.pdf`);
+            alert('Notu kaydettikten sonra profesyonel kapaklı PDF indirebilirsin!');
+            <?php endif; ?>
         }
         function shareOnWhatsApp() {
             const url = encodeURIComponent(window.location.href);
