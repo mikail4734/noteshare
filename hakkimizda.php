@@ -19,7 +19,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <?php seoMeta('Hakkımızda', 'notewarehouse hakkında: kim olduğumuz, neden bu platformu kurduğumuz, ekibimiz ve vizyonumuz. Türkiye''nin ücretsiz öğrenci not paylaşım platformu.'); ?>
+    <?php seoMeta('Hakkımızda', "notewarehouse hakkında: kim olduğumuz, neden bu platformu kurduğumuz, ekibimiz ve vizyonumuz. Türkiye'nin ücretsiz öğrenci not paylaşım platformu."); ?>
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
     <link rel="apple-touch-icon" href="/favicon-180.png">
     <script src="https://cdn.tailwindcss.com"></script>
