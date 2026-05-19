@@ -32,17 +32,13 @@ try {
     if ($secilenOkul)     { $where[] = "school_name = ?"; $params[] = $secilenOkul; }
     if ($secilenKategori) { $where[] = "category = ?";    $params[] = $secilenKategori; }
 
-    // MODERASYON: Public listede sadece onayli notlari goster
-    // (kendi notunu kullanici her durumda gorebilsin, admin hepsini)
+    // MODERASYON: Public listede sadece onayli notlar gozukur
+    // Sahip kendi bekleyen notlarini "Calisma Alanim" / "Profilim"den gorebilir
+    // Sadece admin tum durumlari gorur
     $kullaniciEmail = $_SESSION['user_email'] ?? null;
     $kullaniciRol   = $_SESSION['rol'] ?? 'guest';
     if ($kullaniciRol !== 'admin') {
-        if ($kullaniciEmail) {
-            $where[] = "(durum IS NULL OR durum = 'onayli' OR kullanici_email = ?)";
-            $params[] = $kullaniciEmail;
-        } else {
-            $where[] = "(durum IS NULL OR durum = 'onayli')";
-        }
+        $where[] = "(durum IS NULL OR durum = 'onayli')";
     }
 
     $sql = "SELECT * FROM notes";

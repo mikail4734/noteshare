@@ -119,20 +119,20 @@ $benim = ($benEmail === $hedefEmail);
                         <?php endif; ?>
                     </div>
 
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 shrink-0">
                         <?php if ($benim): ?>
-                            <a href="ayarlar.php" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-2">
+                            <a href="ayarlar.php" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-3 rounded-xl text-base transition flex items-center gap-2 shadow-sm">
                                 <i class="fas fa-cog"></i> Profili Düzenle
                             </a>
                         <?php elseif ($benEmail): ?>
                             <button id="takipBtn" onclick="takipToggle()"
-                                    class="<?= $takipEdiyorum ? 'bg-slate-200 hover:bg-rose-100 text-slate-700 hover:text-rose-600' : 'bg-indigo-600 hover:bg-indigo-700 text-white' ?> font-bold px-6 py-2.5 rounded-xl text-sm transition flex items-center gap-2 min-w-[140px] justify-center">
-                                <i class="fas <?= $takipEdiyorum ? 'fa-user-check' : 'fa-user-plus' ?>"></i>
+                                    class="<?= $takipEdiyorum ? 'bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-600 border-2 border-slate-300 hover:border-rose-400' : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white border-2 border-transparent shadow-lg shadow-indigo-200' ?> font-black px-8 py-3 rounded-xl text-base transition-all flex items-center gap-2 min-w-[180px] justify-center hover:scale-105 active:scale-95">
+                                <i class="fas <?= $takipEdiyorum ? 'fa-user-check' : 'fa-user-plus' ?> text-lg"></i>
                                 <span id="takipText"><?= $takipEdiyorum ? 'Takiptesin' : 'Takip Et' ?></span>
                             </button>
                         <?php else: ?>
-                            <a href="giris.php" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition flex items-center gap-2">
-                                <i class="fas fa-user-plus"></i> Takip Etmek için Giriş Yap
+                            <a href="giris.php" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black px-8 py-3 rounded-xl text-base transition-all flex items-center gap-2 shadow-lg shadow-indigo-200 hover:scale-105">
+                                <i class="fas fa-user-plus text-lg"></i> Takip Etmek için Giriş Yap
                             </a>
                         <?php endif; ?>
                     </div>
@@ -164,6 +164,45 @@ $benim = ($benEmail === $hedefEmail);
             </div>
         </div>
     </div>
+
+    <?php if (!$benim && $benEmail && !$takipEdiyorum): ?>
+    <!-- TAKIP CTA Banner (büyük, dikkat çekici) -->
+    <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl shadow-xl p-6 md:p-8 mb-6 text-white">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center text-3xl backdrop-blur-sm">
+                    🔔
+                </div>
+                <div>
+                    <h3 class="text-xl font-black mb-1"><?= htmlspecialchars($kullanici['ad']) ?>'ı takip et!</h3>
+                    <p class="text-indigo-100 text-sm">Yeni not paylaşımlarından anında haberdar ol.</p>
+                </div>
+            </div>
+            <button onclick="takipToggle()" id="takipBtn2"
+                class="bg-white text-indigo-700 hover:bg-slate-100 font-black px-8 py-3 rounded-xl text-base shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 whitespace-nowrap">
+                <i class="fas fa-user-plus text-lg"></i>
+                <span id="takipText2">Takip Et</span>
+            </button>
+        </div>
+    </div>
+    <?php elseif (!$benim && $benEmail && $takipEdiyorum): ?>
+    <!-- Takiptesin Banner -->
+    <div class="bg-emerald-50 border border-emerald-200 rounded-3xl p-5 mb-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
+                <i class="fas fa-check text-lg"></i>
+            </div>
+            <p class="text-emerald-800 font-bold">
+                <?= htmlspecialchars($kullanici['ad']) ?>'ı takip ediyorsun.
+                <span class="text-emerald-600 font-normal text-sm">Yeni notlarından bildirim alacaksın.</span>
+            </p>
+        </div>
+        <button onclick="takipToggle()" id="takipBtn2"
+            class="bg-white hover:bg-rose-50 text-rose-600 border-2 border-rose-200 hover:border-rose-400 font-bold px-5 py-2 rounded-xl text-sm transition">
+            <span id="takipText2"><i class="fas fa-user-times mr-1"></i> Takipten Çık</span>
+        </button>
+    </div>
+    <?php endif; ?>
 
     <!-- PAYLASILAN NOTLAR -->
     <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
@@ -211,9 +250,8 @@ $benim = ($benEmail === $hedefEmail);
 <script>
 async function takipToggle() {
     const btn = document.getElementById('takipBtn');
-    const text = document.getElementById('takipText');
     const sayac = document.getElementById('takipciSayisi');
-    btn.disabled = true;
+    if (btn) btn.disabled = true;
 
     try {
         const r = await fetch('islem.php', {
@@ -224,23 +262,19 @@ async function takipToggle() {
         const data = await r.json();
         if (data.success) {
             if (data.durum === 'takip') {
-                btn.className = 'bg-slate-200 hover:bg-rose-100 text-slate-700 hover:text-rose-600 font-bold px-6 py-2.5 rounded-xl text-sm transition flex items-center gap-2 min-w-[140px] justify-center';
-                btn.querySelector('i').className = 'fas fa-user-check';
-                text.innerText = 'Takiptesin';
                 sayac.innerText = parseInt(sayac.innerText) + 1;
             } else {
-                btn.className = 'bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition flex items-center gap-2 min-w-[140px] justify-center';
-                btn.querySelector('i').className = 'fas fa-user-plus';
-                text.innerText = 'Takip Et';
                 sayac.innerText = Math.max(0, parseInt(sayac.innerText) - 1);
             }
+            // Sayfayı yenile - banner ve buton durumları doğru render olsun
+            setTimeout(() => location.reload(), 200);
         } else {
             alert(data.error || 'Hata oluştu');
         }
     } catch (e) {
         alert('Bağlantı hatası');
     }
-    btn.disabled = false;
+    if (btn) btn.disabled = false;
 }
 </script>
 
