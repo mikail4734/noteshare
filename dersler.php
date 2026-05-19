@@ -32,6 +32,19 @@ try {
     if ($secilenOkul)     { $where[] = "school_name = ?"; $params[] = $secilenOkul; }
     if ($secilenKategori) { $where[] = "category = ?";    $params[] = $secilenKategori; }
 
+    // MODERASYON: Public listede sadece onayli notlari goster
+    // (kendi notunu kullanici her durumda gorebilsin, admin hepsini)
+    $kullaniciEmail = $_SESSION['user_email'] ?? null;
+    $kullaniciRol   = $_SESSION['rol'] ?? 'guest';
+    if ($kullaniciRol !== 'admin') {
+        if ($kullaniciEmail) {
+            $where[] = "(durum IS NULL OR durum = 'onayli' OR kullanici_email = ?)";
+            $params[] = $kullaniciEmail;
+        } else {
+            $where[] = "(durum IS NULL OR durum = 'onayli')";
+        }
+    }
+
     $sql = "SELECT * FROM notes";
     if (!empty($where)) $sql .= " WHERE " . implode(" AND ", $where);
     $sql .= " ORDER BY id DESC";
@@ -303,7 +316,7 @@ function displayNotes(notesList) {
                 <h4 class="font-bold text-slate-900 group-hover:text-indigo-600 text-[14px] truncate">${note.title}</h4>
                 <p class="text-[10px] text-slate-400 font-bold uppercase">${note.category || 'Genel'}</p>
             </div>
-            <div class="text-xs font-semibold text-slate-600 text-center">@${note.author || 'Anonim'}</div>
+            <div class="text-xs font-semibold text-center">${note.kullanici_email ? `<a href="profil.php?email=${encodeURIComponent(note.kullanici_email)}" onclick="event.stopPropagation()" class="text-indigo-600 hover:text-indigo-800 hover:underline">@${note.author || 'Anonim'}</a>` : `<span class="text-slate-500">@${note.author || 'Anonim'}</span>`}</div>
             <div class="text-[11px] font-medium text-slate-400 text-center">${dateStr}</div>
 
             <div class="flex items-center justify-center space-x-3">
@@ -355,7 +368,7 @@ function notuPanelGoster(note) {
             <span class="text-[10px] bg-indigo-100 text-indigo-700 font-black px-2 py-1 rounded uppercase">${note.category || 'Genel'}</span>
             <h2 class="font-extrabold text-xl text-slate-800 mt-2 leading-tight">${note.title}</h2>
             <p class="text-xs text-slate-500 mt-2 font-medium">
-                <i class="fas fa-user mr-1"></i>@${note.author || 'Anonim'} · ${dateStr}
+                <i class="fas fa-user mr-1"></i>${note.kullanici_email ? `<a href="profil.php?email=${encodeURIComponent(note.kullanici_email)}" class="text-indigo-600 hover:text-indigo-800 hover:underline font-bold">@${note.author || 'Anonim'}</a>` : `@${note.author || 'Anonim'}`} · ${dateStr}
             </p>
             <div class="flex gap-3 mt-3 text-xs">
                 <span class="text-emerald-600 font-bold"><i class="fas fa-thumbs-up mr-1"></i>${note.likes || 0}</span>

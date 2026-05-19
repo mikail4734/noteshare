@@ -105,8 +105,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </a>
     </div>
 
+    <?php
+        // Bekleyen not sayisi (admin hizli erisim icin)
+        try {
+            $bekleyenNotSayi = (int)$db->query("SELECT COUNT(*) FROM notes WHERE durum = 'beklemede'")->fetchColumn();
+        } catch (Exception $e) { $bekleyenNotSayi = 0; }
+    ?>
+
     <!-- Hızlı Eylemler -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-10">
+    <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mb-10">
+        <a href="bekleyen_notlar.php" class="relative bg-gradient-to-br from-amber-500 to-orange-600 text-white p-4 rounded-2xl font-bold text-sm text-center hover:from-amber-600 hover:to-orange-700 transition shadow-md">
+            <i class="fas fa-hourglass-half block text-2xl mb-2"></i> Onay Bekleyen
+            <?php if ($bekleyenNotSayi > 0): ?>
+                <span class="absolute -top-2 -right-2 bg-rose-600 text-white text-xs font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-white shadow-lg animate-pulse">
+                    <?= $bekleyenNotSayi > 99 ? '99+' : $bekleyenNotSayi ?>
+                </span>
+            <?php endif; ?>
+        </a>
         <a href="kullanicilar.php" class="bg-rose-500 text-white p-4 rounded-2xl font-bold text-sm text-center hover:bg-rose-600 transition shadow-md"><i class="fas fa-users-cog block text-2xl mb-2"></i> Kullanıcılar</a>
         <a href="notlar_admin.php" class="bg-emerald-500 text-white p-4 rounded-2xl font-bold text-sm text-center hover:bg-emerald-600 transition shadow-md"><i class="fas fa-file-alt block text-2xl mb-2"></i> Notlar</a>
         <a href="sikayetler_admin.php" class="bg-amber-500 text-white p-4 rounded-2xl font-bold text-sm text-center hover:bg-amber-600 transition shadow-md"><i class="fas fa-inbox block text-2xl mb-2"></i> Mesajlar</a>

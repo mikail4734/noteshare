@@ -9,10 +9,12 @@ $kullanicilar = [];
 if (mb_strlen($q) >= 2) {
     // Notlarda ara
     $like = "%$q%";
+    // MODERASYON: Public aramada sadece onayli notlar (admin hepsini gorur)
+    $durFilter = (($_SESSION['rol'] ?? 'user') === 'admin') ? "" : " AND (durum IS NULL OR durum = 'onayli')";
     $s = $db->prepare("
-        SELECT id, title, content, category, edu_level, school_name, subject, author, likes, dislikes, created_at
+        SELECT id, title, content, category, edu_level, school_name, subject, author, kullanici_email, likes, dislikes, created_at
         FROM notes
-        WHERE title LIKE ? OR content LIKE ? OR subject LIKE ? OR school_name LIKE ? OR author LIKE ?
+        WHERE (title LIKE ? OR content LIKE ? OR subject LIKE ? OR school_name LIKE ? OR author LIKE ?)" . $durFilter . "
         ORDER BY likes DESC, created_at DESC
         LIMIT 50
     ");

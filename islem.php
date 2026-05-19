@@ -177,19 +177,38 @@ if ($data && isset($db)) {
                             throw new Exception("Bu notu düzenleme yetkin yok.");
                         }
                     }
+                    // MODERASYON: Admin direkt yayinlar, normal kullanici update'i de onaya duser
+                    // Grup notlari onay gerektirmez (uyeler arasi)
+                    $rolKullanici = $_SESSION['rol'] ?? 'user';
+                    $isGrupNotu = !empty($mevcut['grup_id']);
+                    $yeniDurum = ($rolKullanici === 'admin' || $isGrupNotu) ? 'onayli' : 'beklemede';
+
                     if ($dosya_yolu) {
-                        $sorgu = $db->prepare("UPDATE notes SET title=?, content=?, category=?, edu_level=?, school_name=?, subject=?, dosya_yolu=? WHERE id=?");
-                        $sorgu->execute([$title, $content, $category, $edu_level, $school_name, $subject, $dosya_yolu, $note_id]);
+                        $sorgu = $db->prepare("UPDATE notes SET title=?, content=?, category=?, edu_level=?, school_name=?, subject=?, dosya_yolu=?, durum=? WHERE id=?");
+                        $sorgu->execute([$title, $content, $category, $edu_level, $school_name, $subject, $dosya_yolu, $yeniDurum, $note_id]);
                     } else {
-                        $sorgu = $db->prepare("UPDATE notes SET title=?, content=?, category=?, edu_level=?, school_name=?, subject=? WHERE id=?");
-                        $sorgu->execute([$title, $content, $category, $edu_level, $school_name, $subject, $note_id]);
+                        $sorgu = $db->prepare("UPDATE notes SET title=?, content=?, category=?, edu_level=?, school_name=?, subject=?, durum=? WHERE id=?");
+                        $sorgu->execute([$title, $content, $category, $edu_level, $school_name, $subject, $yeniDurum, $note_id]);
                     }
                     $silSorgu = $db->prepare("DELETE FROM not_sorulari WHERE note_id = ?");
                     $silSorgu->execute([$note_id]);
                 } else {
-                    $sorgu = $db->prepare("INSERT INTO notes (title, content, category, edu_level, school_name, subject, author, kullanici_email, dosya_yolu, grup_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                    $sorgu->execute([$title, $content, $category, $edu_level, $school_name, $subject, $author, $kullanici_email, $dosya_yolu, $grup_id]);
+                    // MODERASYON: Admin direkt yayinlar, normal kullanici onaya duser
+                    // Grup notlari uyeleri arasinda paylasilir, onay gerektirmez
+                    $rolKullanici = $_SESSION['rol'] ?? 'user';
+                    $durum = ($rolKullanici === 'admin' || $grup_id) ? 'onayli' : 'beklemede';
+
+                    $sorgu = $db->prepare("INSERT INTO notes (title, content, category, edu_level, school_name, subject, author, kullanici_email, dosya_yolu, grup_id, durum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $sorgu->execute([$title, $content, $category, $edu_level, $school_name, $subject, $author, $kullanici_email, $dosya_yolu, $grup_id, $durum]);
                     $note_id = $db->lastInsertId();
+
+                    // Beklemede ise kullaniciya bildirim gonder
+                    if ($durum === 'beklemede' && $kullanici_email) {
+                        try {
+                            $db->prepare("INSERT INTO bildirimler (kullanici_email, baslik, mesaj, gonderen, tip) VALUES (?, ?, ?, ?, 'sistem')")
+                               ->execute([$kullanici_email, "📝 Notunuz İnceleniyor", "\"$title\" başlıklı notunuz admin onayı için kuyruğa alındı. Onaylandığında haberdar olacaksınız.", "Sistem"]);
+                        } catch (Exception $e) {}
+                    }
                 }
 
                 if (isset($data['sorular']) && is_array($data['sorular']) && count($data['sorular']) > 0) {
@@ -601,6 +620,101 @@ if ($data && isset($db)) {
                 $e = strtolower(trim(str_replace('#', '', $e)));
                 if ($e && mb_strlen($e) <= 60) $ins->execute([$note_id, $e]);
             }
+            echo json_encode(['success'=>true]);
+            exit;
+        }
+
+        // ==========================================
+        // MODERASYON: Bekleyen notlari getir (admin)
+        // ==========================================
+        if (isset($data['islem']) && $data['islem'] === 'bekleyen_notlar') {
+            if (($_SESSION['rol'] ?? 'user') !== 'admin') {
+                echo json_encode(['success'=>false,'error'=>'Yetkisiz']); exit;
+            }
+            $s = $db->prepare("SELECT n.id, n.title, n.category, n.edu_level, n.subject, n.author, n.kullanici_email, n.created_at,
+                                      SUBSTRING(n.content, 1, 300) AS onizleme,
+                                      u.ad AS yazar_ad
+                               FROM notes n
+                               LEFT JOIN users u ON u.email = n.kullanici_email
+                               WHERE n.durum = 'beklemede'
+                               ORDER BY n.created_at DESC");
+            $s->execute();
+            echo json_encode(['success'=>true, 'notlar'=>$s->fetchAll(PDO::FETCH_ASSOC)]);
+            exit;
+        }
+
+        // ==========================================
+        // MODERASYON: Not onayla (admin)
+        // ==========================================
+        if (isset($data['islem']) && $data['islem'] === 'not_onayla') {
+            if (($_SESSION['rol'] ?? 'user') !== 'admin') {
+                echo json_encode(['success'=>false,'error'=>'Yetkisiz']); exit;
+            }
+            $nid = intval($data['note_id'] ?? 0);
+            if (!$nid) { echo json_encode(['success'=>false,'error'=>'Gecersiz id']); exit; }
+
+            // Notu cek
+            $n = $db->prepare("SELECT id, title, kullanici_email, author FROM notes WHERE id = ?");
+            $n->execute([$nid]);
+            $not = $n->fetch(PDO::FETCH_ASSOC);
+            if (!$not) { echo json_encode(['success'=>false,'error'=>'Not bulunamadi']); exit; }
+
+            // Onayla
+            $db->prepare("UPDATE notes SET durum = 'onayli' WHERE id = ?")->execute([$nid]);
+
+            // Sahibe bildirim
+            if ($not['kullanici_email']) {
+                $db->prepare("INSERT INTO bildirimler (kullanici_email, baslik, mesaj, gonderen, tip) VALUES (?, ?, ?, ?, 'onay')")
+                   ->execute([$not['kullanici_email'], "✅ Notunuz Onaylandı!", "\"" . $not['title'] . "\" başlıklı notunuz yayımlandı. Tebrikler!", "Admin"]);
+
+                // Takipcilere bildirim (FAZ 3)
+                $takipciler = $db->prepare("SELECT takip_eden FROM takipler WHERE takip_edilen = ?");
+                $takipciler->execute([$not['kullanici_email']]);
+                $hedefler = $takipciler->fetchAll(PDO::FETCH_COLUMN);
+
+                if (count($hedefler) > 0) {
+                    $bildirim = $db->prepare("INSERT INTO bildirimler (kullanici_email, baslik, mesaj, gonderen, tip) VALUES (?, ?, ?, ?, 'yeni_not')");
+                    foreach ($hedefler as $takipci) {
+                        $bildirim->execute([
+                            $takipci,
+                            "📚 " . ($not['author'] ?? 'Birisi') . " yeni not paylaştı",
+                            "\"" . $not['title'] . "\" başlıklı yeni notu görüntülemek için tıkla.",
+                            $not['author'] ?? 'Kullanıcı'
+                        ]);
+                    }
+                }
+            }
+
+            echo json_encode(['success'=>true]);
+            exit;
+        }
+
+        // ==========================================
+        // MODERASYON: Not reddet (admin)
+        // ==========================================
+        if (isset($data['islem']) && $data['islem'] === 'not_reddet') {
+            if (($_SESSION['rol'] ?? 'user') !== 'admin') {
+                echo json_encode(['success'=>false,'error'=>'Yetkisiz']); exit;
+            }
+            $nid = intval($data['note_id'] ?? 0);
+            $sebep = trim($data['sebep'] ?? '');
+            if (!$nid) { echo json_encode(['success'=>false,'error'=>'Gecersiz id']); exit; }
+
+            $n = $db->prepare("SELECT title, kullanici_email FROM notes WHERE id = ?");
+            $n->execute([$nid]);
+            $not = $n->fetch(PDO::FETCH_ASSOC);
+            if (!$not) { echo json_encode(['success'=>false,'error'=>'Not bulunamadi']); exit; }
+
+            $db->prepare("UPDATE notes SET durum = 'reddedildi' WHERE id = ?")->execute([$nid]);
+
+            // Sahibe bildirim
+            if ($not['kullanici_email']) {
+                $mesaj = "\"" . $not['title'] . "\" başlıklı notunuz yayımlanmadı.";
+                if ($sebep) $mesaj .= " Sebep: " . $sebep;
+                $db->prepare("INSERT INTO bildirimler (kullanici_email, baslik, mesaj, gonderen, tip) VALUES (?, ?, ?, ?, 'red')")
+                   ->execute([$not['kullanici_email'], "❌ Notunuz Reddedildi", $mesaj, "Admin"]);
+            }
+
             echo json_encode(['success'=>true]);
             exit;
         }

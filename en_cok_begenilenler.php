@@ -6,7 +6,9 @@ $user_role = isset($_SESSION['rol']) ? $_SESSION['rol'] : 'user';
 
 try {
   
-    $sorgu = $db->prepare("SELECT * FROM notes WHERE likes >= 50 ORDER BY likes DESC");
+    // MODERASYON: Sadece onayli notlar (admin hepsini gorur)
+    $durFilter = (($_SESSION['rol'] ?? 'user') === 'admin') ? "" : " AND (durum IS NULL OR durum = 'onayli')";
+    $sorgu = $db->prepare("SELECT * FROM notes WHERE likes >= 50" . $durFilter . " ORDER BY likes DESC");
     $sorgu->execute();
     $notlar = $sorgu->fetchAll(PDO::FETCH_ASSOC);
     $jsonNotes = json_encode($notlar);

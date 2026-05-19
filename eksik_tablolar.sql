@@ -4,6 +4,19 @@
 -- ile çalıştır. Mevcut tablolar varsa atlar.
 -- ============================================================
 
+-- ================================================
+-- ALTER: Mevcut tablolara kolon ekle (idempotent değil
+-- ama hata verirse sadece "duplicate column" der, problem değil)
+-- ================================================
+
+-- notes tablosuna onay durumu (moderasyon)
+ALTER TABLE `notes` ADD COLUMN IF NOT EXISTS `durum`
+    ENUM('beklemede','onayli','reddedildi') DEFAULT 'onayli'
+    AFTER `created_at`;
+
+-- Bekleyen notlar icin index (hizli filtreleme)
+CREATE INDEX IF NOT EXISTS `idx_notes_durum` ON `notes`(`durum`);
+
 -- Newsletter aboneleri (Haberdar Ol formu için)
 CREATE TABLE IF NOT EXISTS `newsletter_aboneleri` (
   `id`    INT(11)      NOT NULL AUTO_INCREMENT,
