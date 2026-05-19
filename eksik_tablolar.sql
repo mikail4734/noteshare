@@ -125,6 +125,17 @@ CREATE TABLE IF NOT EXISTS `yorumlar` (
   KEY `note_id` (`note_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Takipler (kullanici takip sistemi)
+CREATE TABLE IF NOT EXISTS `takipler` (
+  `id`             INT(11)      NOT NULL AUTO_INCREMENT,
+  `takip_eden`     VARCHAR(255) NOT NULL,
+  `takip_edilen`   VARCHAR(255) NOT NULL,
+  `tarih`          TIMESTAMP    NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tek_takip` (`takip_eden`, `takip_edilen`),
+  KEY `takip_edilen_idx` (`takip_edilen`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- Beğeniler
 CREATE TABLE IF NOT EXISTS `begeniler` (
   `id`              INT(11)      NOT NULL AUTO_INCREMENT,
