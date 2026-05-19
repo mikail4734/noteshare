@@ -27,15 +27,10 @@ sudo -u ubuntu git config --global --add safe.directory /var/www/html 2>/dev/nul
 cd /var/www/html
 echo -e "${GREEN}[2/6]${NC} /var/www/html dizinindeyiz"
 
-# 3) Mevcut degisiklikleri stash et (cakisma olmasin)
-if [ -n "$(git status --porcelain)" ]; then
-    echo -e "${YELLOW}      Yerel degisiklikler bulundu, stash ediliyor...${NC}"
-    git stash push -m "auto-stash $(date +%s)" || true
-fi
-
-# 4) Pull
-echo -e "${GREEN}[3/6]${NC} GitHub'dan son kod cekiliyor (git pull)..."
-git pull origin main
+# 3) GitHub'dan son state'i fetch et + force reset (cakisma olmaz)
+echo -e "${GREEN}[3/6]${NC} GitHub'dan son kod cekiliyor (force sync)..."
+git fetch origin main
+git reset --hard origin/main
 echo -e "      ${GREEN}OK${NC} Son commit: $(git log --oneline -1)"
 
 # 5) MySQL'de eksik tablolari ekle
