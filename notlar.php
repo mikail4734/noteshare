@@ -13,6 +13,13 @@ $mevcutGrup = null;
 $kullaniciEmail = $_SESSION['user_email'] ?? null;
 $kullaniciRol = $_SESSION['rol'] ?? 'guest';
 
+// GIRIS KONTROLU — Yeni not olusturma anonim erisime kapali
+// Mevcut bir not goruntulemek serbest
+if (!$noteId && !$kullaniciEmail) {
+    header("Location: giris.php?neden=not_yazmak");
+    exit;
+}
+
 // Erişim ve düzenleme yetkisi
 $duzenleyebilir = !$noteId; // Yeni not oluşturuyorsa düzenleyebilir
 $sahibi = false;
@@ -799,6 +806,14 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
 
         
         async function saveToDatabase(sessiz = false) {
+            // GIRIS KONTROLU — Anonim kullanici not paylasamaz
+            <?php if (empty($_SESSION['user_email'])): ?>
+            if (confirm("Not paylaşmak için giriş yapmalısın. Şimdi giriş sayfasına gidelim mi?")) {
+                window.location.href = 'giris.php';
+            }
+            return;
+            <?php endif; ?>
+
             const btn = document.getElementById('btnSaveText');
             const original = btn ? btn.innerText : 'Kaydet';
             const category = document.getElementById('noteCategory').value;

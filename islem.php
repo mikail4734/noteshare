@@ -134,7 +134,30 @@ if ($data && isset($db)) {
 
         // Not Kaydetme/Güncelleme İşlemi
         if (isset($data['title']) && !isset($data['islem'])) {
-            $db->beginTransaction(); 
+
+            // GIRIS KONTROLU — Anonim not eklemeyi engelle
+            if (!isset($_SESSION['user_email']) || empty($_SESSION['user_email'])) {
+                echo json_encode([
+                    'success' => false,
+                    'error'   => 'Not paylaşmak için giriş yapmanız gerekiyor.',
+                    'redirect' => 'giris.php'
+                ]);
+                exit;
+            }
+
+            // Engellenmis kullanici kontrolu (durum=0 ise yazamaz)
+            $durKontrol = $db->prepare("SELECT durum FROM users WHERE email = ?");
+            $durKontrol->execute([$_SESSION['user_email']]);
+            $userDurum = $durKontrol->fetchColumn();
+            if ($userDurum !== false && (int)$userDurum === 0) {
+                echo json_encode([
+                    'success' => false,
+                    'error'   => 'Hesabınız yöneticiniz tarafından kısıtlanmış. Not paylaşamazsınız.'
+                ]);
+                exit;
+            }
+
+            $db->beginTransaction();
             try {
                 $title = $data['title'] ?? 'Başlıksız';
                 $content = $data['content'] ?? '';
@@ -144,8 +167,8 @@ if ($data && isset($db)) {
                 $subject = $data['subjectName'] ?? '';
                 $dosya_yolu = $data['dosya_yolu'] ?? null;
                 $grup_id = !empty($data['grup_id']) ? intval($data['grup_id']) : null;
-                $author = $_SESSION['user_name'] ?? 'Anonim';
-                $kullanici_email = $_SESSION['user_email'] ?? null;
+                $author = $_SESSION['user_name'] ?? 'Kullanıcı';
+                $kullanici_email = $_SESSION['user_email'];  // Garantili, kontrol ettik
 
                 // Grup not'u ise kullanıcının üye olduğunu doğrula
                 if ($grup_id) {
