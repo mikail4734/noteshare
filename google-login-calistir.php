@@ -1,16 +1,59 @@
 ﻿<?php
 require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/baglan.php';
 
+// vendor/autoload.php yoksa anlamlı hata göster
+$autoload = __DIR__ . '/vendor/autoload.php';
+if (!file_exists($autoload)) {
+    http_response_code(500);
+    die("<div style='font-family:sans-serif;padding:50px;text-align:center'>
+        <h2>Composer kurulumu eksik</h2>
+        <p>Sunucuda <code>vendor/autoload.php</code> bulunamadı.</p>
+        <p>SSH'tan şu komutu çalıştırın:<br>
+        <code>cd /var/www/html && sudo -u www-data composer install</code></p>
+        <a href='giris.php'>← Giriş</a>
+    </div>");
+}
+require_once $autoload;
+require_once __DIR__ . '/baglan.php';
 require_once __DIR__ . '/oturum_baslat.php';
 
-$client = new Google_Client();
-$client->setClientId($config['GOOGLE_CLIENT_ID']);
-$client->setClientSecret($config['GOOGLE_CLIENT_SECRET']);
-$client->setRedirectUri($config['GOOGLE_REDIRECT_URI']);
-$client->addScope("email");
-$client->addScope("profile");
+// Google_Client sınıfı yoksa
+if (!class_exists('Google_Client')) {
+    http_response_code(500);
+    die("<div style='font-family:sans-serif;padding:50px;text-align:center'>
+        <h2>Google API Client paketi eksik</h2>
+        <p>vendor/ var ama Google API Client paketi yüklü değil.</p>
+        <p>SSH'tan:<br>
+        <code>cd /var/www/html && sudo -u www-data composer require google/apiclient</code></p>
+        <a href='giris.php'>← Giriş</a>
+    </div>");
+}
+
+// Config kontrolü
+if (empty($config['GOOGLE_CLIENT_ID']) || empty($config['GOOGLE_CLIENT_SECRET'])) {
+    http_response_code(500);
+    die("<div style='font-family:sans-serif;padding:50px;text-align:center'>
+        <h2>Google OAuth yapılandırılmamış</h2>
+        <p>.env dosyasında <code>GOOGLE_CLIENT_ID</code> veya <code>GOOGLE_CLIENT_SECRET</code> tanımlı değil.</p>
+        <a href='giris.php'>← Giriş</a>
+    </div>");
+}
+
+try {
+    $client = new Google_Client();
+    $client->setClientId($config['GOOGLE_CLIENT_ID']);
+    $client->setClientSecret($config['GOOGLE_CLIENT_SECRET']);
+    $client->setRedirectUri($config['GOOGLE_REDIRECT_URI'] ?? 'https://notewarehouse.com/google-login-calistir.php');
+    $client->addScope("email");
+    $client->addScope("profile");
+} catch (Throwable $e) {
+    http_response_code(500);
+    die("<div style='font-family:sans-serif;padding:50px;text-align:center'>
+        <h2>Google Client oluşturulamadı</h2>
+        <p>" . htmlspecialchars($e->getMessage()) . "</p>
+        <a href='giris.php'>← Giriş</a>
+    </div>");
+}
 
 if (isset($_GET['code'])) {
     $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
