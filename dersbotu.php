@@ -4,7 +4,7 @@
 // =====================================================
 require_once __DIR__ . '/config.php';
 
-$anthropic_api_key = $config['ANTHROPIC_API_KEY'] ?? '';
+$openai_api_key = $config['OPENAI_API_KEY'] ?? '';
 
 $db_host = $config['DB_HOST'] ?? 'localhost';
 $db_name = $config['DB_NAME'] ?? 'notdeposu';
@@ -65,78 +65,76 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SERVER["HTTP_X_REQUESTED_WI
             exit;
         }
  
-        // Dosya varsa son kullanıcı mesajına ekle
+        // Dosya varsa son kullanıcı mesajına ekle (OpenAI Vision formati)
         $api_messages = $messages;
         if ($file_data && isset($file_data['base64']) && isset($file_data['type'])) {
             $last = end($api_messages);
             $idx  = count($api_messages) - 1;
-            $content = [];
- 
-            // Resim mi PDF mi?
+            $content = [
+                ['type' => 'text', 'text' => $last['content']]
+            ];
+
+            // Resim - OpenAI gpt-4o-mini gorebilir
             if (strpos($file_data['type'], 'image/') === 0) {
                 $content[] = [
-                    'type'   => 'image',
-                    'source' => [
-                        'type'       => 'base64',
-                        'media_type' => $file_data['type'],
-                        'data'       => $file_data['base64']
+                    'type' => 'image_url',
+                    'image_url' => [
+                        'url' => 'data:' . $file_data['type'] . ';base64,' . $file_data['base64']
                     ]
                 ];
             } elseif ($file_data['type'] === 'application/pdf') {
-                $content[] = [
-                    'type'   => 'document',
-                    'source' => [
-                        'type'       => 'base64',
-                        'media_type' => 'application/pdf',
-                        'data'       => $file_data['base64']
-                    ]
-                ];
+                // OpenAI PDF'i dogrudan desteklemiyor - kullaniciya uyari
+                $content[0]['text'] = "[PDF DOSYASI YÜKLENDI - icerik metin olarak okunmali] " . $last['content'];
             }
- 
-            $content[] = ['type' => 'text', 'text' => $last['content']];
+
             $api_messages[$idx]['content'] = $content;
         }
- 
+
+        // OpenAI messages formati - system role'u messages arrayinde ilk eleman
+        $systemMessage = [
+            'role' => 'system',
+            'content' => 'Sen DersBotu\'sun — Türkçe konuşan öğrencilere ve geliştiricilere yardımcı olan kapsamlı bir asistansın. TEMEL KURALLAR: 1) Kod isteklerinde ASLA eksik bırakma, tüm kodu eksiksiz yaz. HTML/CSS/JS/PHP isteklerinde baştan sona tam dosyayı ver. 2) Eğer çok uzun olacaksa bile kes bölme, devam et. 3) Her zaman tam ve çalışır kodu ver. 4) Asla \'geri kalan kısmı kendin tamamla\' deme. 5) Dosya veya resim yüklenirse analiz et ve açıkla. 6) Cevaplarını Türkçe ver, kod içindeki yorumlar da Türkçe olsun.'
+        ];
+
+        $finalMessages = array_merge([$systemMessage], $api_messages);
+
         $payload = json_encode([
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => 'gpt-4o-mini',
             'max_tokens' => 16000,
-            'system'     => 'Sen DersBotu\'sun — Türkçe konuşan öğrencilere ve geliştiricilere yardımcı olan kapsamlı bir asistansın. TEMEL KURALLAR: 1) Kod isteklerinde ASLA eksik bırakma, tüm kodu eksiksiz yaz. HTML/CSS/JS/PHP isteklerinde baştan sona tam dosyayı ver. Sadece bir bölüm değil, tüm dosyayı yaz. 2) Eğer çok uzun olacaksa bile kes bölme, devam et. 3) Kullanıcı \'tam sayfa\', \'tüm kod\', \'eksiksiz\' dese de demese de her zaman tam ve çalışır kodu ver. 4) Asla \'geri kalan kısmı kendin tamamla\' veya \'... devamı aynı şekilde\' deme, her şeyi yaz. 5) Dosya veya resim yüklenirse analiz et ve açıkla. 6) Cevaplarını Türkçe ver, kod içindeki yorumlar da Türkçe olsun.',
-            'messages'   => $api_messages
+            'messages'   => $finalMessages
         ]);
- 
-        $ch = curl_init('https://api.anthropic.com/v1/messages');
+
+        $ch = curl_init('https://api.openai.com/v1/chat/completions');
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => $payload,
             CURLOPT_HTTPHEADER     => [
                 'Content-Type: application/json',
-                'x-api-key: ' . $anthropic_api_key,
-                'anthropic-version: 2023-06-01',
-                'anthropic-beta: pdfs-2024-09-25'
+                'Authorization: Bearer ' . $openai_api_key
             ],
             CURLOPT_TIMEOUT => 180,
         ]);
- 
+
         $response  = curl_exec($ch);
         $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
         curl_close($ch);
- 
+
         if ($curlError) {
             echo json_encode(['error' => 'cURL hatası: ' . $curlError]);
             exit;
         }
- 
+
         $data = json_decode($response, true);
- 
+
         if ($httpCode !== 200) {
             $errMsg = isset($data['error']['message']) ? $data['error']['message'] : $response;
             echo json_encode(['error' => 'HTTP ' . $httpCode . ': ' . $errMsg]);
             exit;
         }
- 
-        $reply = isset($data['content'][0]['text']) ? $data['content'][0]['text'] : '';
+
+        $reply = isset($data['choices'][0]['message']['content']) ? $data['choices'][0]['message']['content'] : '';
  
         // Veritabanına kaydet
         $last_user = '';
