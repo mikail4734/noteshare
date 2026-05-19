@@ -9,8 +9,9 @@ $kullanicilar = [];
 if (mb_strlen($q) >= 2) {
     // Notlarda ara
     $like = "%$q%";
-    // MODERASYON: Public aramada sadece onayli notlar (admin hepsini gorur)
-    $durFilter = (($_SESSION['rol'] ?? 'user') === 'admin') ? "" : " AND (durum IS NULL OR durum = 'onayli')";
+    // MODERASYON + GIZLILIK: Onayli + Grup notlari haric (admin hepsini)
+    $isAdmin = (($_SESSION['rol'] ?? 'user') === 'admin');
+    $durFilter = $isAdmin ? "" : " AND (durum IS NULL OR durum = 'onayli') AND grup_id IS NULL";
     $s = $db->prepare("
         SELECT id, title, content, category, edu_level, school_name, subject, author, kullanici_email, likes, dislikes, created_at
         FROM notes

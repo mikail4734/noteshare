@@ -32,13 +32,14 @@ try {
     if ($secilenOkul)     { $where[] = "school_name = ?"; $params[] = $secilenOkul; }
     if ($secilenKategori) { $where[] = "category = ?";    $params[] = $secilenKategori; }
 
-    // MODERASYON: Public listede sadece onayli notlar gozukur
-    // Sahip kendi bekleyen notlarini "Calisma Alanim" / "Profilim"den gorebilir
-    // Sadece admin tum durumlari gorur
+    // MODERASYON + GIZLILIK: Public listede sadece onayli + kisisel notlar
+    // - Grup notlari grup uyelerine sadece grup_notlari.php'de gosterilir
+    // - Admin her seyi gorur
     $kullaniciEmail = $_SESSION['user_email'] ?? null;
     $kullaniciRol   = $_SESSION['rol'] ?? 'guest';
     if ($kullaniciRol !== 'admin') {
         $where[] = "(durum IS NULL OR durum = 'onayli')";
+        $where[] = "grup_id IS NULL";  // Grup notlari public listede gozukmesin
     }
 
     $sql = "SELECT * FROM notes";

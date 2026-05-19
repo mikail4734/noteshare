@@ -60,6 +60,18 @@ if ($noteId) {
             $gs = $db->prepare("SELECT * FROM gruplar WHERE id = ?");
             $gs->execute([$mevcutNot['grup_id']]);
             $mevcutGrup = $gs->fetch(PDO::FETCH_ASSOC);
+
+            // ERIsIM KONTROLU: Grup notu sadece grup uyeleri/sahibi/admin gorebilir
+            $sahibi = ($mevcutNot['kullanici_email'] === $kullaniciEmail);
+            if (!$grupUyesi && !$sahibi && $kullaniciRol !== 'admin') {
+                http_response_code(403);
+                die("<div style='text-align:center;padding:80px;font-family:sans-serif;'>
+                    <h1 style='color:#dc2626;font-size:3em;margin:0'>🔒</h1>
+                    <h2 style='color:#1e293b'>Bu not özel bir gruba ait</h2>
+                    <p style='color:#64748b;margin:20px 0'>Sadece grup üyeleri bu notu görüntüleyebilir.</p>
+                    <a href='index.php' style='background:#4f46e5;color:white;padding:12px 24px;border-radius:12px;text-decoration:none;font-weight:bold;display:inline-block;margin-top:20px'>← Anasayfaya Dön</a>
+                </div>");
+            }
         }
 
         // Düzenleme yetkisi: sahip, admin VEYA grup üyesi

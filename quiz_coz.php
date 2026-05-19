@@ -12,8 +12,25 @@ if ($noteId) {
     $sorgu->execute([$noteId]);
     $mevcutNot = $sorgu->fetch(PDO::FETCH_ASSOC);
 
-   
+
     if ($mevcutNot) {
+        // GIZLILIK: Grup notu ise grup uyesi kontrolu
+        if (!empty($mevcutNot['grup_id'])) {
+            $kEmail = $_SESSION['user_email'] ?? null;
+            $kRol = $_SESSION['rol'] ?? 'guest';
+            $sahibi = ($mevcutNot['kullanici_email'] === $kEmail);
+            $grupUyesi = false;
+            if ($kEmail) {
+                $u = $db->prepare("SELECT 1 FROM grup_uyeleri WHERE grup_id = ? AND kullanici_email = ?");
+                $u->execute([$mevcutNot['grup_id'], $kEmail]);
+                $grupUyesi = $u->rowCount() > 0;
+            }
+            if (!$grupUyesi && !$sahibi && $kRol !== 'admin') {
+                http_response_code(403);
+                die("<div style='text-align:center;padding:50px;font-family:sans-serif'>🔒 Bu quiz özel bir grup notuna ait. Sadece grup üyeleri çözebilir. <a href='index.php'>← Anasayfa</a></div>");
+            }
+        }
+
         $soruSorgu = $db->prepare("SELECT * FROM not_sorulari WHERE note_id = ? ORDER BY id ASC");
         $soruSorgu->execute([$noteId]);
         $sorular = $soruSorgu->fetchAll(PDO::FETCH_ASSOC);

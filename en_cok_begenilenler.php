@@ -6,8 +6,9 @@ $user_role = isset($_SESSION['rol']) ? $_SESSION['rol'] : 'user';
 
 try {
   
-    // MODERASYON: Sadece onayli notlar (admin hepsini gorur)
-    $durFilter = (($_SESSION['rol'] ?? 'user') === 'admin') ? "" : " AND (durum IS NULL OR durum = 'onayli')";
+    // MODERASYON + GIZLILIK: Onayli + grup notlari haric (admin hepsi)
+    $isAdmin = (($_SESSION['rol'] ?? 'user') === 'admin');
+    $durFilter = $isAdmin ? "" : " AND (durum IS NULL OR durum = 'onayli') AND grup_id IS NULL";
     $sorgu = $db->prepare("SELECT * FROM notes WHERE likes >= 50" . $durFilter . " ORDER BY likes DESC");
     $sorgu->execute();
     $notlar = $sorgu->fetchAll(PDO::FETCH_ASSOC);

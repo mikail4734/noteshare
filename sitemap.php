@@ -42,8 +42,8 @@ foreach ($sabitSayfalar as $sayfa) {
 
 // Tüm notları sitemap'e ekle
 try {
-    // MODERASYON: Sitemap'e sadece onayli notlar (Google reddedilenleri indexlemesin)
-    $stmt = $db->query("SELECT id, title, created_at FROM notes WHERE (durum IS NULL OR durum = 'onayli') ORDER BY id DESC LIMIT 5000");
+    // MODERASYON + GIZLILIK: Sadece public + onayli notlar (Google grup notlarini indexlemesin)
+    $stmt = $db->query("SELECT id, title, created_at FROM notes WHERE (durum IS NULL OR durum = 'onayli') AND grup_id IS NULL ORDER BY id DESC LIMIT 5000");
     while ($not = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $lastmod = date('Y-m-d', strtotime($not['created_at']));
         echo "  <url>\n";

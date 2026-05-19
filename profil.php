@@ -47,10 +47,12 @@ if ($benEmail && $benEmail !== $hedefEmail) {
     $takipEdiyorum = $s->fetchColumn() ? true : false;
 }
 
-// Bu kullanicinin paylastigi notlar
+// Bu kullanicinin paylastigi public notlar (grup notlari hariç)
 $s = $db->prepare("SELECT id, title, category, edu_level, subject, likes, goruntulenme, created_at
                    FROM notes
-                   WHERE kullanici_email = ? AND (durum IS NULL OR durum = 'onayli')
+                   WHERE kullanici_email = ?
+                     AND (durum IS NULL OR durum = 'onayli')
+                     AND grup_id IS NULL
                    ORDER BY created_at DESC LIMIT 30");
 $s->execute([$hedefEmail]);
 $notlar = $s->fetchAll(PDO::FETCH_ASSOC);

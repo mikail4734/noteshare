@@ -30,6 +30,23 @@ if (!$not) {
     die("Not bulunamadı. <a href='index.php'>← Anasayfa</a>");
 }
 
+// GIZLILIK: Grup notu ise sadece grup uyesi/sahip/admin PDF indirebilir
+if (!empty($not['grup_id'])) {
+    $kEmail = $_SESSION['user_email'] ?? null;
+    $kRol = $_SESSION['rol'] ?? 'guest';
+    $sahibi = ($not['kullanici_email'] === $kEmail);
+    $grupUyesi = false;
+    if ($kEmail) {
+        $u = $db->prepare("SELECT 1 FROM grup_uyeleri WHERE grup_id = ? AND kullanici_email = ?");
+        $u->execute([$not['grup_id'], $kEmail]);
+        $grupUyesi = $u->rowCount() > 0;
+    }
+    if (!$grupUyesi && !$sahibi && $kRol !== 'admin') {
+        http_response_code(403);
+        die("🔒 Bu PDF özel bir grup notuna ait. Sadece grup üyeleri indirebilir.");
+    }
+}
+
 // Yazar bilgisi
 $yazarAd = $not['author'] ?? 'Anonim';
 if (!empty($not['kullanici_email'])) {
