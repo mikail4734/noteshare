@@ -1,5 +1,5 @@
 # ============================================
-# NoteShare .htaccess (Apache)
+# notewarehouse .htaccess (Apache)
 # ============================================
 
 # UTF-8 zorla
@@ -17,8 +17,9 @@ RewriteRule ^sitemap\.xml$ sitemap.php [L]
 # .PHP UZANTISINI URL'DE GİZLE (TEMİZ URL)
 # =============================================
 
-# 1. Eğer kullanıcı .php yazarsa otomatik .php'siz hale yönlendir (301)
-RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^\s]+)\.php[\s?]
+# 1. Sadece GET isteklerinde .php uzantisini gizle (POST body bozulmasin)
+#    NOT: POST/PUT/DELETE icin redirect YOK, cunku 301 POST body'sini sifirlar
+RewriteCond %{THE_REQUEST} ^GET\ /([^\s]+)\.php[\s?]
 RewriteRule ^ /%1 [R=301,L,NE]
 
 # 2. /lise gibi istek geldiğinde içeriden lise.php çalıştır
