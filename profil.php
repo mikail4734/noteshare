@@ -178,12 +178,14 @@ $benim = ($benEmail === $hedefEmail);
                     <p class="text-indigo-100 text-sm">Yeni not paylaşımlarından anında haberdar ol.</p>
                 </div>
             </div>
-            <button onclick="takipToggle()" id="takipBtn2"
-                class="bg-white text-indigo-700 hover:bg-slate-100 font-black px-8 py-3 rounded-xl text-base shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 whitespace-nowrap">
-                <i class="fas fa-user-plus text-lg"></i>
-                <span id="takipText2">Takip Et</span>
+            <button type="button" onclick="takipToggle(event)" id="takipBtn2"
+                class="bg-white text-indigo-700 hover:bg-slate-100 font-black px-8 py-3 rounded-xl text-base shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer">
+                <i class="fas fa-user-plus text-lg pointer-events-none"></i>
+                <span id="takipText2" class="pointer-events-none">Takip Et</span>
             </button>
         </div>
+        <!-- Inline durum mesaji -->
+        <div id="takipDurum" class="hidden mt-4 bg-white/20 backdrop-blur-sm rounded-xl p-3 text-sm font-bold"></div>
     </div>
     <?php elseif (!$benim && $benEmail && $takipEdiyorum): ?>
     <!-- Takiptesin Banner -->
@@ -248,8 +250,26 @@ $benim = ($benEmail === $hedefEmail);
 </main>
 
 <script>
-async function takipToggle() {
-    console.log('takipToggle çağrıldı, hedef:', '<?= htmlspecialchars($hedefEmail) ?>');
+function showDurum(mesaj, tip = 'info') {
+    const d = document.getElementById('takipDurum');
+    if (!d) return;
+    const colors = {
+        info:    'bg-white/20',
+        loading: 'bg-blue-500/30',
+        success: 'bg-emerald-500/40',
+        error:   'bg-rose-500/40'
+    };
+    d.className = 'mt-4 backdrop-blur-sm rounded-xl p-3 text-sm font-bold ' + (colors[tip] || colors.info);
+    d.innerText = mesaj;
+}
+
+async function takipToggle(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    console.log('🔔 takipToggle çağrıldı');
+    console.log('  hedef:', '<?= htmlspecialchars($hedefEmail) ?>');
+    console.log('  giris yapan:', '<?= htmlspecialchars($benEmail ?? "YOK") ?>');
+
+    showDurum('İşleniyor...', 'loading');
 
     // Tum takip butonlarini disable et
     document.querySelectorAll('#takipBtn, #takipBtn2').forEach(b => {
@@ -265,35 +285,34 @@ async function takipToggle() {
             body: JSON.stringify({ islem: 'takip_toggle', hedef: '<?= htmlspecialchars($hedefEmail) ?>' })
         });
 
-        console.log('HTTP status:', r.status);
+        console.log('  HTTP status:', r.status);
         const responseText = await r.text();
-        console.log('Yanıt:', responseText);
+        console.log('  Yanıt:', responseText);
 
         let data;
         try {
             data = JSON.parse(responseText);
         } catch (parseErr) {
-            alert('Sunucu beklenmeyen yanıt verdi:\n\n' + responseText.substring(0, 300));
+            showDurum('Sunucu HTML döndü (htaccess?): ' + responseText.substring(0, 200), 'error');
             console.error('JSON parse error', parseErr);
             return;
         }
 
         if (data.success) {
-            // Sayfayı yenile - banner ve buton durumları doğru render olsun
-            location.reload();
+            showDurum('✓ Başarılı! Sayfa yenileniyor...', 'success');
+            setTimeout(() => location.reload(), 600);
         } else {
             // Giriş yapılmamışsa giriş sayfasına yönlendir
-            if (data.error && data.error.toLowerCase().includes('giriş')) {
-                if (confirm('Takip etmek için giriş yapmalısın. Şimdi gidelim mi?')) {
-                    window.location.href = 'giris.php?neden=takip';
-                }
+            if (data.error && (data.error.toLowerCase().includes('giriş') || data.error.toLowerCase().includes('giris'))) {
+                showDurum('Giriş yapmalısın → giris.php', 'error');
+                setTimeout(() => { window.location.href = 'giris.php?neden=takip'; }, 1500);
                 return;
             }
-            alert('Hata: ' + (data.error || 'Bilinmeyen hata oluştu'));
+            showDurum('✗ ' + (data.error || 'Bilinmeyen hata'), 'error');
         }
-    } catch (e) {
-        console.error('Fetch hatası:', e);
-        alert('Bağlantı hatası: ' + e.message);
+    } catch (err) {
+        console.error('Fetch hatası:', err);
+        showDurum('Bağlantı hatası: ' + err.message, 'error');
     } finally {
         document.querySelectorAll('#takipBtn, #takipBtn2').forEach(b => {
             b.disabled = false;
