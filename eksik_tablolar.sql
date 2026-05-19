@@ -5,17 +5,44 @@
 -- ============================================================
 
 -- ================================================
--- ALTER: Mevcut tablolara kolon ekle (idempotent değil
--- ama hata verirse sadece "duplicate column" der, problem değil)
+-- ALTER: Mevcut tablolara kolon ekle (MySQL + MariaDB uyumlu)
+-- information_schema ile kontrol ederek ekler, hata vermez
 -- ================================================
 
--- notes tablosuna onay durumu (moderasyon)
-ALTER TABLE `notes` ADD COLUMN IF NOT EXISTS `durum`
-    ENUM('beklemede','onayli','reddedildi') DEFAULT 'onayli'
-    AFTER `created_at`;
+-- notes tablosuna durum kolonu ekle (varsa atla)
+SET @col_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'notes'
+      AND COLUMN_NAME = 'durum'
+);
+SET @sql = IF(@col_exists = 0,
+    "ALTER TABLE `notes` ADD COLUMN `durum` ENUM('beklemede','onayli','reddedildi') DEFAULT 'onayli' AFTER `created_at`",
+    "SELECT 'durum kolonu zaten var' AS bilgi"
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
--- Bekleyen notlar icin index (hizli filtreleme)
-CREATE INDEX IF NOT EXISTS `idx_notes_durum` ON `notes`(`durum`);
+-- Index ekle (varsa atla)
+SET @idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'notes'
+      AND INDEX_NAME = 'idx_notes_durum'
+);
+SET @sql = IF(@idx_exists = 0,
+    "CREATE INDEX `idx_notes_durum` ON `notes`(`durum`)",
+    "SELECT 'index zaten var' AS bilgi"
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Tum eski notlari 'onayli' yap (yeni durum kolonu icin)
+UPDATE `notes` SET `durum` = 'onayli' WHERE `durum` IS NULL OR `durum` = '';
 
 -- Newsletter aboneleri (Haberdar Ol formu için)
 CREATE TABLE IF NOT EXISTS `newsletter_aboneleri` (

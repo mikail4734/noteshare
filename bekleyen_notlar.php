@@ -8,8 +8,15 @@ if (($_SESSION['rol'] ?? 'user') !== 'admin') {
     exit;
 }
 
-// Bekleyen sayisi
-$bekleyenSayi = (int)$db->query("SELECT COUNT(*) FROM notes WHERE durum = 'beklemede'")->fetchColumn();
+// Bekleyen sayisi (durum kolonu yoksa graceful)
+$bekleyenSayi = 0;
+$durumKolonuVar = false;
+try {
+    $bekleyenSayi = (int)$db->query("SELECT COUNT(*) FROM notes WHERE durum = 'beklemede'")->fetchColumn();
+    $durumKolonuVar = true;
+} catch (PDOException $e) {
+    // durum kolonu hala yok — SQL guncellemesi yapilmamis
+}
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -43,6 +50,22 @@ $bekleyenSayi = (int)$db->query("SELECT COUNT(*) FROM notes WHERE durum = 'bekle
 </nav>
 
 <main class="max-w-6xl mx-auto px-4 py-8">
+
+    <?php if (!$durumKolonuVar): ?>
+        <div class="bg-amber-50 border-l-4 border-amber-500 rounded-2xl p-6 mb-6">
+            <h2 class="text-xl font-black text-amber-800 mb-2"><i class="fas fa-exclamation-triangle mr-2"></i> Veritabanı güncellemesi gerekli</h2>
+            <p class="text-amber-700 mb-4">
+                <code class="bg-amber-100 px-2 py-1 rounded">notes</code> tablosunda <code class="bg-amber-100 px-2 py-1 rounded">durum</code> kolonu yok.
+                Sunucuda şu komutu çalıştırın:
+            </p>
+            <pre class="bg-slate-900 text-amber-300 p-4 rounded-lg text-xs overflow-x-auto"># EC2'de:
+cd /var/www/html
+sudo mysql notdeposu &lt; eksik_tablolar.sql
+
+# Sonra apache restart:
+sudo systemctl restart apache2</pre>
+        </div>
+    <?php endif; ?>
 
     <div id="bosMesaj" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl p-8 text-center">
         <i class="fas fa-check-circle text-5xl text-emerald-500 mb-3"></i>
