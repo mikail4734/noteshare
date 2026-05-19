@@ -262,7 +262,7 @@ if ($data && isset($db)) {
             exit;
         }
 
-        // --- CLAUDE API (DERSBOTU) KISMI ---
+        // --- OPENAI ChatGPT API (DERSBOTU) ---
         if (isset($data['islem']) && $data['islem'] === 'dersbotu') {
             $gelenMesaj = trim($data['mesaj'] ?? '');
             $sessionId = trim($data['session_id'] ?? '');
@@ -272,28 +272,29 @@ if ($data && isset($db)) {
                 exit;
             }
 
-            // BURAYI KENDİ ANAHTARINLA DOLDUR
-            $anthropic_api_key = $config['ANTHROPIC_API_KEY'] ?? '';
+            $openai_api_key = $config['OPENAI_API_KEY'] ?? '';
+            if (empty($openai_api_key)) {
+                echo json_encode(['success' => false, 'error' => 'OpenAI API anahtarı yapılandırılmamış (.env dosyasını kontrol edin)']);
+                exit;
+            }
 
-            $url = 'https://api.anthropic.com/v1/messages';
-            $postData = [
-                "model" => "claude-3-haiku-20240307", // En stabil model ismi
-                "max_tokens" => 1024,
-                "system" => "Sen DersBotu adında, üniversite öğrencilerine yardım eden uzman bir eğitmensin.",
-                "messages" => [
-                    ["role" => "user", "content" => $gelenMesaj]
-                ]
-            ];
-
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // XAMPP SSL Hatasını önlemek için
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json',
-                'x-api-key: ' . $anthropic_api_key,
-                'anthropic-version: 2023-06-01'
+            $ch = curl_init('https://api.openai.com/v1/chat/completions');
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_HTTPHEADER => [
+                    'Content-Type: application/json',
+                    'Authorization: Bearer ' . $openai_api_key
+                ],
+                CURLOPT_POSTFIELDS => json_encode([
+                    'model' => 'gpt-4o-mini',
+                    'max_tokens' => 1024,
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'Sen DersBotu adında, Türk öğrencilere yardım eden uzman bir eğitmensin. Türkçe, akıcı ve öğretici cevaplar ver.'],
+                        ['role' => 'user', 'content' => $gelenMesaj]
+                    ]
+                ])
             ]);
 
             $response = curl_exec($ch);
@@ -308,16 +309,18 @@ if ($data && isset($db)) {
 
             $responseData = json_decode($response, true);
 
-            if ($httpCode === 200 && isset($responseData['content'][0]['text'])) {
-                $botCevabi = $responseData['content'][0]['text'];
-                
+            if ($httpCode === 200 && isset($responseData['choices'][0]['message']['content'])) {
+                $botCevabi = $responseData['choices'][0]['message']['content'];
+
                 if (isset($_SESSION['user_email'])) {
-                    $kaydet = $db->prepare("INSERT INTO sohbet_gecmisi (kullanici_email, session_id, kullanici_mesaji, bot_cevabi) VALUES (?, ?, ?, ?)");
-                    $kaydet->execute([$_SESSION['user_email'], $sessionId, $gelenMesaj, $botCevabi]);
+                    try {
+                        $kaydet = $db->prepare("INSERT INTO sohbet_gecmisi (kullanici_email, session_id, kullanici_mesaji, bot_cevabi) VALUES (?, ?, ?, ?)");
+                        $kaydet->execute([$_SESSION['user_email'], $sessionId, $gelenMesaj, $botCevabi]);
+                    } catch (Exception $e) {}
                 }
                 echo json_encode(['success' => true, 'cevap' => $botCevabi]);
             } else {
-                $apiError = $responseData['error']['message'] ?? 'Claude hata döndürdü veya bakiye henüz aktifleşmedi.';
+                $apiError = $responseData['error']['message'] ?? 'OpenAI yanıt vermedi';
                 echo json_encode(['success' => false, 'error' => "API Hatası ($httpCode): " . $apiError]);
             }
             exit;
@@ -394,38 +397,46 @@ if ($data && isset($db)) {
             exit;
         }
 
-        // --- AI'DAN ÖZET ÇIKART ---
+        // --- AI'DAN ÖZET ÇIKART (OpenAI) ---
         if (isset($data['islem']) && $data['islem'] === 'ai_ozet') {
             $icerik = trim($data['icerik'] ?? '');
-            $mod = $data['mod'] ?? 'ozet'; // 'ozet' veya 'anlat'
+            $mod = $data['mod'] ?? 'ozet';
 
             if (mb_strlen($icerik) < 30) {
                 echo json_encode(['success'=>false, 'error'=>'En az 30 karakterlik içerik gerekli.']);
                 exit;
             }
 
-            $anthropic_api_key = $config['ANTHROPIC_API_KEY'] ?? '';
-
-            if ($mod === 'anlat') {
-                $prompt = "Aşağıdaki ders notunu bir öğretmen gibi öğrenciye anlatır gibi açıkla. Doğal bir dille, akıcı bir paragraf halinde yaz. Maksimum 300 kelime kullan.\n\nNOT:\n" . substr(strip_tags($icerik), 0, 6000);
-            } else {
-                $prompt = "Aşağıdaki ders notunun en önemli noktalarını içeren kısa ve öz bir özet çıkar. Madde madde, anahtar kelimeleri **bold** olarak işaretle. HTML formatında dön.\n\nNOT:\n" . substr(strip_tags($icerik), 0, 6000);
+            $openai_api_key = $config['OPENAI_API_KEY'] ?? '';
+            if (empty($openai_api_key)) {
+                echo json_encode(['success'=>false, 'error'=>'OpenAI API anahtarı yapılandırılmamış (.env)']);
+                exit;
             }
 
-            $ch = curl_init('https://api.anthropic.com/v1/messages');
+            if ($mod === 'anlat') {
+                $systemMsg = "Sen tecrübeli bir öğretmensin. Türkçe, akıcı, anlaşılır bir paragraf halinde öğretmen anlatımı yap. Maksimum 300 kelime.";
+                $userMsg = "Aşağıdaki ders notunu öğrenciye anlatır gibi açıkla:\n\n" . substr(strip_tags($icerik), 0, 6000);
+            } else {
+                $systemMsg = "Sen kısa ve öz özet çıkaran bir asistansın. Madde madde özet çıkar, anahtar kelimeleri <strong>bold</strong> ile işaretle. HTML formatında dön.";
+                $userMsg = "Bu notun en önemli noktalarını madde madde özetle:\n\n" . substr(strip_tags($icerik), 0, 6000);
+            }
+
+            $ch = curl_init('https://api.openai.com/v1/chat/completions');
             curl_setopt_array($ch, [
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_POST => true,
                 CURLOPT_SSL_VERIFYPEER => false,
                 CURLOPT_HTTPHEADER => [
                     'Content-Type: application/json',
-                    'x-api-key: ' . $anthropic_api_key,
-                    'anthropic-version: 2023-06-01'
+                    'Authorization: Bearer ' . $openai_api_key
                 ],
                 CURLOPT_POSTFIELDS => json_encode([
-                    'model' => 'claude-3-haiku-20240307',
+                    'model' => 'gpt-4o-mini',
                     'max_tokens' => 1500,
-                    'messages' => [['role'=>'user','content'=>$prompt]]
+                    'messages' => [
+                        ['role'=>'system','content'=>$systemMsg],
+                        ['role'=>'user','content'=>$userMsg]
+                    ]
                 ])
             ]);
             $resp = curl_exec($ch);
@@ -433,15 +444,15 @@ if ($data && isset($db)) {
             curl_close($ch);
 
             $r = json_decode($resp, true);
-            if ($http === 200 && isset($r['content'][0]['text'])) {
-                echo json_encode(['success'=>true, 'sonuc'=>$r['content'][0]['text']]);
+            if ($http === 200 && isset($r['choices'][0]['message']['content'])) {
+                echo json_encode(['success'=>true, 'sonuc'=>$r['choices'][0]['message']['content']]);
             } else {
                 echo json_encode(['success'=>false, 'error'=>'AI hatası: '.($r['error']['message'] ?? "HTTP $http")]);
             }
             exit;
         }
 
-        // --- AI'DAN SORU ÜRET ---
+        // --- AI'DAN SORU ÜRET (OpenAI) ---
         if (isset($data['islem']) && $data['islem'] === 'ai_soru_uret') {
             $icerik = trim($data['icerik'] ?? '');
             $adet = max(1, min(20, intval($data['adet'] ?? 5)));
@@ -451,26 +462,34 @@ if ($data && isset($db)) {
                 exit;
             }
 
-            $anthropic_api_key = $config['ANTHROPIC_API_KEY'] ?? '';
-            $prompt = "Aşağıdaki metinden $adet adet çoktan seçmeli test sorusu hazırla.\n".
-                      "SADECE geçerli JSON dizisi döndür. Şu formatta:\n".
-                      "[{\"soru_metni\":\"...\",\"secenek_a\":\"...\",\"secenek_b\":\"...\",\"secenek_c\":\"...\",\"secenek_d\":\"...\",\"dogru_cevap\":\"A\"}]\n".
-                      "Başka hiçbir açıklama yazma, sadece JSON dön.\n\nMETİN:\n".substr(strip_tags($icerik), 0, 8000);
+            $openai_api_key = $config['OPENAI_API_KEY'] ?? '';
+            if (empty($openai_api_key)) {
+                echo json_encode(['success'=>false, 'error'=>'OpenAI API anahtarı yapılandırılmamış (.env)']);
+                exit;
+            }
 
-            $ch = curl_init('https://api.anthropic.com/v1/messages');
+            $systemMsg = "Sen Türkçe çoktan seçmeli test sorusu hazırlayan bir asistansın. Cevabını SADECE geçerli JSON dizisi olarak dön. Başka açıklama yazma.";
+            $userMsg = "Aşağıdaki metinden $adet adet çoktan seçmeli test sorusu hazırla. JSON formatı:\n".
+                      "[{\"soru_metni\":\"...\",\"secenek_a\":\"...\",\"secenek_b\":\"...\",\"secenek_c\":\"...\",\"secenek_d\":\"...\",\"dogru_cevap\":\"A\"}]\n\n".
+                      "METİN:\n".substr(strip_tags($icerik), 0, 8000);
+
+            $ch = curl_init('https://api.openai.com/v1/chat/completions');
             curl_setopt_array($ch, [
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_POST => true,
                 CURLOPT_SSL_VERIFYPEER => false,
                 CURLOPT_HTTPHEADER => [
                     'Content-Type: application/json',
-                    'x-api-key: ' . $anthropic_api_key,
-                    'anthropic-version: 2023-06-01'
+                    'Authorization: Bearer ' . $openai_api_key
                 ],
                 CURLOPT_POSTFIELDS => json_encode([
-                    'model' => 'claude-3-haiku-20240307',
+                    'model' => 'gpt-4o-mini',
                     'max_tokens' => 2048,
-                    'messages' => [['role'=>'user','content'=>$prompt]]
+                    'response_format' => ['type' => 'json_object'],
+                    'messages' => [
+                        ['role'=>'system','content'=>$systemMsg . " JSON yanıtın {\"sorular\":[...]} formatında olsun."],
+                        ['role'=>'user','content'=>$userMsg]
+                    ]
                 ])
             ]);
             $resp = curl_exec($ch);
@@ -478,21 +497,43 @@ if ($data && isset($db)) {
             curl_close($ch);
 
             $r = json_decode($resp, true);
-            if ($http !== 200 || !isset($r['content'][0]['text'])) {
-                echo json_encode(['success'=>false, 'error'=>'AI cevap vermedi: '.($r['error']['message'] ?? 'bilinmeyen')]);
+            if ($http !== 200 || !isset($r['choices'][0]['message']['content'])) {
+                echo json_encode(['success'=>false, 'error'=>'AI cevap vermedi: '.($r['error']['message'] ?? "HTTP $http")]);
                 exit;
             }
-            $cevap = $r['content'][0]['text'];
+            $cevap = $r['choices'][0]['message']['content'];
 
-            // JSON'u çıkar
-            if (preg_match('/\[.*\]/s', $cevap, $m)) {
+            // OpenAI json_object response_format ile {"sorular":[...]} dondurur
+            $parsed = json_decode($cevap, true);
+            if (is_array($parsed)) {
+                // {"sorular":[...]} formati
+                if (isset($parsed['sorular']) && is_array($parsed['sorular'])) {
+                    echo json_encode(['success'=>true, 'sorular'=>$parsed['sorular']]);
+                    exit;
+                }
+                // Direkt dizi geldiyse
+                if (isset($parsed[0]) && isset($parsed[0]['soru_metni'])) {
+                    echo json_encode(['success'=>true, 'sorular'=>$parsed]);
+                    exit;
+                }
+                // Baska bir key altinda olabilir (questions, items vs.)
+                foreach ($parsed as $key => $val) {
+                    if (is_array($val) && isset($val[0]['soru_metni'])) {
+                        echo json_encode(['success'=>true, 'sorular'=>$val]);
+                        exit;
+                    }
+                }
+            }
+
+            // Fallback: regex ile JSON dizisi cikartma
+            if (preg_match('/\[\s*\{.*\}\s*\]/s', $cevap, $m)) {
                 $sorular = json_decode($m[0], true);
                 if (is_array($sorular)) {
                     echo json_encode(['success'=>true, 'sorular'=>$sorular]);
                     exit;
                 }
             }
-            echo json_encode(['success'=>false, 'error'=>'AI cevabı parse edilemedi.', 'raw'=>$cevap]);
+            echo json_encode(['success'=>false, 'error'=>'AI cevabı parse edilemedi.', 'raw'=>substr($cevap, 0, 500)]);
             exit;
         }
 
