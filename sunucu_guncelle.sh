@@ -56,13 +56,51 @@ else
     echo -e "      ${YELLOW}Atlandi${NC} (eksik_tablolar.sql bulunamadi)"
 fi
 
-# 6) Composer install (Dompdf vs.)
-echo -e "${GREEN}[5/6]${NC} Composer paketleri yukleniyor..."
+# 6) Gerekli PHP extension'lari kontrol et
+echo -e "${GREEN}[5a/6]${NC} PHP extension'lari kontrol ediliyor..."
+NEEDED_EXTS="gd mbstring curl xml zip"
+MISSING_EXTS=""
+for ext in $NEEDED_EXTS; do
+    if ! php -m 2>/dev/null | grep -qi "^${ext}$"; then
+        MISSING_EXTS="$MISSING_EXTS php-${ext}"
+    fi
+done
+if [ -n "$MISSING_EXTS" ]; then
+    echo -e "      ${YELLOW}Eksik:${NC}$MISSING_EXTS - kuruluyor..."
+    sudo apt-get install -y $MISSING_EXTS
+    sudo systemctl restart apache2
+fi
+
+# 6b) Composer install (Dompdf, Google API, PHPMailer)
+echo -e "${GREEN}[5b/6]${NC} Composer paketleri yukleniyor..."
 if [ -f "composer.json" ]; then
-    # www-data olarak calistir (Apache user)
-    sudo -u www-data composer install --no-interaction --no-dev --optimize-autoloader 2>&1 | tail -5 || \
-        sudo composer install --no-interaction --no-dev --optimize-autoloader 2>&1 | tail -5
-    echo -e "      ${GREEN}OK${NC} Composer paketleri yuklendi"
+    # vendor yoksa veya autoload eksikse, temizden basla
+    if [ ! -f "vendor/autoload.php" ] || [ ! -d "vendor/composer" ]; then
+        echo -e "      ${YELLOW}vendor bozuk veya eksik, temizleniyor...${NC}"
+        sudo rm -rf vendor composer.lock
+    fi
+
+    # GERCEK exit code ile composer calistir (tail trick'i kullanma!)
+    COMPOSER_OK=0
+    if sudo -u www-data composer install --no-interaction --no-dev --optimize-autoloader; then
+        COMPOSER_OK=1
+    elif sudo composer install --no-interaction --no-dev --optimize-autoloader; then
+        COMPOSER_OK=1
+    fi
+
+    if [ $COMPOSER_OK -eq 0 ]; then
+        echo -e "      ${RED}HATA: Composer install basarisiz!${NC}"
+        echo -e "      ${RED}Manuel kontrol:${NC} cd /var/www/html && sudo composer install --no-dev"
+        exit 1
+    fi
+
+    # autoload.php gercekten olusturuldu mu dogrula
+    if [ ! -f "vendor/autoload.php" ]; then
+        echo -e "      ${RED}HATA: vendor/autoload.php olusturulamadi!${NC}"
+        exit 1
+    fi
+
+    echo -e "      ${GREEN}OK${NC} vendor/autoload.php var ($(stat -c '%s' vendor/autoload.php) byte)"
 else
     echo -e "      ${YELLOW}Atlandi${NC} (composer.json yok)"
 fi
