@@ -59,9 +59,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SERVER["HTTP_X_REQUESTED_WI
         $messages  = isset($input['messages'])   ? $input['messages']   : [];
         $session_id = isset($input['session_id']) ? $input['session_id'] : null;
         $file_data  = isset($input['file'])       ? $input['file']       : null;
- 
+
         if (empty($messages)) {
             echo json_encode(['error' => 'Mesaj boş']);
+            exit;
+        }
+
+        // AI ozelligi kapali mi?
+        if (($config['AI_ENABLED'] ?? 'true') === 'false') {
+            echo json_encode([
+                'error' => 'DersBotu şu an devre dışı. Yakında tekrar aktif olacak. 🤖💤'
+            ]);
             exit;
         }
  

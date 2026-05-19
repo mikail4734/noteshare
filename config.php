@@ -50,6 +50,9 @@ $config = [
     'APP_ENV'     => cfg('APP_ENV', 'production'), // 'production' veya 'development'
 
     'ANTHROPIC_API_KEY'    => cfg('ANTHROPIC_API_KEY', ''),
+    'OPENAI_API_KEY'       => cfg('OPENAI_API_KEY', ''),
+    'AI_ENABLED'           => cfg('AI_ENABLED', 'true'), // 'true' veya 'false'
+
     'GOOGLE_CLIENT_ID'     => cfg('GOOGLE_CLIENT_ID', ''),
     'GOOGLE_CLIENT_SECRET' => cfg('GOOGLE_CLIENT_SECRET', ''),
     'GOOGLE_REDIRECT_URI'  => cfg('GOOGLE_REDIRECT_URI', 'http://localhost/norwarhouse.php/google-login-calistir.php'),

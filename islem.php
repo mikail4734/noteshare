@@ -264,6 +264,16 @@ if ($data && isset($db)) {
 
         // --- OPENAI ChatGPT API (DERSBOTU) ---
         if (isset($data['islem']) && $data['islem'] === 'dersbotu') {
+
+            // AI ozelligi kapali mi?
+            if (($config['AI_ENABLED'] ?? 'true') === 'false') {
+                echo json_encode([
+                    'success' => false,
+                    'error'   => 'AI Asistan şu an devre dışı. Yakında tekrar aktif olacak. 🤖💤'
+                ]);
+                exit;
+            }
+
             $gelenMesaj = trim($data['mesaj'] ?? '');
             $sessionId = trim($data['session_id'] ?? '');
 
@@ -399,6 +409,16 @@ if ($data && isset($db)) {
 
         // --- AI'DAN ÖZET ÇIKART (OpenAI) ---
         if (isset($data['islem']) && $data['islem'] === 'ai_ozet') {
+
+            // AI ozelligi kapali mi?
+            if (($config['AI_ENABLED'] ?? 'true') === 'false') {
+                echo json_encode([
+                    'success' => false,
+                    'error'   => 'AI özet özelliği şu an devre dışı. Yakında tekrar aktif olacak. 🤖💤'
+                ]);
+                exit;
+            }
+
             $icerik = trim($data['icerik'] ?? '');
             $mod = $data['mod'] ?? 'ozet';
 
@@ -454,6 +474,16 @@ if ($data && isset($db)) {
 
         // --- AI'DAN SORU ÜRET (OpenAI) ---
         if (isset($data['islem']) && $data['islem'] === 'ai_soru_uret') {
+
+            // AI ozelligi kapali mi?
+            if (($config['AI_ENABLED'] ?? 'true') === 'false') {
+                echo json_encode([
+                    'success' => false,
+                    'error'   => 'AI soru üretici şu an devre dışı. Yakında tekrar aktif olacak. 🤖💤'
+                ]);
+                exit;
+            }
+
             $icerik = trim($data['icerik'] ?? '');
             $adet = max(1, min(20, intval($data['adet'] ?? 5)));
 
