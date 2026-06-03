@@ -1505,161 +1505,209 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
             }
         };
     </script>
-<!-- ═════════════════ ÇİZİM (KALEM) MODALI ═════════════════ -->
-<div id="cizimModal" class="fixed inset-0 z-[120] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden">
-        <!-- Başlık çubuğu -->
-        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <i class="fas fa-pen-nib text-amber-500 text-xl"></i>
-                <h3 class="font-black text-slate-900 text-lg">Serbest Çizim</h3>
-            </div>
-            <button onclick="cizimKapat()" class="text-slate-400 hover:text-rose-500 transition text-xl">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
+<!-- ═════════════════ ÇİZİM (OVERLAY) ARAÇ ÇUBUĞU ═════════════════ -->
+<div id="cizimAraclar" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] bg-white shadow-2xl rounded-2xl px-4 py-3 flex items-center gap-3 border border-slate-200">
+    <span class="text-[10px] font-black text-amber-600 uppercase tracking-widest flex items-center">
+        <i class="fas fa-pen-nib mr-2"></i> Çizim Modu
+    </span>
 
-        <!-- Araç çubuğu -->
-        <div class="px-6 py-3 bg-slate-50 border-b border-slate-100 flex flex-wrap items-center gap-3">
-            <!-- Renkler -->
-            <div class="flex items-center gap-1.5">
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mr-1">Renk</span>
-                <?php
-                $cRenkler = ['#0f172a','#dc2626','#2563eb','#16a34a','#f59e0b','#7c3aed','#ec4899','#ffffff'];
-                foreach ($cRenkler as $c):
-                ?>
-                <button type="button" onclick="cizimRenk('<?= $c ?>')"
-                        class="w-7 h-7 rounded-full border-2 border-white shadow ring-1 ring-slate-200 hover:scale-110 transition"
-                        style="background:<?= $c ?>"></button>
-                <?php endforeach; ?>
-            </div>
-            <!-- Kalınlık -->
-            <div class="flex items-center gap-2 ml-2">
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kalınlık</span>
-                <input type="range" id="cizimKalinlik" min="1" max="30" value="3" class="w-32">
-                <span id="cizimKalinlikYazi" class="text-xs font-bold text-slate-600 w-6">3</span>
-            </div>
-            <!-- Mod -->
-            <div class="flex items-center gap-1 ml-auto">
-                <button type="button" id="modKalem" onclick="cizimMod('kalem')" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold transition">
-                    <i class="fas fa-pen mr-1"></i> Kalem
-                </button>
-                <button type="button" id="modSilgi" onclick="cizimMod('silgi')" class="px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-bold transition">
-                    <i class="fas fa-eraser mr-1"></i> Silgi
-                </button>
-                <button type="button" onclick="cizimTemizle()" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 text-xs font-bold transition hover:bg-rose-500 hover:text-white">
-                    <i class="fas fa-trash mr-1"></i> Temizle
-                </button>
-                <button type="button" onclick="cizimGeriAl()" title="Geri Al (Ctrl+Z)" class="px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-bold transition hover:bg-slate-100">
-                    <i class="fas fa-undo"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Canvas -->
-        <div class="p-6 bg-slate-50">
-            <canvas id="cizimCanvas" width="900" height="500"
-                    class="w-full bg-white border-2 border-dashed border-slate-200 rounded-2xl cursor-crosshair touch-none"></canvas>
-            <p class="text-[11px] text-slate-400 mt-3 text-center">
-                <i class="fas fa-info-circle mr-1"></i> Mouse / parmak / kalem ile çizebilirsin. "Nota Ekle" dediğinde çizim notuna gömülür.
-            </p>
-        </div>
-
-        <!-- Altta butonlar -->
-        <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-3 bg-white">
-            <button onclick="cizimKapat()" class="bg-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-200 transition">İptal</button>
-            <button onclick="cizimNotaEkle()" class="bg-emerald-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-emerald-600 shadow-md transition">
-                <i class="fas fa-check mr-2"></i> Nota Ekle
-            </button>
-        </div>
+    <!-- Renkler -->
+    <div class="flex items-center gap-1.5 border-l border-slate-200 pl-3">
+        <?php
+        $cRenkler = ['#0f172a','#dc2626','#2563eb','#16a34a','#f59e0b','#7c3aed','#ec4899'];
+        foreach ($cRenkler as $c):
+        ?>
+        <button type="button" data-renk="<?= $c ?>" onclick="cizimRenk('<?= $c ?>')"
+                class="cizim-renk w-6 h-6 rounded-full border-2 border-white shadow ring-1 ring-slate-200 hover:scale-125 transition"
+                style="background:<?= $c ?>"></button>
+        <?php endforeach; ?>
     </div>
+
+    <!-- Kalınlık -->
+    <div class="flex items-center gap-2 border-l border-slate-200 pl-3">
+        <span class="text-[10px] font-bold text-slate-400">Kalınlık</span>
+        <input type="range" id="cizimKalinlik" min="1" max="20" value="3" class="w-24">
+        <span id="cizimKalinlikYazi" class="text-xs font-bold text-slate-600 w-5">3</span>
+    </div>
+
+    <!-- Mod -->
+    <div class="flex items-center gap-1 border-l border-slate-200 pl-3">
+        <button type="button" id="modKalem" onclick="cizimMod('kalem')" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold transition" title="Kalem">
+            <i class="fas fa-pen"></i>
+        </button>
+        <button type="button" id="modSilgi" onclick="cizimMod('silgi')" class="px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-bold transition" title="Silgi">
+            <i class="fas fa-eraser"></i>
+        </button>
+        <button type="button" onclick="cizimGeriAl()" title="Geri Al (Ctrl+Z)" class="px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-bold transition hover:bg-slate-100">
+            <i class="fas fa-undo"></i>
+        </button>
+        <button type="button" onclick="cizimTemizle()" title="Tümünü Temizle" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 text-xs font-bold transition hover:bg-rose-500 hover:text-white">
+            <i class="fas fa-trash"></i>
+        </button>
+    </div>
+
+    <!-- Bitir -->
+    <button type="button" onclick="cizimModunuKapat()" class="bg-emerald-500 text-white px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-emerald-600 shadow-md transition ml-2">
+        <i class="fas fa-check mr-1"></i> Bitir
+    </button>
 </div>
 
+<style>
+/* Çizim modu açıkken üst nav'ı görseli ile çakışmasın */
+body.cizim-mod-aktif .ql-editor { caret-color: transparent; }
+body.cizim-mod-aktif #cizimOverlay { cursor: crosshair; }
+/* Overlay canvas, editör scroll'una uyumlu */
+#cizimOverlay {
+    position: absolute;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 5;
+}
+.ql-container { position: relative; }
+</style>
+
 <script>
-// ═════════════════ ÇİZİM (KALEM) ═════════════════
+// ═════════════════ OVERLAY ÇİZİM SİSTEMİ ═════════════════
+// Çizim editörün üstüne saydam canvas olarak konur.
+// "Çiz" butonu açar → kullanıcı yazıların/resimlerin üstüne çizer.
+// "Bitir" deyince canvas üstte kalır (pointer-events:none) → altındaki içerik tekrar yazılabilir.
 (function() {
-    let cnv, ctx;
+    let canvas, ctx;
+    let aktif = false;
     let ciziyor = false;
-    let renk = '#0f172a';
+    let renk = '#dc2626';   // Varsayılan: kırmızı (öğretmen kalemi gibi)
     let kalinlik = 3;
-    let mod = 'kalem';   // 'kalem' veya 'silgi'
-    const tarih = [];    // undo için snapshot dizisi
+    let mod = 'kalem';
+    const tarih = [];
 
     function setup() {
-        cnv = document.getElementById('cizimCanvas');
-        if (!cnv) return;
-        ctx = cnv.getContext('2d');
-        ctx.lineJoin = 'round';
-        ctx.lineCap  = 'round';
-        beyazaBoya();
+        const container = document.querySelector('.ql-container');
+        const editor    = document.querySelector('.ql-editor');
+        if (!container || !editor || canvas) return;
 
-        const baslat = (x, y) => {
-            ciziyor = true;
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            snapshotAl();
-        };
-        const ciz = (x, y) => {
-            if (!ciziyor) return;
-            ctx.strokeStyle = (mod === 'silgi') ? '#ffffff' : renk;
-            ctx.lineWidth   = (mod === 'silgi') ? kalinlik * 3 : kalinlik;
-            ctx.lineTo(x, y);
-            ctx.stroke();
-        };
-        const dur = () => { ciziyor = false; };
+        canvas = document.createElement('canvas');
+        canvas.id = 'cizimOverlay';
+        container.appendChild(canvas);
+        ctx = canvas.getContext('2d');
 
-        const koordinat = (e) => {
-            const r = cnv.getBoundingClientRect();
-            const t = e.touches ? e.touches[0] : e;
-            return {
-                x: (t.clientX - r.left) * (cnv.width  / r.width),
-                y: (t.clientY - r.top)  * (cnv.height / r.height)
-            };
-        };
+        // Editör boyutuna göre canvas'ı boyutlandır (devexel çizim sırasında değişirse koru)
+        yenidenBoyutla();
+        new ResizeObserver(yenidenBoyutla).observe(editor);
+        new MutationObserver(yenidenBoyutla).observe(editor, { childList: true, subtree: true, characterData: true });
 
-        cnv.addEventListener('mousedown',  e => { const p = koordinat(e); baslat(p.x, p.y); });
-        cnv.addEventListener('mousemove',  e => { const p = koordinat(e); ciz(p.x, p.y); });
+        // Çizim olayları
+        canvas.addEventListener('mousedown', e => baslat(e));
+        canvas.addEventListener('mousemove', e => ciz(e));
         window.addEventListener('mouseup', dur);
-        cnv.addEventListener('touchstart', e => { e.preventDefault(); const p = koordinat(e); baslat(p.x, p.y); }, {passive:false});
-        cnv.addEventListener('touchmove',  e => { e.preventDefault(); const p = koordinat(e); ciz(p.x, p.y); }, {passive:false});
-        cnv.addEventListener('touchend',   dur);
+        canvas.addEventListener('touchstart', e => { e.preventDefault(); baslat(e); }, {passive:false});
+        canvas.addEventListener('touchmove',  e => { e.preventDefault(); ciz(e); },   {passive:false});
+        canvas.addEventListener('touchend',   dur);
 
-        document.getElementById('cizimKalinlik').addEventListener('input', function() {
+        const kal = document.getElementById('cizimKalinlik');
+        if (kal) kal.addEventListener('input', function() {
             kalinlik = +this.value;
             document.getElementById('cizimKalinlikYazi').innerText = kalinlik;
         });
 
-        document.addEventListener('keydown', e => {
-            if (document.getElementById('cizimModal').classList.contains('hidden')) return;
-            if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); window.cizimGeriAl(); }
-        });
-    }
-    function beyazaBoya() {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, cnv.width, cnv.height);
-    }
-    function snapshotAl() {
-        try { tarih.push(cnv.toDataURL()); if (tarih.length > 30) tarih.shift(); } catch (e) {}
-    }
-
-    // Dışa açılan API
-    window.cizimAc = function() {
-        const m = document.getElementById('cizimModal');
-        m.classList.remove('hidden');
-        if (!cnv) setup();
-        // Saklı çizim varsa onunla başla
+        // Saklı çizim varsa yükle
         if (window._cizimDataURL) {
             const im = new Image();
-            im.onload = () => ctx.drawImage(im, 0, 0, cnv.width, cnv.height);
+            im.onload = () => ctx.drawImage(im, 0, 0);
             im.src = window._cizimDataURL;
         }
+
+        document.addEventListener('keydown', e => {
+            if (!aktif) return;
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); window.cizimGeriAl(); }
+            if (e.key === 'Escape') window.cizimModunuKapat();
+        });
+    }
+
+    function yenidenBoyutla() {
+        const editor = document.querySelector('.ql-editor');
+        if (!editor || !canvas) return;
+        const w = editor.scrollWidth  || editor.clientWidth;
+        const h = editor.scrollHeight || editor.clientHeight;
+        if (canvas.width === w && canvas.height === h) return;
+        // Mevcut içeriği koru
+        let eski = null;
+        try { eski = canvas.toDataURL(); } catch (_) {}
+        canvas.width  = w;
+        canvas.height = h;
+        canvas.style.width  = w + 'px';
+        canvas.style.height = h + 'px';
+        if (eski && eski.length > 100) {
+            const im = new Image();
+            im.onload = () => ctx.drawImage(im, 0, 0);
+            im.src = eski;
+        }
+    }
+
+    function poz(e) {
+        const r = canvas.getBoundingClientRect();
+        const t = e.touches ? e.touches[0] : e;
+        return {
+            x: (t.clientX - r.left) * (canvas.width  / r.width),
+            y: (t.clientY - r.top)  * (canvas.height / r.height)
+        };
+    }
+    function baslat(e) {
+        if (!aktif) return;
+        ciziyor = true;
+        const p = poz(e);
+        try { tarih.push(canvas.toDataURL()); if (tarih.length > 25) tarih.shift(); } catch (_) {}
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+    }
+    function ciz(e) {
+        if (!aktif || !ciziyor) return;
+        const p = poz(e);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        if (mod === 'silgi') {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.lineWidth = kalinlik * 4;
+        } else {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.strokeStyle = renk;
+            ctx.lineWidth = kalinlik;
+        }
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+    }
+    function dur() {
+        if (!ciziyor) return;
+        ciziyor = false;
+        // Kalıcı sakla — lokal kayıt için
+        try { window._cizimDataURL = canvas.toDataURL('image/png'); } catch (_) {}
+        if (typeof triggerAutoSave === 'function') triggerAutoSave();
+    }
+
+    // ───── Dışa açılan API ─────
+    window.cizimAc = function() {
+        setup();
+        if (!canvas) return;
+        aktif = true;
+        canvas.style.pointerEvents = 'auto';
+        document.body.classList.add('cizim-mod-aktif');
+        document.getElementById('cizimAraclar').classList.remove('hidden');
+        try { quill.enable(false); } catch (_) {}  // Çizerken yazı yazma kapalı
     };
-    window.cizimKapat = function() {
-        document.getElementById('cizimModal').classList.add('hidden');
+    window.cizimModunuKapat = function() {
+        aktif = false;
+        if (canvas) canvas.style.pointerEvents = 'none';
+        document.body.classList.remove('cizim-mod-aktif');
+        document.getElementById('cizimAraclar').classList.add('hidden');
+        try { quill.enable(true); } catch (_) {}
     };
     window.cizimRenk = function(c) {
         renk = c;
         if (mod === 'silgi') window.cizimMod('kalem');
+        // Aktif renk göstergesi
+        document.querySelectorAll('.cizim-renk').forEach(b => {
+            b.classList.toggle('ring-2', b.dataset.renk === c);
+            b.classList.toggle('ring-indigo-500', b.dataset.renk === c);
+        });
     };
     window.cizimMod = function(m) {
         mod = m;
@@ -1674,28 +1722,22 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
         }
     };
     window.cizimTemizle = function() {
-        snapshotAl();
-        beyazaBoya();
+        if (!canvas) return;
+        try { tarih.push(canvas.toDataURL()); if (tarih.length > 25) tarih.shift(); } catch (_) {}
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        try { window._cizimDataURL = canvas.toDataURL('image/png'); } catch (_) {}
     };
     window.cizimGeriAl = function() {
-        if (!tarih.length) return;
+        if (!tarih.length || !canvas) return;
         const veri = tarih.pop();
         const im = new Image();
-        im.onload = () => { ctx.clearRect(0,0,cnv.width,cnv.height); ctx.drawImage(im, 0, 0); };
+        im.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(im, 0, 0); };
         im.src = veri;
+        setTimeout(() => { try { window._cizimDataURL = canvas.toDataURL('image/png'); } catch (_) {} }, 50);
     };
-    window.cizimNotaEkle = function() {
-        const dataURL = cnv.toDataURL('image/png');
-        window._cizimDataURL = dataURL;
-        // Quill editörün sonuna resim olarak ekle
-        try {
-            const len = quill.getLength();
-            quill.insertEmbed(len - 1, 'image', dataURL, 'user');
-            quill.insertText(quill.getLength() - 1, '\n');
-        } catch (e) {}
-        window.cizimKapat();
-        if (typeof bildirim === 'function') bildirim('Çizim nota eklendi.', 'emerald');
-    };
+
+    // Editör hazır olduğunda canvas'ı kur (görünür hale gelsin diye)
+    setTimeout(setup, 500);
 })();
 </script>
 
