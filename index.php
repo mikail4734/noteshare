@@ -361,6 +361,23 @@ $levels = [
 </div>
 <?php endif; ?>
 
+<style>
+    /* Yatay kaydırma çubuğu (ince, şık) */
+    .kaydir-satir {
+        display: flex;
+        gap: 2rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding: 0.5rem 1.5rem 1.5rem;
+        scroll-behavior: smooth;
+    }
+    .kaydir-satir > * { scroll-snap-align: start; }
+    .kaydir-satir::-webkit-scrollbar { height: 8px; }
+    .kaydir-satir::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 100px; }
+    .kaydir-satir::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 100px; }
+    .kaydir-satir::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+</style>
+
 <main class="py-16 px-6">
 
     <!-- ═══ EĞİTİM SEVİYESİ ═══ -->
@@ -382,101 +399,68 @@ $levels = [
     <!-- ═══ DİL SEVİYESİ ═══ -->
     <?php
     $diller = [
-        ['link' => 'dil.php?dil=ingilizce', 'bayrak' => '🇬🇧', 'ad' => 'İngilizce',  'renk' => 'border-blue-500',   'bg' => 'from-blue-50 to-blue-100'],
-        ['link' => 'dil.php?dil=almanca',   'bayrak' => '🇩🇪', 'ad' => 'Almanca',    'renk' => 'border-yellow-500', 'bg' => 'from-yellow-50 to-yellow-100'],
-        ['link' => 'dil.php?dil=fransizca', 'bayrak' => '🇫🇷', 'ad' => 'Fransızca',  'renk' => 'border-red-500',    'bg' => 'from-red-50 to-red-100'],
-        ['link' => 'dil.php?dil=arapca',    'bayrak' => '🇸🇦', 'ad' => 'Arapça',     'renk' => 'border-green-600',  'bg' => 'from-green-50 to-green-100'],
-        ['link' => 'dil.php?dil=cince',     'bayrak' => '🇨🇳', 'ad' => 'Çince',      'renk' => 'border-rose-500',   'bg' => 'from-rose-50 to-rose-100'],
-        ['link' => 'dil.php?dil=ispanyolca','bayrak' => '🇪🇸', 'ad' => 'İspanyolca', 'renk' => 'border-orange-500', 'bg' => 'from-orange-50 to-orange-100'],
-        ['link' => 'dil.php?dil=italyanca', 'bayrak' => '🇮🇹', 'ad' => 'İtalyanca',  'renk' => 'border-emerald-500','bg' => 'from-emerald-50 to-emerald-100'],
-        ['link' => 'dil.php?dil=rusca',     'bayrak' => '🇷🇺', 'ad' => 'Rusça',      'renk' => 'border-indigo-500', 'bg' => 'from-indigo-50 to-indigo-100'],
+        ['link' => 'dil.php?dil=ingilizce', 'bayrak' => '🇬🇧', 'ad' => 'İngilizce',  'renk' => 'border-blue-500'],
+        ['link' => 'dil.php?dil=almanca',   'bayrak' => '🇩🇪', 'ad' => 'Almanca',    'renk' => 'border-yellow-500'],
+        ['link' => 'dil.php?dil=fransizca', 'bayrak' => '🇫🇷', 'ad' => 'Fransızca',  'renk' => 'border-red-500'],
+        ['link' => 'dil.php?dil=arapca',    'bayrak' => '🇸🇦', 'ad' => 'Arapça',     'renk' => 'border-green-600'],
+        ['link' => 'dil.php?dil=cince',     'bayrak' => '🇨🇳', 'ad' => 'Çince',      'renk' => 'border-rose-500'],
+        ['link' => 'dil.php?dil=ispanyolca','bayrak' => '🇪🇸', 'ad' => 'İspanyolca', 'renk' => 'border-orange-500'],
+        ['link' => 'dil.php?dil=italyanca', 'bayrak' => '🇮🇹', 'ad' => 'İtalyanca',  'renk' => 'border-emerald-500'],
+        ['link' => 'dil.php?dil=rusca',     'bayrak' => '🇷🇺', 'ad' => 'Rusça',      'renk' => 'border-violet-500'],
     ];
     ?>
-    <div class="mt-20">
-        <div class="container mx-auto">
-            <div class="flex items-center justify-between mb-8">
-                <div>
-                    <h2 class="text-3xl font-extrabold text-gray-800">🌍 Dil Seviyesi Seçin</h2>
-                    <p class="text-gray-500 mt-1">Öğrenmek istediğin dili seç, seviyene göre notları incele</p>
-                </div>
-                <button onclick="scrollRow('dilRow','sag')" class="hidden sm:flex items-center bg-white border border-gray-200 px-4 py-2 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 shadow-sm transition">
-                    Tümü <i class="fas fa-chevron-right ml-2"></i>
-                </button>
-            </div>
+    <div class="container mx-auto mt-20">
+        <div class="text-center mb-10">
+            <h2 class="text-4xl font-extrabold text-gray-800">🌍 Dil Seviyesi Seçin</h2>
+            <p class="text-gray-500 mt-2">Öğrenmek istediğin dili seç, seviyene göre notları incele</p>
         </div>
-        <!-- Kaydırmalı satır -->
-        <div class="relative">
-            <button onclick="scrollRow('dilRow','sol')" class="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition border border-gray-100 hidden sm:flex">
-                <i class="fas fa-chevron-left text-sm"></i>
-            </button>
-            <div id="dilRow" class="flex gap-5 overflow-x-auto scroll-smooth pb-4 px-6 scrollbar-hide"
-                 style="scrollbar-width:none; -ms-overflow-style:none;">
-                <?php foreach ($diller as $dil): ?>
-                <a href="<?= $dil['link'] ?>"
-                   class="group flex-none w-40 bg-gradient-to-b <?= $dil['bg'] ?> p-6 rounded-3xl shadow-sm border-b-8 <?= $dil['renk'] ?> hover:shadow-xl transition-all text-center">
-                    <div class="text-5xl mb-3 group-hover:scale-110 transition-transform"><?= $dil['bayrak'] ?></div>
-                    <h3 class="text-base font-bold text-gray-700"><?= $dil['ad'] ?></h3>
-                    <p class="text-xs text-gray-400 mt-1 font-medium">A1 → C2</p>
-                </a>
-                <?php endforeach; ?>
-            </div>
-            <button onclick="scrollRow('dilRow','sag')" class="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition border border-gray-100 hidden sm:flex">
-                <i class="fas fa-chevron-right text-sm"></i>
-            </button>
+    </div>
+    <div class="container mx-auto">
+        <div id="dilRow" class="kaydir-satir">
+            <?php foreach ($diller as $dil): ?>
+            <a href="<?= $dil['link'] ?>"
+               class="group flex-none w-72 bg-white p-10 rounded-3xl shadow-sm border-b-8 <?= $dil['renk'] ?> hover:shadow-2xl transition-all text-center">
+                <div class="text-6xl group-hover:scale-110 transition-transform mb-4"><?= $dil['bayrak'] ?></div>
+                <h3 class="text-xl font-bold text-gray-700"><?= $dil['ad'] ?></h3>
+                <p class="text-sm text-gray-400 mt-2 font-semibold">A1 → C2 Seviyeleri</p>
+            </a>
+            <?php endforeach; ?>
         </div>
     </div>
 
     <!-- ═══ SINAVLARA HAZIRLIK ═══ -->
     <?php
     $sinavlar = [
-        ['link'=>'sinav.php?sinav=yks',  'icon'=>'🎯', 'ad'=>'YKS',   'alt'=>'TYT · AYT · YDT',          'renk'=>'border-indigo-600', 'bg'=>'from-indigo-50 to-indigo-100'],
-        ['link'=>'sinav.php?sinav=lgs',  'icon'=>'📐', 'ad'=>'LGS',   'alt'=>'8. Sınıf Merkezi Sınav',    'renk'=>'border-blue-500',   'bg'=>'from-blue-50 to-blue-100'],
-        ['link'=>'sinav.php?sinav=dgs',  'icon'=>'🏛️', 'ad'=>'DGS',   'alt'=>'Dikey Geçiş Sınavı',        'renk'=>'border-purple-500', 'bg'=>'from-purple-50 to-purple-100'],
-        ['link'=>'sinav.php?sinav=kpss', 'icon'=>'🏛️', 'ad'=>'KPSS',  'alt'=>'Kamu Personeli Seçme',      'renk'=>'border-amber-500',  'bg'=>'from-amber-50 to-amber-100'],
-        ['link'=>'sinav.php?sinav=yds',  'icon'=>'🌐', 'ad'=>'YDS',   'alt'=>'Yabancı Dil Sınavı',        'renk'=>'border-emerald-500','bg'=>'from-emerald-50 to-emerald-100'],
-        ['link'=>'sinav.php?sinav=ales', 'icon'=>'🎓', 'ad'=>'ALES',  'alt'=>'Akademik Lisan. Sınavı',    'renk'=>'border-rose-500',   'bg'=>'from-rose-50 to-rose-100'],
-        ['link'=>'sinav.php?sinav=ekys', 'icon'=>'⚖️', 'ad'=>'EKYS',  'alt'=>'Engelli Kamu Personeli',    'renk'=>'border-teal-500',   'bg'=>'from-teal-50 to-teal-100'],
-        ['link'=>'sinav.php?sinav=meb',  'icon'=>'📚', 'ad'=>'MEB',   'alt'=>'Öğretmenlik Sınavları',     'renk'=>'border-orange-500', 'bg'=>'from-orange-50 to-orange-100'],
+        ['link'=>'sinav.php?sinav=yks',  'icon'=>'🎯', 'ad'=>'YKS',   'alt'=>'TYT · AYT · YDT',          'renk'=>'border-indigo-600'],
+        ['link'=>'sinav.php?sinav=lgs',  'icon'=>'📐', 'ad'=>'LGS',   'alt'=>'8. Sınıf Merkezi Sınav',    'renk'=>'border-blue-500'],
+        ['link'=>'sinav.php?sinav=dgs',  'icon'=>'🏛️', 'ad'=>'DGS',   'alt'=>'Dikey Geçiş Sınavı',        'renk'=>'border-purple-500'],
+        ['link'=>'sinav.php?sinav=kpss', 'icon'=>'🏛️', 'ad'=>'KPSS',  'alt'=>'Kamu Personeli Seçme',      'renk'=>'border-amber-500'],
+        ['link'=>'sinav.php?sinav=yds',  'icon'=>'🌐', 'ad'=>'YDS',   'alt'=>'Yabancı Dil Sınavı',        'renk'=>'border-emerald-500'],
+        ['link'=>'sinav.php?sinav=ales', 'icon'=>'🎓', 'ad'=>'ALES',  'alt'=>'Akademik Lisansüstü',        'renk'=>'border-rose-500'],
+        ['link'=>'sinav.php?sinav=ekys', 'icon'=>'⚖️', 'ad'=>'EKYS',  'alt'=>'Engelli Kamu Personeli',    'renk'=>'border-teal-500'],
+        ['link'=>'sinav.php?sinav=meb',  'icon'=>'📚', 'ad'=>'MEB',   'alt'=>'Öğretmenlik Sınavları',     'renk'=>'border-orange-500'],
     ];
     ?>
-    <div class="mt-20">
-        <div class="container mx-auto">
-            <div class="flex items-center justify-between mb-8">
-                <div>
-                    <h2 class="text-3xl font-extrabold text-gray-800">📋 Sınavlara Hazırlık</h2>
-                    <p class="text-gray-500 mt-1">Hedeflediğin sınava özel notlar, çıkmış sorular ve özet kaynaklar</p>
-                </div>
-            </div>
+    <div class="container mx-auto mt-20">
+        <div class="text-center mb-10">
+            <h2 class="text-4xl font-extrabold text-gray-800">📋 Sınavlara Hazırlık</h2>
+            <p class="text-gray-500 mt-2">Hedeflediğin sınava özel notlar, çıkmış sorular ve özet kaynaklar</p>
         </div>
-        <div class="relative">
-            <button onclick="scrollRow('sinavRow','sol')" class="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition border border-gray-100 hidden sm:flex">
-                <i class="fas fa-chevron-left text-sm"></i>
-            </button>
-            <div id="sinavRow" class="flex gap-5 overflow-x-auto scroll-smooth pb-4 px-6"
-                 style="scrollbar-width:none; -ms-overflow-style:none;">
-                <?php foreach ($sinavlar as $sinav): ?>
-                <a href="<?= $sinav['link'] ?>"
-                   class="group flex-none w-44 bg-gradient-to-b <?= $sinav['bg'] ?> p-6 rounded-3xl shadow-sm border-b-8 <?= $sinav['renk'] ?> hover:shadow-xl transition-all text-center">
-                    <div class="text-5xl mb-3 group-hover:scale-110 transition-transform"><?= $sinav['icon'] ?></div>
-                    <h3 class="text-lg font-black text-gray-800"><?= $sinav['ad'] ?></h3>
-                    <p class="text-xs text-gray-400 mt-1 font-medium leading-snug"><?= $sinav['alt'] ?></p>
-                </a>
-                <?php endforeach; ?>
-            </div>
-            <button onclick="scrollRow('sinavRow','sag')" class="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition border border-gray-100 hidden sm:flex">
-                <i class="fas fa-chevron-right text-sm"></i>
-            </button>
+    </div>
+    <div class="container mx-auto">
+        <div id="sinavRow" class="kaydir-satir">
+            <?php foreach ($sinavlar as $s): ?>
+            <a href="<?= $s['link'] ?>"
+               class="group flex-none w-72 bg-white p-10 rounded-3xl shadow-sm border-b-8 <?= $s['renk'] ?> hover:shadow-2xl transition-all text-center">
+                <div class="text-6xl group-hover:scale-110 transition-transform mb-4"><?= $s['icon'] ?></div>
+                <h3 class="text-2xl font-black text-gray-800"><?= $s['ad'] ?></h3>
+                <p class="text-sm text-gray-400 mt-2 font-semibold leading-snug"><?= $s['alt'] ?></p>
+            </a>
+            <?php endforeach; ?>
         </div>
     </div>
 
 </main>
-
-<script>
-function scrollRow(id, yon) {
-    const el = document.getElementById(id);
-    el.scrollBy({ left: yon === 'sag' ? 320 : -320, behavior: 'smooth' });
-}
-</script>
 
 <section class="bg-white mt-20 py-16 border-t border-gray-100">
     <div class="container mx-auto px-6">
