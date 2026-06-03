@@ -362,20 +362,40 @@ $levels = [
 <?php endif; ?>
 
 <style>
-    /* Yatay kaydırma çubuğu (ince, şık) */
+    /* Yatay kaydırma — çubuk GİZLİ, yanlarda oklarla kaydırılır */
     .kaydir-satir {
         display: flex;
         gap: 2rem;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
-        padding: 0.5rem 1.5rem 1.5rem;
+        padding: 0.5rem 0.25rem 1rem;
         scroll-behavior: smooth;
+        -ms-overflow-style: none;   /* IE / Edge */
+        scrollbar-width: none;      /* Firefox */
     }
+    .kaydir-satir::-webkit-scrollbar { display: none; }  /* Chrome / Safari */
     .kaydir-satir > * { scroll-snap-align: start; }
-    .kaydir-satir::-webkit-scrollbar { height: 8px; }
-    .kaydir-satir::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 100px; }
-    .kaydir-satir::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 100px; }
-    .kaydir-satir::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+
+    /* Yan kaydırma okları */
+    .kaydir-ok {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 20;
+        width: 3rem; height: 3rem;
+        border-radius: 9999px;
+        background: #fff;
+        color: #4f46e5;
+        box-shadow: 0 8px 22px rgba(15,23,42,.14);
+        display: flex; align-items: center; justify-content: center;
+        border: 1px solid #eef2ff;
+        transition: all .2s;
+        cursor: pointer;
+    }
+    .kaydir-ok:hover { background:#4f46e5; color:#fff; transform: translateY(-50%) scale(1.08); }
+    .kaydir-ok-sol { left: -0.75rem; }
+    .kaydir-ok-sag { right: -0.75rem; }
+    @media (max-width: 640px) { .kaydir-ok { display: none; } } /* mobilde parmakla kaydır */
 </style>
 
 <main class="py-16 px-6">
@@ -415,7 +435,8 @@ $levels = [
             <p class="text-gray-500 mt-2">Öğrenmek istediğin dili seç, seviyene göre notları incele</p>
         </div>
     </div>
-    <div class="container mx-auto">
+    <div class="container mx-auto relative">
+        <button type="button" onclick="kaydir('dilRow',-1)" class="kaydir-ok kaydir-ok-sol" aria-label="Sola kaydır"><i class="fas fa-chevron-left"></i></button>
         <div id="dilRow" class="kaydir-satir">
             <?php foreach ($diller as $dil): ?>
             <a href="<?= $dil['link'] ?>"
@@ -426,6 +447,7 @@ $levels = [
             </a>
             <?php endforeach; ?>
         </div>
+        <button type="button" onclick="kaydir('dilRow',1)" class="kaydir-ok kaydir-ok-sag" aria-label="Sağa kaydır"><i class="fas fa-chevron-right"></i></button>
     </div>
 
     <!-- ═══ SINAVLARA HAZIRLIK ═══ -->
@@ -447,7 +469,8 @@ $levels = [
             <p class="text-gray-500 mt-2">Hedeflediğin sınava özel notlar, çıkmış sorular ve özet kaynaklar</p>
         </div>
     </div>
-    <div class="container mx-auto">
+    <div class="container mx-auto relative">
+        <button type="button" onclick="kaydir('sinavRow',-1)" class="kaydir-ok kaydir-ok-sol" aria-label="Sola kaydır"><i class="fas fa-chevron-left"></i></button>
         <div id="sinavRow" class="kaydir-satir">
             <?php foreach ($sinavlar as $s): ?>
             <a href="<?= $s['link'] ?>"
@@ -458,9 +481,18 @@ $levels = [
             </a>
             <?php endforeach; ?>
         </div>
+        <button type="button" onclick="kaydir('sinavRow',1)" class="kaydir-ok kaydir-ok-sag" aria-label="Sağa kaydır"><i class="fas fa-chevron-right"></i></button>
     </div>
 
 </main>
+
+<script>
+function kaydir(id, yon) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollBy({ left: yon * (el.clientWidth * 0.8), behavior: 'smooth' });
+}
+</script>
 
 <section class="bg-white mt-20 py-16 border-t border-gray-100">
     <div class="container mx-auto px-6">

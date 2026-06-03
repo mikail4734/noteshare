@@ -134,6 +134,32 @@ $araclar = [
         body { font-family: 'Inter', sans-serif; }
         .sv-card { transition: all 0.25s; }
         .sv-card:hover { transform: translateY(-6px); box-shadow: 0 16px 32px <?= $r['shadow'] ?>; }
+
+        /* Yatay kaydırma — çubuk gizli, yanlardan oklar */
+        .kaydir-satir {
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding: 0.5rem 0.25rem 1rem;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .kaydir-satir::-webkit-scrollbar { display: none; }
+        .kaydir-satir > * { scroll-snap-align: start; }
+        .kaydir-ok {
+            position: absolute; top: 50%; transform: translateY(-50%); z-index: 20;
+            width: 3rem; height: 3rem; border-radius: 9999px;
+            background:#fff; color:#4f46e5;
+            box-shadow: 0 8px 22px rgba(15,23,42,.14);
+            display:flex; align-items:center; justify-content:center;
+            border: 1px solid #eef2ff; cursor: pointer; transition: all .2s;
+        }
+        .kaydir-ok:hover { background:#0f172a; color:#fff; transform: translateY(-50%) scale(1.08); }
+        .kaydir-ok-sol { left: -0.75rem; }
+        .kaydir-ok-sag { right: -0.75rem; }
+        @media (max-width: 640px) { .kaydir-ok { display: none; } }
     </style>
     <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
@@ -164,24 +190,32 @@ $araclar = [
         <p class="text-slate-500 mt-2">Çalışmak istediğin bölümü seç, o bölümün notlarına ulaş</p>
     </div>
 
-    <!-- BÖLÜM KARTLARI → dersler.php'ye gider -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-        <?php foreach ($sinav['altlar'] as $slug => $alt):
-            $kategori = $sinavSlug . '-' . $slug;
-        ?>
-        <a href="dersler.php?kategori=<?= urlencode($kategori) ?>"
-           class="sv-card bg-white border-2 border-slate-100 <?= $r['hover'] ?> rounded-3xl p-7 flex items-center gap-5">
-            <div class="w-16 h-16 flex-none <?= $r['soft'] ?> rounded-2xl flex items-center justify-center text-4xl">
-                <?= $alt['icon'] ?>
-            </div>
-            <div class="flex-1">
-                <h4 class="text-xl font-black text-slate-800"><?= $alt['ad'] ?></h4>
-                <p class="text-sm text-slate-500 mt-1 leading-snug"><?= $alt['tam'] ?></p>
-            </div>
-            <i class="fas fa-chevron-right text-slate-300"></i>
-        </a>
-        <?php endforeach; ?>
+    <!-- BÖLÜM KARTLARI — okullarla aynı boyut, yan oklarla yatay kaydırma -->
+    <div class="relative max-w-6xl mx-auto">
+        <button type="button" onclick="kaydir('bolumRow',-1)" class="kaydir-ok kaydir-ok-sol" aria-label="Sola"><i class="fas fa-chevron-left"></i></button>
+        <div id="bolumRow" class="kaydir-satir">
+            <?php foreach ($sinav['altlar'] as $slug => $alt):
+                $kategori = $sinavSlug . '-' . $slug;
+            ?>
+            <a href="dersler.php?kategori=<?= urlencode($kategori) ?>"
+               class="sv-card group flex-none w-72 bg-white p-10 rounded-3xl shadow-sm border-b-8 <?= $r['hover'] ?> hover:shadow-2xl transition-all text-center"
+               style="border-bottom-color: currentColor;">
+                <div class="text-6xl group-hover:scale-110 transition-transform mb-4"><?= $alt['icon'] ?></div>
+                <h3 class="text-xl font-black text-slate-800"><?= $alt['ad'] ?></h3>
+                <p class="text-xs text-slate-400 mt-2 font-semibold leading-snug"><?= $alt['tam'] ?></p>
+            </a>
+            <?php endforeach; ?>
+        </div>
+        <button type="button" onclick="kaydir('bolumRow',1)" class="kaydir-ok kaydir-ok-sag" aria-label="Sağa"><i class="fas fa-chevron-right"></i></button>
     </div>
+
+    <script>
+    function kaydir(id, yon) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.scrollBy({ left: yon * (el.clientWidth * 0.8), behavior: 'smooth' });
+    }
+    </script>
 
     <!-- HAZIRLIK ARAÇLARI -->
     <div class="max-w-5xl mx-auto mt-14">

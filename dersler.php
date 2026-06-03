@@ -50,6 +50,23 @@ try {
     $sorgu->execute($params);
     $notlar = $sorgu->fetchAll(PDO::FETCH_ASSOC);
 
+    // Hangi notların GERÇEK testi (sorusu) var? -> "Testi Çöz" sadece onlarda çıksın
+    try {
+        $idler = array_column($notlar, 'id');
+        $testliIdler = [];
+        if ($idler) {
+            $ph = implode(',', array_fill(0, count($idler), '?'));
+            $tq = $db->prepare("SELECT DISTINCT note_id FROM not_sorulari WHERE note_id IN ($ph)");
+            $tq->execute($idler);
+            $testliIdler = $tq->fetchAll(PDO::FETCH_COLUMN);
+        }
+        foreach ($notlar as &$_n) { $_n['has_test'] = in_array($_n['id'], $testliIdler) ? 1 : 0; }
+        unset($_n);
+    } catch (PDOException $e) {
+        foreach ($notlar as &$_n) { $_n['has_test'] = 0; }
+        unset($_n);
+    }
+
     $baslikParcalari = array_filter([$secilenSeviye, $secilenOkul, $secilenDers, $secilenKategori]);
     $sayfaBaslik = !empty($baslikParcalari)
         ? htmlspecialchars(implode(" · ", $baslikParcalari)) . " Notları"
@@ -302,9 +319,10 @@ function displayNotes(notesList) {
             adminButtons = `<button onclick="event.stopPropagation(); deleteNote(${note.id})" class="text-[10px] font-extrabold text-red-600 bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition-all uppercase ml-2">Sil</button>`;
         }
 
-        // Soru Çözümü notuysa "Testi Çöz" butonu göster
+        // "Testi Çöz" sadece GERÇEKTEN testi olan notlarda görünsün
+        // (kategori Soru Çözümü olsa bile, içinde soru yoksa buton çıkmaz)
         let quizBtn = '';
-        if (note.category === 'Soru Çözümü' || note.category === 'soru_cozumu') {
+        if (note.has_test == 1 || note.has_test === true) {
             quizBtn = `<button onclick="event.stopPropagation(); window.location.href='quiz_coz.php?id=${note.id}'" class="text-[10px] font-extrabold text-white bg-emerald-500 px-3 py-1.5 rounded-lg hover:bg-emerald-600 transition-all uppercase shadow-md ml-2"><i class="fas fa-play mr-1"></i>Testi Çöz</button>`;
         }
 

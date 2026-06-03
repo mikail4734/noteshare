@@ -74,9 +74,11 @@ if ($noteId) {
             }
         }
 
-        // Düzenleme yetkisi: sahip, admin VEYA grup üyesi
+        // Düzenleme/kaydetme yetkisi: sahip, admin VEYA grup üyesi
         $sahibi = ($mevcutNot['kullanici_email'] === $kullaniciEmail);
         $duzenleyebilir = $sahibi || $kullaniciRol === 'admin' || $grupUyesi;
+        // Sahip değilse: editör açık kalır (LOKAL deneme), ama "Güncelle"/"Paylaş" gizlenir.
+        $lokalDuzenleme = !$duzenleyebilir;
 
         $soruSorgu = $db->prepare("SELECT * FROM not_sorulari WHERE note_id = ? ORDER BY id ASC");
         $soruSorgu->execute([$noteId]);
@@ -228,7 +230,7 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
     </style>
     <?php if (file_exists(__DIR__ . '/global_assets.php')) require_once __DIR__ . '/global_assets.php'; ?>
 </head>
-<body class="bg-slate-50 text-slate-800 transition-all duration-300 <?= $duzenleyebilir ? '' : 'readonly' ?>">
+<body class="bg-slate-50 text-slate-800 transition-all duration-300">
 
     <nav id="mainNav" class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div class="flex items-center space-x-4">
@@ -272,24 +274,29 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
                 </a>
             <?php endif; ?>
 
+            <!-- ÇİZİM (KALEM) — herkese açık, yerel olarak nota gömülür -->
+            <button onclick="cizimAc()" title="Çizim ekle (kalem)" class="bg-amber-500 text-white px-4 py-2 rounded-xl font-bold hover:bg-amber-600 shadow-md transition active:scale-95 text-sm">
+                <i class="fas fa-pen-nib mr-2"></i><span class="hidden sm:inline">Çiz</span>
+            </button>
+
             <?php if ($duzenleyebilir): ?>
                 <button onclick="saveToDatabase()" class="bg-emerald-500 text-white px-5 py-2 rounded-xl font-bold hover:bg-emerald-600 shadow-md transition active:scale-95 text-sm">
                     <i class="fas fa-save mr-2"></i> <span id="btnSaveText"><?= $noteId ? 'Güncelle' : 'Kaydet' ?></span>
                 </button>
+                <button onclick="openShareModal()" class="bg-indigo-600 text-white px-5 py-2 rounded-xl font-bold hover:bg-indigo-700 shadow-md transition active:scale-95 text-sm">
+                    <i class="fas fa-share-alt mr-2"></i> <span id="btnShareText">Paylaş</span>
+                </button>
             <?php else: ?>
-                <span class="bg-slate-100 text-slate-500 px-4 py-2 rounded-xl text-sm font-bold flex items-center">
-                    <i class="fas fa-eye mr-2"></i> Görüntüleme Modu
+                <!-- Lokal düzenleme uyarısı — değişiklikler sadece tarayıcıda kalır -->
+                <span class="bg-amber-50 border border-amber-200 text-amber-700 px-3 py-2 rounded-xl text-[11px] font-bold flex items-center" title="Bu not başkasına ait. Düzenleyebilirsin ama değişiklikler sadece kendi bilgisayarında kalır; paylaşamaz ya da güncelleyemezsin.">
+                    <i class="fas fa-laptop mr-2"></i> Sadece bende — paylaşılmaz
                 </span>
-                <?php if ($mevcutNot['kullanici_email']): ?>
-                    <span class="text-xs text-slate-400">
+                <?php if (!empty($mevcutNot['kullanici_email'])): ?>
+                    <span class="text-xs text-slate-400 hidden sm:inline">
                         Yazar: <strong class="text-slate-600">@<?= htmlspecialchars($mevcutNot['author'] ?: 'Anonim') ?></strong>
                     </span>
                 <?php endif; ?>
             <?php endif; ?>
-            
-            <button onclick="openShareModal()" class="bg-indigo-600 text-white px-5 py-2 rounded-xl font-bold hover:bg-indigo-700 shadow-md transition active:scale-95 text-sm">
-                <i class="fas fa-share-alt mr-2"></i> <span id="btnShareText">Paylaş</span>
-            </button>
         </div>
     </nav>
 
@@ -695,11 +702,14 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
         let egitimData = null;
         let questionCount = 0;
 
-        const SADECE_OKUMA = <?= $duzenleyebilir ? 'false' : 'true' ?>;
+        // Editör her zaman düzenlenebilir; sahip değilse değişiklikler SADECE LOKAL'de kalır
+        const SADECE_OKUMA = false;
+        const KAYDETME_HAKKIM = <?= $duzenleyebilir ? 'true' : 'false' ?>;
+        const NOT_ID = <?= $noteId ? (int)$noteId : 'null' ?>;
         var quill = new Quill('#editor', {
             theme: 'snow',
-            readOnly: SADECE_OKUMA,
-            placeholder: SADECE_OKUMA ? '' : 'Notlarını buraya yaz... (zengin metin, formül, kod, resim, video destekler)',
+            readOnly: false,
+            placeholder: KAYDETME_HAKKIM ? 'Notlarını buraya yaz... (zengin metin, formül, kod, resim, video destekler)' : 'Notu düzenleyebilirsin — ama değişiklikler sadece bu bilgisayarda kalır.',
             modules: {
                 toolbar: [
                     [{ 'font': [] }, { 'size': ['small', false, 'large', 'huge'] }],
@@ -825,6 +835,15 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
             }
             return;
             <?php endif; ?>
+
+            // SAHIPLIK KONTROLU — Sahip değilse sunucuya gönderme; sessizce sadece lokal kaydet
+            if (!KAYDETME_HAKKIM) {
+                lokalKaydet();
+                if (!sessiz) {
+                    bildirim('Bu not sana ait değil. Değişiklikler sadece bu bilgisayarda saklandı.', 'amber');
+                }
+                return;
+            }
 
             const btn = document.getElementById('btnSaveText');
             const original = btn ? btn.innerText : 'Kaydet';
@@ -1195,18 +1214,57 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
         }
 
         // ---------- OTOMATİK KAYDET ----------
-        <?php if ($duzenleyebilir): ?>
         let autoSaveTimer = null;
         let lastSavedContent = '';
         const autoSaveIndicator = document.getElementById('otomatikKaydet');
 
+        // ─── LOKAL KAYIT (sahibi olmayan kullanıcılar için) ──────────
+        function lokalKaydet() {
+            if (!NOT_ID) return;  // Yeni notlar için lokal kayıt anlamsız
+            try {
+                const veri = {
+                    title:   document.getElementById('title')?.value ?? '',
+                    content: quill.root.innerHTML,
+                    cizim:   window._cizimDataURL || null,
+                    tarih:   Date.now()
+                };
+                localStorage.setItem('lokalNot_' + NOT_ID, JSON.stringify(veri));
+            } catch (e) {}
+        }
+        function lokalYukle() {
+            if (!NOT_ID) return;
+            try {
+                const raw = localStorage.getItem('lokalNot_' + NOT_ID);
+                if (!raw) return;
+                const v = JSON.parse(raw);
+                if (v.title)   { const ti = document.getElementById('title'); if (ti) ti.value = v.title; }
+                if (v.content) { quill.root.innerHTML = v.content; }
+                if (v.cizim)   { window._cizimDataURL = v.cizim; }
+                if (!KAYDETME_HAKKIM) bildirim('Yerel taslağın yüklendi.', 'slate');
+            } catch (e) {}
+        }
+        window.addEventListener('load', () => setTimeout(lokalYukle, 400));
+
         function triggerAutoSave() {
             clearTimeout(autoSaveTimer);
             autoSaveTimer = setTimeout(async () => {
-                const t = document.getElementById('title').value.trim();
-                if (!t) return; // Başlık yoksa kaydetme
+                const t = document.getElementById('title')?.value.trim() || '';
                 const content = quill.root.innerHTML;
                 if (content === lastSavedContent) return;
+
+                if (!KAYDETME_HAKKIM) {
+                    // Sahip değil → sadece localStorage
+                    lokalKaydet();
+                    lastSavedContent = content;
+                    if (autoSaveIndicator) {
+                        autoSaveIndicator.innerHTML = '<i class="fas fa-laptop text-amber-500 mr-1"></i> Yerel olarak kaydedildi';
+                        autoSaveIndicator.classList.remove('hidden');
+                        setTimeout(() => autoSaveIndicator.classList.add('hidden'), 2500);
+                    }
+                    return;
+                }
+
+                if (!t) return; // Başlık yoksa sunucuya da gitme
                 try {
                     await saveToDatabase(true);
                     lastSavedContent = content;
@@ -1215,14 +1273,23 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
                         setTimeout(() => autoSaveIndicator.classList.add('hidden'), 2500);
                     }
                 } catch (e) {}
-            }, 5000); // 5 saniye sonra otomatik kaydet
+            }, 5000);
         }
         quill.on('text-change', triggerAutoSave);
         ['title','eduLevel','noteCategory'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.addEventListener('input', triggerAutoSave);
         });
-        <?php endif; ?>
+
+        // Ufak bildirim helper (sağ-alt köşe)
+        function bildirim(mesaj, renk='emerald') {
+            const e = document.createElement('div');
+            e.className = `fixed bottom-6 right-6 z-[100] bg-${renk}-500 text-white px-5 py-3 rounded-2xl shadow-xl font-semibold text-sm transition-all opacity-0 translate-y-2`;
+            e.innerText = mesaj;
+            document.body.appendChild(e);
+            requestAnimationFrame(() => { e.style.opacity = 1; e.style.transform = 'translateY(0)'; });
+            setTimeout(() => { e.style.opacity = 0; setTimeout(() => e.remove(), 300); }, 2800);
+        }
 
         // ---------- DOSYA YÜKLEME ----------
         let yuklenenDosya = null;
@@ -1418,6 +1485,200 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
             }
         };
     </script>
+<!-- ═════════════════ ÇİZİM (KALEM) MODALI ═════════════════ -->
+<div id="cizimModal" class="fixed inset-0 z-[120] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden">
+        <!-- Başlık çubuğu -->
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-pen-nib text-amber-500 text-xl"></i>
+                <h3 class="font-black text-slate-900 text-lg">Serbest Çizim</h3>
+            </div>
+            <button onclick="cizimKapat()" class="text-slate-400 hover:text-rose-500 transition text-xl">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Araç çubuğu -->
+        <div class="px-6 py-3 bg-slate-50 border-b border-slate-100 flex flex-wrap items-center gap-3">
+            <!-- Renkler -->
+            <div class="flex items-center gap-1.5">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mr-1">Renk</span>
+                <?php
+                $cRenkler = ['#0f172a','#dc2626','#2563eb','#16a34a','#f59e0b','#7c3aed','#ec4899','#ffffff'];
+                foreach ($cRenkler as $c):
+                ?>
+                <button type="button" onclick="cizimRenk('<?= $c ?>')"
+                        class="w-7 h-7 rounded-full border-2 border-white shadow ring-1 ring-slate-200 hover:scale-110 transition"
+                        style="background:<?= $c ?>"></button>
+                <?php endforeach; ?>
+            </div>
+            <!-- Kalınlık -->
+            <div class="flex items-center gap-2 ml-2">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kalınlık</span>
+                <input type="range" id="cizimKalinlik" min="1" max="30" value="3" class="w-32">
+                <span id="cizimKalinlikYazi" class="text-xs font-bold text-slate-600 w-6">3</span>
+            </div>
+            <!-- Mod -->
+            <div class="flex items-center gap-1 ml-auto">
+                <button type="button" id="modKalem" onclick="cizimMod('kalem')" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold transition">
+                    <i class="fas fa-pen mr-1"></i> Kalem
+                </button>
+                <button type="button" id="modSilgi" onclick="cizimMod('silgi')" class="px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-bold transition">
+                    <i class="fas fa-eraser mr-1"></i> Silgi
+                </button>
+                <button type="button" onclick="cizimTemizle()" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 text-xs font-bold transition hover:bg-rose-500 hover:text-white">
+                    <i class="fas fa-trash mr-1"></i> Temizle
+                </button>
+                <button type="button" onclick="cizimGeriAl()" title="Geri Al (Ctrl+Z)" class="px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-bold transition hover:bg-slate-100">
+                    <i class="fas fa-undo"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="p-6 bg-slate-50">
+            <canvas id="cizimCanvas" width="900" height="500"
+                    class="w-full bg-white border-2 border-dashed border-slate-200 rounded-2xl cursor-crosshair touch-none"></canvas>
+            <p class="text-[11px] text-slate-400 mt-3 text-center">
+                <i class="fas fa-info-circle mr-1"></i> Mouse / parmak / kalem ile çizebilirsin. "Nota Ekle" dediğinde çizim notuna gömülür.
+            </p>
+        </div>
+
+        <!-- Altta butonlar -->
+        <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-3 bg-white">
+            <button onclick="cizimKapat()" class="bg-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-200 transition">İptal</button>
+            <button onclick="cizimNotaEkle()" class="bg-emerald-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-emerald-600 shadow-md transition">
+                <i class="fas fa-check mr-2"></i> Nota Ekle
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ═════════════════ ÇİZİM (KALEM) ═════════════════
+(function() {
+    let cnv, ctx;
+    let ciziyor = false;
+    let renk = '#0f172a';
+    let kalinlik = 3;
+    let mod = 'kalem';   // 'kalem' veya 'silgi'
+    const tarih = [];    // undo için snapshot dizisi
+
+    function setup() {
+        cnv = document.getElementById('cizimCanvas');
+        if (!cnv) return;
+        ctx = cnv.getContext('2d');
+        ctx.lineJoin = 'round';
+        ctx.lineCap  = 'round';
+        beyazaBoya();
+
+        const baslat = (x, y) => {
+            ciziyor = true;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            snapshotAl();
+        };
+        const ciz = (x, y) => {
+            if (!ciziyor) return;
+            ctx.strokeStyle = (mod === 'silgi') ? '#ffffff' : renk;
+            ctx.lineWidth   = (mod === 'silgi') ? kalinlik * 3 : kalinlik;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        };
+        const dur = () => { ciziyor = false; };
+
+        const koordinat = (e) => {
+            const r = cnv.getBoundingClientRect();
+            const t = e.touches ? e.touches[0] : e;
+            return {
+                x: (t.clientX - r.left) * (cnv.width  / r.width),
+                y: (t.clientY - r.top)  * (cnv.height / r.height)
+            };
+        };
+
+        cnv.addEventListener('mousedown',  e => { const p = koordinat(e); baslat(p.x, p.y); });
+        cnv.addEventListener('mousemove',  e => { const p = koordinat(e); ciz(p.x, p.y); });
+        window.addEventListener('mouseup', dur);
+        cnv.addEventListener('touchstart', e => { e.preventDefault(); const p = koordinat(e); baslat(p.x, p.y); }, {passive:false});
+        cnv.addEventListener('touchmove',  e => { e.preventDefault(); const p = koordinat(e); ciz(p.x, p.y); }, {passive:false});
+        cnv.addEventListener('touchend',   dur);
+
+        document.getElementById('cizimKalinlik').addEventListener('input', function() {
+            kalinlik = +this.value;
+            document.getElementById('cizimKalinlikYazi').innerText = kalinlik;
+        });
+
+        document.addEventListener('keydown', e => {
+            if (document.getElementById('cizimModal').classList.contains('hidden')) return;
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); window.cizimGeriAl(); }
+        });
+    }
+    function beyazaBoya() {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, cnv.width, cnv.height);
+    }
+    function snapshotAl() {
+        try { tarih.push(cnv.toDataURL()); if (tarih.length > 30) tarih.shift(); } catch (e) {}
+    }
+
+    // Dışa açılan API
+    window.cizimAc = function() {
+        const m = document.getElementById('cizimModal');
+        m.classList.remove('hidden');
+        if (!cnv) setup();
+        // Saklı çizim varsa onunla başla
+        if (window._cizimDataURL) {
+            const im = new Image();
+            im.onload = () => ctx.drawImage(im, 0, 0, cnv.width, cnv.height);
+            im.src = window._cizimDataURL;
+        }
+    };
+    window.cizimKapat = function() {
+        document.getElementById('cizimModal').classList.add('hidden');
+    };
+    window.cizimRenk = function(c) {
+        renk = c;
+        if (mod === 'silgi') window.cizimMod('kalem');
+    };
+    window.cizimMod = function(m) {
+        mod = m;
+        const k = document.getElementById('modKalem');
+        const s = document.getElementById('modSilgi');
+        if (m === 'kalem') {
+            k.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold transition';
+            s.className = 'px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-bold transition';
+        } else {
+            s.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold transition';
+            k.className = 'px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-bold transition';
+        }
+    };
+    window.cizimTemizle = function() {
+        snapshotAl();
+        beyazaBoya();
+    };
+    window.cizimGeriAl = function() {
+        if (!tarih.length) return;
+        const veri = tarih.pop();
+        const im = new Image();
+        im.onload = () => { ctx.clearRect(0,0,cnv.width,cnv.height); ctx.drawImage(im, 0, 0); };
+        im.src = veri;
+    };
+    window.cizimNotaEkle = function() {
+        const dataURL = cnv.toDataURL('image/png');
+        window._cizimDataURL = dataURL;
+        // Quill editörün sonuna resim olarak ekle
+        try {
+            const len = quill.getLength();
+            quill.insertEmbed(len - 1, 'image', dataURL, 'user');
+            quill.insertText(quill.getLength() - 1, '\n');
+        } catch (e) {}
+        window.cizimKapat();
+        if (typeof bildirim === 'function') bildirim('Çizim nota eklendi.', 'emerald');
+    };
+})();
+</script>
+
 <?php if (file_exists(__DIR__ . '/footer_partial.php')) include __DIR__ . '/footer_partial.php'; ?>
 </body>
 </html>
