@@ -722,28 +722,42 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
             }
         });
 
-        // ──────── Quill toolbar'ına özel "Çiz" butonu ekle ────────
-        (function ekleCizimButonu() {
+        // ──────── Quill toolbar'ına özel iki buton ekle ────────
+        // 1) 🖋 Kalem  → Editörün üstüne overlay çizim (yazıların/resimlerin üzerine)
+        // 2) 🧑‍🏫 Beyaz Tahta → Ayrı modal'da büyük çizim ekranı
+        (function ekleCizimButonlari() {
             const tb = document.querySelector('.ql-toolbar');
-            if (!tb) return;
-            // Halihazırda varsa tekrar ekleme
-            if (tb.querySelector('.ql-cizim')) return;
+            if (!tb || tb.querySelector('.ql-cizim')) return;
 
             const grup = document.createElement('span');
             grup.className = 'ql-formats';
 
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'ql-cizim';
-            btn.title = 'Çizim ekle (kalem)';
-            btn.style.cssText = 'color:#f59e0b; display:inline-flex; align-items:center; justify-content:center; width:32px; height:24px;';
-            btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>';
-            btn.onclick = function(e) {
+            // Buton 1: Overlay kalem
+            const btn1 = document.createElement('button');
+            btn1.type = 'button';
+            btn1.className = 'ql-cizim';
+            btn1.title = 'Üstüne çiz (yazıların/resimlerin üzerine)';
+            btn1.style.cssText = 'color:#f59e0b; display:inline-flex; align-items:center; justify-content:center; width:32px; height:24px;';
+            btn1.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>';
+            btn1.onclick = function(e) {
                 e.preventDefault();
                 if (typeof cizimAc === 'function') cizimAc();
             };
 
-            grup.appendChild(btn);
+            // Buton 2: Ayrı ekran beyaz tahta
+            const btn2 = document.createElement('button');
+            btn2.type = 'button';
+            btn2.className = 'ql-tahta';
+            btn2.title = 'Beyaz tahta (ayrı ekranda büyük çizim)';
+            btn2.style.cssText = 'color:#2563eb; display:inline-flex; align-items:center; justify-content:center; width:32px; height:24px; margin-left:2px;';
+            btn2.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/><path d="M8 9l2 2 4-4"/></svg>';
+            btn2.onclick = function(e) {
+                e.preventDefault();
+                if (typeof tahtaAc === 'function') tahtaAc();
+            };
+
+            grup.appendChild(btn1);
+            grup.appendChild(btn2);
             tb.appendChild(grup);
         })();
 
@@ -1507,6 +1521,12 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
     </script>
 <!-- ═════════════════ ÇİZİM (OVERLAY) ARAÇ ÇUBUĞU ═════════════════ -->
 <div id="cizimAraclar" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] bg-white shadow-2xl rounded-2xl px-4 py-3 flex items-center gap-3 border border-slate-200">
+    <!-- KAPATMA (X) -->
+    <button type="button" onclick="cizimModunuKapat()" title="Çizim modunu kapat (Esc)"
+            class="w-8 h-8 rounded-full bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white border border-rose-200 transition flex items-center justify-center">
+        <i class="fas fa-times"></i>
+    </button>
+
     <span class="text-[10px] font-black text-amber-600 uppercase tracking-widest flex items-center">
         <i class="fas fa-pen-nib mr-2"></i> Çizim Modu
     </span>
@@ -1738,6 +1758,190 @@ body.cizim-mod-aktif #cizimOverlay { cursor: crosshair; }
 
     // Editör hazır olduğunda canvas'ı kur (görünür hale gelsin diye)
     setTimeout(setup, 500);
+})();
+</script>
+
+
+<!-- ═════════════════ BEYAZ TAHTA (AYRI EKRAN) MODALI ═════════════════ -->
+<div id="tahtaModal" class="fixed inset-0 z-[120] hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden">
+
+        <!-- Başlık -->
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-chalkboard text-blue-500 text-xl"></i>
+                <h3 class="font-black text-slate-900 text-lg">Beyaz Tahta</h3>
+                <span class="text-xs text-slate-400 hidden sm:block">— Büyük ekranda çiz, nota resim olarak ekle</span>
+            </div>
+            <button onclick="tahtaKapat()" class="w-10 h-10 rounded-full hover:bg-rose-50 text-slate-400 hover:text-rose-500 transition flex items-center justify-center text-xl">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Araç çubuğu -->
+        <div class="px-6 py-3 bg-slate-50 border-b border-slate-100 flex flex-wrap items-center gap-3">
+            <!-- Renkler -->
+            <div class="flex items-center gap-1.5">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mr-1">Renk</span>
+                <?php foreach (['#0f172a','#dc2626','#2563eb','#16a34a','#f59e0b','#7c3aed','#ec4899'] as $c): ?>
+                <button type="button" onclick="tahtaRenk('<?= $c ?>')"
+                        class="w-7 h-7 rounded-full border-2 border-white shadow ring-1 ring-slate-200 hover:scale-110 transition"
+                        style="background:<?= $c ?>"></button>
+                <?php endforeach; ?>
+            </div>
+            <!-- Kalınlık -->
+            <div class="flex items-center gap-2 ml-2">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kalınlık</span>
+                <input type="range" id="tahtaKalinlik" min="1" max="30" value="3" class="w-32">
+                <span id="tahtaKalinlikYazi" class="text-xs font-bold text-slate-600 w-6">3</span>
+            </div>
+            <!-- Mod -->
+            <div class="flex items-center gap-1 ml-auto">
+                <button type="button" id="tahtaModKalem" onclick="tahtaMod('kalem')" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold transition">
+                    <i class="fas fa-pen mr-1"></i> Kalem
+                </button>
+                <button type="button" id="tahtaModSilgi" onclick="tahtaMod('silgi')" class="px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-bold transition">
+                    <i class="fas fa-eraser mr-1"></i> Silgi
+                </button>
+                <button type="button" onclick="tahtaGeriAl()" title="Geri Al (Ctrl+Z)" class="px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-bold transition hover:bg-slate-100">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button type="button" onclick="tahtaTemizle()" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 text-xs font-bold transition hover:bg-rose-500 hover:text-white">
+                    <i class="fas fa-trash mr-1"></i> Temizle
+                </button>
+            </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="p-6 bg-slate-50">
+            <canvas id="tahtaCanvas" width="1000" height="560"
+                    class="w-full bg-white border-2 border-dashed border-slate-200 rounded-2xl cursor-crosshair touch-none"></canvas>
+            <p class="text-[11px] text-slate-400 mt-3 text-center">
+                <i class="fas fa-info-circle mr-1"></i> Mouse / parmak / kalem ile çiz. "Nota Ekle" deyince çizim notuna resim olarak eklenir.
+            </p>
+        </div>
+
+        <!-- Altta butonlar -->
+        <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-3 bg-white">
+            <button onclick="tahtaKapat()" class="bg-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-200 transition">İptal</button>
+            <button onclick="tahtaNotaEkle()" class="bg-emerald-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-emerald-600 shadow-md transition">
+                <i class="fas fa-check mr-2"></i> Nota Ekle
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ═════════════════ BEYAZ TAHTA (MODAL) ═════════════════
+(function() {
+    let cnv, ctx;
+    let ciziyor = false;
+    let renk = '#0f172a';
+    let kalinlik = 3;
+    let mod = 'kalem';
+    const tarih = [];
+
+    function setup() {
+        cnv = document.getElementById('tahtaCanvas');
+        if (!cnv) return;
+        ctx = cnv.getContext('2d');
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        beyazaBoya();
+
+        const koord = (e) => {
+            const r = cnv.getBoundingClientRect();
+            const t = e.touches ? e.touches[0] : e;
+            return {
+                x: (t.clientX - r.left) * (cnv.width  / r.width),
+                y: (t.clientY - r.top)  * (cnv.height / r.height)
+            };
+        };
+        const baslat = (e) => {
+            ciziyor = true;
+            const p = koord(e);
+            try { tarih.push(cnv.toDataURL()); if (tarih.length > 25) tarih.shift(); } catch (_) {}
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+        };
+        const ciz = (e) => {
+            if (!ciziyor) return;
+            const p = koord(e);
+            ctx.strokeStyle = (mod === 'silgi') ? '#ffffff' : renk;
+            ctx.lineWidth   = (mod === 'silgi') ? kalinlik * 3 : kalinlik;
+            ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+        };
+        const dur = () => { ciziyor = false; };
+
+        cnv.addEventListener('mousedown',  baslat);
+        cnv.addEventListener('mousemove',  ciz);
+        window.addEventListener('mouseup', dur);
+        cnv.addEventListener('touchstart', e => { e.preventDefault(); baslat(e); }, {passive:false});
+        cnv.addEventListener('touchmove',  e => { e.preventDefault(); ciz(e); },   {passive:false});
+        cnv.addEventListener('touchend',   dur);
+
+        document.getElementById('tahtaKalinlik').addEventListener('input', function() {
+            kalinlik = +this.value;
+            document.getElementById('tahtaKalinlikYazi').innerText = kalinlik;
+        });
+
+        document.addEventListener('keydown', e => {
+            if (document.getElementById('tahtaModal').classList.contains('hidden')) return;
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); window.tahtaGeriAl(); }
+            if (e.key === 'Escape') window.tahtaKapat();
+        });
+    }
+    function beyazaBoya() {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, cnv.width, cnv.height);
+    }
+
+    window.tahtaAc = function() {
+        document.getElementById('tahtaModal').classList.remove('hidden');
+        if (!cnv) setup();
+    };
+    window.tahtaKapat = function() {
+        document.getElementById('tahtaModal').classList.add('hidden');
+    };
+    window.tahtaRenk = function(c) {
+        renk = c;
+        if (mod === 'silgi') window.tahtaMod('kalem');
+    };
+    window.tahtaMod = function(m) {
+        mod = m;
+        const k = document.getElementById('tahtaModKalem');
+        const s = document.getElementById('tahtaModSilgi');
+        if (m === 'kalem') {
+            k.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold transition';
+            s.className = 'px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-bold transition';
+        } else {
+            s.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold transition';
+            k.className = 'px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-bold transition';
+        }
+    };
+    window.tahtaTemizle = function() {
+        try { tarih.push(cnv.toDataURL()); if (tarih.length > 25) tarih.shift(); } catch (_) {}
+        beyazaBoya();
+    };
+    window.tahtaGeriAl = function() {
+        if (!tarih.length) return;
+        const veri = tarih.pop();
+        const im = new Image();
+        im.onload = () => { ctx.clearRect(0,0,cnv.width,cnv.height); ctx.drawImage(im, 0, 0); };
+        im.src = veri;
+    };
+    window.tahtaNotaEkle = function() {
+        if (!cnv) return;
+        const dataURL = cnv.toDataURL('image/png');
+        try {
+            const range = quill.getSelection(true) || { index: quill.getLength() - 1 };
+            quill.insertEmbed(range.index, 'image', dataURL, 'user');
+            quill.insertText(range.index + 1, '\n');
+        } catch (e) {}
+        window.tahtaKapat();
+        if (typeof bildirim === 'function') bildirim('Çizim nota eklendi.', 'emerald');
+    };
 })();
 </script>
 
