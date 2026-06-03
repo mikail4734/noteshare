@@ -182,7 +182,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['loginsubmit'])) {
                 </div>
             </div>
 
-            <a href="fb-login-calistir.php" 
+            <a href="google-login-calistir.php"
+                class="w-full flex items-center justify-center bg-white border-2 border-slate-200 text-slate-700 py-4 rounded-xl font-bold text-sm shadow-sm hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] transition-all mb-3">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5 mr-3">
+                Google ile Giriş Yap
+            </a>
+            <a href="fb-login-calistir.php"
                 class="w-full flex items-center justify-center bg-[#1877F2] text-white py-4 rounded-xl font-bold text-sm shadow-lg hover:bg-[#166fe5] active:scale-[0.98] transition-all">
                 <i class="fab fa-facebook text-lg mr-3"></i>
                 Facebook ile Giriş Yap
