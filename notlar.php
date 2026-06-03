@@ -274,11 +274,6 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
                 </a>
             <?php endif; ?>
 
-            <!-- ÇİZİM (KALEM) — herkese açık, yerel olarak nota gömülür -->
-            <button onclick="cizimAc()" title="Çizim ekle (kalem)" class="bg-amber-500 text-white px-4 py-2 rounded-xl font-bold hover:bg-amber-600 shadow-md transition active:scale-95 text-sm">
-                <i class="fas fa-pen-nib mr-2"></i><span class="hidden sm:inline">Çiz</span>
-            </button>
-
             <?php if ($duzenleyebilir): ?>
                 <button onclick="saveToDatabase()" class="bg-emerald-500 text-white px-5 py-2 rounded-xl font-bold hover:bg-emerald-600 shadow-md transition active:scale-95 text-sm">
                     <i class="fas fa-save mr-2"></i> <span id="btnSaveText"><?= $noteId ? 'Güncelle' : 'Kaydet' ?></span>
@@ -726,6 +721,31 @@ if ($noteId && $mevcutNot && $mevcutNot['kullanici_email'] && $kullaniciEmail &&
                 ]
             }
         });
+
+        // ──────── Quill toolbar'ına özel "Çiz" butonu ekle ────────
+        (function ekleCizimButonu() {
+            const tb = document.querySelector('.ql-toolbar');
+            if (!tb) return;
+            // Halihazırda varsa tekrar ekleme
+            if (tb.querySelector('.ql-cizim')) return;
+
+            const grup = document.createElement('span');
+            grup.className = 'ql-formats';
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'ql-cizim';
+            btn.title = 'Çizim ekle (kalem)';
+            btn.style.cssText = 'color:#f59e0b; display:inline-flex; align-items:center; justify-content:center; width:32px; height:24px;';
+            btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>';
+            btn.onclick = function(e) {
+                e.preventDefault();
+                if (typeof cizimAc === 'function') cizimAc();
+            };
+
+            grup.appendChild(btn);
+            tb.appendChild(grup);
+        })();
 
         async function fetchEgitimData() {
             try {
